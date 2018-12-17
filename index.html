@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matrix Transformation</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.0.0/math.js"></script>
+    <script type="text/javascript" src="MatrixTransformation.js"></script>
+</head>
+<body style="margin:0px">
+<canvas id="c" width="1000" height="700" style="border: 1px solid black; margin: 0px"></canvas>
+<p id="">VISTA</p>
+<p id="x"></p>
+<p id="y"></p>
+
+<p id="">MONDO</p>
+<p id="mx"></p>
+<p id="my"></p>
+
+</body>
+<script type="text/javascript">
+    let px = document.getElementById("x");
+    let py = document.getElementById("y");
+    let mx = document.getElementById("mx");
+    let my = document.getElementById("my");
+    let c = document.getElementById("c");
+    let ctx = c.getContext("2d");
+
+    let zoom_in = 1.05;
+    let zoom_out = 1/1.05;
+    let zoom_inL = 1.15;
+    let zoom_outL = 1/1.15;
+    let rotate_angle = math.pi / 500;
+    let rotate_angleL = math.pi / 50;
+
+    let drag = false;
+    let drag_point1 = null;
+    let drag_point2 = null;
+    
+    translate(500,350);
+    draw();
+
+    document.body.addEventListener("keyup", function(e) {
+        //console.log(e);
+        switch(e.key){
+            case "w":
+                translate(0,-10);
+                break;
+            case "s":
+                translate(0,10);
+                break;
+            case "a":
+                translate(-10,0);
+                break;
+            case "d":
+                translate(10,0);
+                break;
+            case "q":
+                rotate(math.pi/20);
+                break;
+            case "e":
+                rotate(-math.pi/20);
+                break;
+            case "z":
+                scale_on_point(zoom_out,zoom_out,0,0);
+                break;
+            case "x":
+                scale_on_point(zoom_in,zoom_in,0,0);
+                break;
+        }
+
+        draw();
+    });
+
+    c.addEventListener("mousewheel", function(e) {
+        e.preventDefault();
+        //console.log(e.wheelDeltaY);
+        if(e.altKey){
+            let r = rotate_angle;
+            if(e.ctrlKey){
+                r = rotate_angleL;
+            }
+            rotate(math.sign(e.deltaY) * r);
+        } else {
+            let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
+            let z;
+            if(e.deltaY < 0){
+                z = zoom_in;
+                if(e.ctrlKey){
+                    z = zoom_inL
+                }
+            } else{
+                z = zoom_out;
+                if(e.ctrlKey){
+                    z = zoom_outL
+                }
+            }
+            scale_on_point(z,z,math.subset(res,math.index(0)),math.subset(res,math.index(1)));
+        }      
+
+        
+        draw();
+    });
+
+
+    function draw_point(x,y){
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+        ctx.strokeStyle = '#003300';
+        ctx.stroke();
+    };
+
+    function draw_center(){
+        draw_point(0,0);
+    };
+
+    function draw_axis(){
+        ctx.lineWidth = 1 / math.subset(s,math.index(0,0));
+        ctx.beginPath();
+        ctx.moveTo(-1000, 0);
+        ctx.lineTo(1000, 0);
+        ctx.moveTo(0, -1000);
+        ctx.lineTo(0, 1000);
+        ctx.stroke();
+    };
+
+    c.addEventListener("mousemove", function(e){
+        x.innerText = e.clientX;
+        y.innerText = e.clientY;
+
+        drag_point2 = {
+            x: e.clientX,
+            y: e.clientY
+        }
+
+        let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
+
+        if(drag){
+            translate(drag_point2.x - drag_point1.x, drag_point2.y - drag_point1.y);
+            drag_point1 = drag_point2;
+            draw();
+        }
+
+        mx.innerText = math.subset(res,math.index(0));
+        my.innerText = math.subset(res,math.index(1));
+        
+
+    });
+
+    c.addEventListener("mousedown", function(e){
+        drag = true;
+        ctx.save();
+        drag_point1 = {
+            x: e.clientX,
+            y: e.clientY
+        }
+
+    });
+
+    c.addEventListener("mouseup", function(e){
+        ctx.restore();
+        drag = false;
+    });
+
+    function draw(){
+        clear();
+        applyTransform(ctx);
+        draw_axis();
+        draw_point(100,100);
+        //draw_center();
+    }
+
+    function clear(){
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, c.width, c.height);
+    }
+
+</script>
+</html>
