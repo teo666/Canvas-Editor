@@ -108,7 +108,7 @@ el.prototype.draw = function(){
         math.subset(ts,math.index(0,2)),
         math.subset(ts,math.index(1,2))
     )
-    ctx.drawImage(
+    /*ctx.drawImage(
         this.img,
         200,                      //clip start x
         300,                      //clip start y
@@ -118,6 +118,18 @@ el.prototype.draw = function(){
         -this.center.y+300,
         this.img.width-220,
         this.img.height-230
+    );
+    */
+    ctx.drawImage(
+        this.img,
+        0,                      //clip start x
+        0,                      //clip start y
+        this.img.width-0,         //clip width
+        this.img.height-0,        //clip height
+        -this.center.x+0,
+        -this.center.y+0,
+        this.img.width-0,
+        this.img.height-0
     );
     ctx.restore();
 }

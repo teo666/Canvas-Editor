@@ -25,12 +25,19 @@
     let c = document.getElementById("c");
     let ctx = c.getContext("2d");
 
+    const CTRL = 0b0001;
+    const ALT = 0b0010;
+    const SHIFT = 0b0100;
+    const META = 0b1000
+
     let zoom_in = 1.05;
     let zoom_out = 1/1.05;
     let zoom_inL = 1.15;
     let zoom_outL = 1/1.15;
     let rotate_angle = math.pi / 500;
     let rotate_angleL = math.pi / 50;
+    let translatel = 1;
+    let translatelL = 10;
 
     let drag = false;
     let drag_point1 = null;
@@ -38,9 +45,9 @@
 
     let logo = new el();
     logo.setCenter(325,325)
-    //logo.scale(1/3,1/3)
-    //logo.rotate(math.pi/4)
-    //logo.translate(500,500)
+    logo.scale(1/3,1/3)
+    logo.rotate(math.pi/4)
+    logo.translate(500,500)
     
     translate(500,350);
     draw();
@@ -80,50 +87,158 @@
         draw();
     });
 
+    function get_mask(e){
+        let m = 0b0000;
+        if(e.ctrlKey){
+            m |= CTRL;
+        }
+        if(e.altKey){
+            m |= ALT;
+        }
+        if(e.shiftKey){
+            m |= SHIFT;
+        }
+        if(e.metaKey){
+            m |= META;
+        }
+        //console.log(m)
+        return m;
+    }
+
+    c.addEventListener("mouseleave",function(){
+        drag = false;
+    })
+
     c.addEventListener("wheel", function(e) {
         e.preventDefault();
-        //console.log(e.wheelDeltaY);
-        if(e.shiftKey && !e.altKey){
-            if(math.sign(e.deltaY) > 0){
-                logo.rotate(math.pi/100);
-            } else {
-                logo.rotate(-math.pi/100);
-            }
-            
-        }else
-        if(e.altKey){
-            let r = rotate_angle;
-            if(e.ctrlKey){
-                r = rotate_angleL;
-                
-            } else if(e.shiftKey){
-                if(math.sign(e.deltaY) > 0){
-                    logo.scale(1/1.1,1/1.1)
-                } else {
-                    logo.scale(1.1,1.1)
-                }
-                draw();
-                return;
-            }
-            rotate(math.sign(e.deltaY) * r);
-        } else {
+        //console.log(e)
+        mask = get_mask(e);
+        //ctrl alt shift
+        console.log(mask)
+        
+        //rotazione globale
+        if(!(mask ^ ALT)){
+            //console.log("solo alt")
+            rotate(math.sign(e.deltaY) * rotate_angle);
+        }
+        
+        //zoom veloce
+        if(!(mask ^ CTRL)){
+            //console.log("solo ctrl")
             let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
-            let z;
+            let z = 0;
             if(e.deltaY < 0){
-                z = zoom_in;
-                if(e.ctrlKey){
-                    z = zoom_inL
-                }
+                z = zoom_inL;
             } else{
-                z = zoom_out;
-                if(e.ctrlKey){
-                    z = zoom_outL
-                }
+                z = zoom_outL;
             }
             scale_on_point(z,z,math.subset(res,math.index(0)),math.subset(res,math.index(1)));
-        }      
+        }
+        
+        //zoom dell'oggetto
+        if(!(mask ^ SHIFT)){
+            //console.log("solo shift")
+            let z = 0;
+            if(math.sign(e.deltaY) > 0){
+                z = zoom_out;
+            } else {
+                z = zoom_in;
+            }
+            logo.scale(z,z)
+        }
+
+        if(!(mask ^ META)){
+            let t = translatel;
+            //console.log("solo shift")
+            if(math.sign(e.deltaY) < 0){
+                t = -t;
+            }
+            translate(t,0)
+        }
+        //rotazione globale veloce
+        if(!(mask ^ (ALT | CTRL) ) ){
+            //console.log("alt e ctrl")
+            rotate(math.sign(e.deltaY) * rotate_angleL);
+        }
+        //rotazione dell'oggetto
+        if(!(mask ^ (ALT | SHIFT))){
+            //console.log("alt e shift")
+            logo.rotate(rotate_angle * math.sign(e.deltaY));
+        }
+
+        if(!(mask ^ (ALT | META))){
+            let t = translatel;
+            //console.log("solo shift")
+            if(math.sign(e.deltaY) < 0){
+                t = -t;
+            }
+            translate(0,t)
+        }
+
+        if(!(mask ^ ( META | CTRL))){
+            let t = translatelL;
+            //console.log("solo shift")
+            if(math.sign(e.deltaY) < 0){
+                t = -t;
+            }
+            translate(t,0)
+        }
+
+        if(!(mask ^ ( META | CTRL | ALT))){
+            let t = translatelL;
+            //console.log("solo shift")
+            if(math.sign(e.deltaY) < 0){
+                t = -t;
+            }
+            translate(0,t)
+        }
+
+        if(!(mask ^ ( SHIFT | META ))){
+           
+        }
+
+        if(!(mask ^ ( SHIFT | META | ALT))){
+           
+        }
+
+        if(!(mask ^ ( SHIFT | META | CTRL))){
+           
+        }
+
+        if(!(mask ^ ( SHIFT | META | CTRL | ALT))){
+           
+        }
+
 
         
+        //zoom velore dell'oggetto
+        if(!(mask ^ (CTRL | SHIFT))){
+            //console.log("ctrl e shift")
+            let z = 0;
+            if(math.sign(e.deltaY) > 0){
+                z = zoom_outL
+            } else {
+                z = zoom_inL;
+            }
+            logo.scale(z,z)
+        }
+        //rotazione veloce dell'oggetto
+        if(!(mask ^ (ALT | CTRL | SHIFT))){
+            //console.log("alt shift e ctrl")
+            logo.rotate(rotate_angleL * math.sign(e.deltaY));
+        }
+        //zoom normale
+        if(!mask){
+            let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
+            let z = 0;
+            if(e.deltaY < 0){
+                z = zoom_in;
+            } else{
+                z = zoom_out;
+            }
+            scale_on_point(z,z,math.subset(res,math.index(0)),math.subset(res,math.index(1)));
+        }
+
         draw();
     });
 
