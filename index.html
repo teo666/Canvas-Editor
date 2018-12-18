@@ -111,20 +111,15 @@
 
     c.addEventListener("wheel", function(e) {
         e.preventDefault();
-        //console.log(e)
         mask = get_mask(e);
-        //ctrl alt shift
-        console.log(mask)
         
         //rotazione globale
         if(!(mask ^ ALT)){
-            //console.log("solo alt")
             rotate(math.sign(e.deltaY) * rotate_angle);
         }
         
         //zoom veloce
         if(!(mask ^ CTRL)){
-            //console.log("solo ctrl")
             let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
             let z = 0;
             if(e.deltaY < 0){
@@ -137,7 +132,6 @@
         
         //zoom dell'oggetto
         if(!(mask ^ SHIFT)){
-            //console.log("solo shift")
             let z = 0;
             if(math.sign(e.deltaY) > 0){
                 z = zoom_out;
@@ -149,7 +143,6 @@
 
         if(!(mask ^ META)){
             let t = translatel;
-            //console.log("solo shift")
             if(math.sign(e.deltaY) < 0){
                 t = -t;
             }
@@ -157,18 +150,15 @@
         }
         //rotazione globale veloce
         if(!(mask ^ (ALT | CTRL) ) ){
-            //console.log("alt e ctrl")
             rotate(math.sign(e.deltaY) * rotate_angleL);
         }
         //rotazione dell'oggetto
         if(!(mask ^ (ALT | SHIFT))){
-            //console.log("alt e shift")
             logo.rotate(rotate_angle * math.sign(e.deltaY));
         }
 
         if(!(mask ^ (ALT | META))){
             let t = translatel;
-            //console.log("solo shift")
             if(math.sign(e.deltaY) < 0){
                 t = -t;
             }
@@ -177,7 +167,6 @@
 
         if(!(mask ^ ( META | CTRL))){
             let t = translatelL;
-            //console.log("solo shift")
             if(math.sign(e.deltaY) < 0){
                 t = -t;
             }
@@ -186,7 +175,6 @@
 
         if(!(mask ^ ( META | CTRL | ALT))){
             let t = translatelL;
-            //console.log("solo shift")
             if(math.sign(e.deltaY) < 0){
                 t = -t;
             }
@@ -194,26 +182,41 @@
         }
 
         if(!(mask ^ ( SHIFT | META ))){
-           
+            let t = translatel;
+            if(math.sign(e.deltaY) < 0){
+                t = -t;
+            }
+            logo.translate(t,0);
         }
 
         if(!(mask ^ ( SHIFT | META | ALT))){
-           
+            let t = translatel;
+            if(math.sign(e.deltaY) < 0){
+                t = -t;
+            }
+            logo.translate(0,t);
         }
 
         if(!(mask ^ ( SHIFT | META | CTRL))){
-           
+            let t = translatelL;
+            if(math.sign(e.deltaY) < 0){
+                t = -t;
+            }
+            logo.translate(t,0);
         }
 
         if(!(mask ^ ( SHIFT | META | CTRL | ALT))){
-           
+            let t = translatelL;
+            if(math.sign(e.deltaY) < 0){
+                t = -t;
+            }
+            logo.translate(0,t);
         }
 
 
         
         //zoom velore dell'oggetto
         if(!(mask ^ (CTRL | SHIFT))){
-            //console.log("ctrl e shift")
             let z = 0;
             if(math.sign(e.deltaY) > 0){
                 z = zoom_outL
