@@ -5,6 +5,8 @@
     <title>Matrix Transformation</title>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.0.0/math.js"></script>
     <script type="text/javascript" src="MatrixTransformation.js"></script>
+    <script type="text/javascript" src="Element.js"></script>
+    <script type="text/javascript" src="Logo.js"></script>
 </head>
 <body style="margin:0px">
 <canvas id="c" width="1000" height="700" style="border: 1px solid black; margin: 0px"></canvas>
@@ -40,14 +42,18 @@
     let translatelL = 10;
 
     let drag = false;
-    let drag_point1 = null;
-    let drag_point2 = null;
+    let drag_point = null;
 
-    let logo = new el();
-    logo.setCenter(325,325)
-    logo.scale(1/3,1/3)
-    logo.rotate(math.pi/4)
-    logo.translate(500,500)
+    let logo = new Logo();
+    logo.setSource("./font.jpg").then(() => {
+        let d = logo.getImageDimension();
+        logo.setCenter(d.w / 2 ,d.h / 2)
+        logo.scale(1/3,1/3)
+        logo.reflectX()
+        logo.rotate(math.pi/4)
+        logo.translate(50,50)
+        logo.draw()
+    })
     
     translate(500,350);
     draw();
@@ -56,16 +62,16 @@
         //console.log(e);
         switch(e.key){
             case "w":
-                translate(0,-10);
+                translateAdd(0,-10);
                 break;
             case "s":
-                translate(0,10);
+                translateAdd(0,10);
                 break;
             case "a":
-                translate(-10,0);
+                translateAdd(-10,0);
                 break;
             case "d":
-                translate(10,0);
+                translateAdd(10,0);
                 break;
             case "q":
                 rotate(math.pi/20);
@@ -120,14 +126,14 @@
         
         //zoom veloce
         if(!(mask ^ CTRL)){
-            let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
+            //let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
             let z = 0;
             if(e.deltaY < 0){
                 z = zoom_inL;
             } else{
                 z = zoom_outL;
             }
-            scale_on_point(z,z,math.subset(res,math.index(0)),math.subset(res,math.index(1)));
+            scale_on_point(z,z,e.clientX,e.clientY);
         }
         
         //zoom dell'oggetto
@@ -227,19 +233,17 @@
         }
         //rotazione veloce dell'oggetto
         if(!(mask ^ (ALT | CTRL | SHIFT))){
-            //console.log("alt shift e ctrl")
             logo.rotate(rotate_angleL * math.sign(e.deltaY));
         }
         //zoom normale
         if(!mask){
-            let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
             let z = 0;
             if(e.deltaY < 0){
                 z = zoom_in;
             } else{
                 z = zoom_out;
             }
-            scale_on_point(z,z,math.subset(res,math.index(0)),math.subset(res,math.index(1)));
+            scale_on_point(z,z,e.clientX,e.clientY);
         }
 
         draw();
@@ -260,7 +264,7 @@
     };
 
     function draw_axis(){
-        ctx.lineWidth = 1 / math.subset(s,math.index(0,0));
+        ctx.lineWidth = 1 / math.subset(ts,math.index(0,0));
         ctx.beginPath();
         ctx.moveTo(-1000, 0);
         ctx.lineTo(1000, 0);
@@ -273,16 +277,20 @@
         x.innerText = e.clientX;
         y.innerText = e.clientY;
 
-        drag_point2 = {
-            x: e.clientX,
-            y: e.clientY
-        }
+
 
         let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
 
         if(drag){
-            translate(drag_point2.x - drag_point1.x, drag_point2.y - drag_point1.y);
-            drag_point1 = drag_point2;
+            let rest = {
+                x : (e.clientX - drag_point.x) / math.subset(ts,math.index(0,0)),
+                y : (e.clientY - drag_point.y) / math.subset(ts,math.index(1,1))
+            }
+            translate( rest.x, rest.y );
+            drag_point = {
+                x: e.clientX,
+                y: e.clientY
+            }
             draw();
         }
 
@@ -294,8 +302,7 @@
 
     c.addEventListener("mousedown", function(e){
         drag = true;
-        ctx.save();
-        drag_point1 = {
+        drag_point = {
             x: e.clientX,
             y: e.clientY
         }
@@ -303,7 +310,6 @@
     });
 
     c.addEventListener("mouseup", function(e){
-        ctx.restore();
         drag = false;
     });
 
