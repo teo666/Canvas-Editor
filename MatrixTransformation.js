@@ -26,14 +26,11 @@ function scale(w,h) {
 }
 
 function scale_on_point(w,h,cx,cy){
-    let old_point = math.multiply(math.inv(transformation), [cx,cy,1]);
+    let old_point = math.multiply(math.inv(ts), [cx,cy,1]);
     scale(w,h);
-    transformation = math.multiply(ts, r);
-    // = res;
-    let new_point = math.multiply(math.inv(transformation), [cx,cy,1]);
+    let new_point = math.multiply(math.inv(ts), [cx,cy,1]);
     let diff = math.subtract(new_point, old_point);
-    translate(math.subset(diff,math.index(0)),math.subset(diff,math.index(1)));
-    //applyTransform(ctx);
+    translate( math.subset(diff,math.index(0)) , math.subset(diff,math.index(1)) );
 }
 
 function applyTransform(ctx){
