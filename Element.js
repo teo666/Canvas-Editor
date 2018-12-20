@@ -25,6 +25,12 @@ class Element{
         this.tss = math.multiply(this.tss, tm);
         this.applyTransform();
     }
+
+    translateAdd(x,y){
+        let tm = math.matrix([[0,0,x],[0,0,y],[0,0,0]]);
+        this.tss = math.add(this.tss, tm);
+        this.applyTransform();
+    }
     
     rotate(teta){
         let cos = math.cos(teta);
