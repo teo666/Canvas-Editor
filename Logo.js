@@ -1,8 +1,9 @@
 'use strict'
 
 class Logo extends Element{
-    constructor(){
+    constructor(s){
         super();
+        this.radius = 325;
     }
 
     setSource(s){
@@ -23,10 +24,20 @@ class Logo extends Element{
         }
     }
 
-    draw(){
+    hitTest(x,y){
+        //x and y are coordinates relative to canvas including world transformations
+        //
+        let p = math.multiply(math.inv(this.transformation), math.matrix([x,y,1]))
+        console.log(math.subset(p, math.index(0)) , math.subset(p, math.index(1)) )
+
+
+        return false;
+    }
+
+    draw(world){
         ctx.save();
     
-        let ts = math.multiply(transformation, this.transformation);
+        let ts = math.multiply(world, this.transformation);
         
         ctx.setTransform(
             math.subset(ts,math.index(0,0)),
