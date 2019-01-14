@@ -3,6 +3,7 @@
 class Element{
     constructor(){
         this.center = {};
+        this.parent = world;
         this.transformation = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
         this.r = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
         this.tss = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
@@ -14,10 +15,29 @@ class Element{
         this.center.y = y || 0;
     }
 
-    scale(h,w){
+    scale(w,h){
         let tm = math.matrix([[w,0,0],[0,h,0],[0,0,1]]);
         this.tss = math.multiply(this.tss, tm);
         this.applyTransform();
+    }
+
+    scaleOnPoint(w,h,cx,cy){
+        /******** */
+        let _old = math.multiply( this.transformation , math.matrix([cx,cy,1]) )
+        this.scale(w,h);
+        let _new = math.multiply( this.transformation , math.matrix([cx,cy,1]) )
+        let res = math.subtract(_new , _old);
+        let scale = math.matrix([[1/math.subset(this.tss,math.index(0,0)),0,0],[0,1/math.subset(this.tss,math.index(1,1)),0],[0,0,1.0]]);
+        res = math.multiply(scale, res );
+        this.translate(- math.subset(res,math.index(0)) ,- math.subset(res,math.index(1)) )
+    }
+
+    scaleOnWorldPoint(w,h, cx, cy){
+        /******** */
+        //prendo le coordinate del mondo e le porto nell'immagine e poi utilizzo l'altra funzione
+        let toimage = math.multiply( math.inv(this.transformation) , math.matrix([cx,cy,1]) )
+        //console.log(math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)))
+        this.scaleOnPoint( w,h, math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)) ) 
     }
     
     translate(x,y){
@@ -38,6 +58,28 @@ class Element{
         let tm = math.matrix([[cos,sin,0],[-sin,cos,0],[0,0,1]]);
         this.r = math.multiply(this.r, tm);
         this.applyTransform();
+    }
+
+    rotateOnElementPoint(teta, x, y){
+        /******** */
+        //ritorna le coordinate dell'attuale centro di rotazione sul mondo
+        let _old = math.multiply( this.transformation , math.matrix([x,y,1]) )
+        //console.log(math.subset(_old,math.index(0)) , math.subset(_old,math.index(1)))
+        this.rotate(teta);
+        let _new = math.multiply( this.transformation , math.matrix([x,y,1]) )
+        let res = math.subtract(_new , _old);
+        //moltiplico la differenza per l'inverso del fattore di scala
+        let scale = math.matrix([[1/math.subset(this.tss,math.index(0,0)),0,0],[0,1/math.subset(this.tss,math.index(1,1)),0],[0,0,1.0]]);
+        res = math.multiply(scale, res );
+        this.translate(- math.subset(res,math.index(0)) ,- math.subset(res,math.index(1)) )
+    }
+
+    rotateOnWorldPoint(teta, x, y){
+        /******** */
+        //prendo le coordinate del mondo e le porto nell'immagine e poi utilizzo l'altra funzione
+        let toimage = math.multiply( math.inv(this.transformation) , math.matrix([x,y,1]) )
+        //console.log(math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)))
+        this.rotateOnElementPoint( teta, math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)) ) 
     }
 
     reflectX() {
@@ -77,9 +119,7 @@ class Element{
     }
     
     applyTransform(){
-        let res = math.multiply(this.tss, this.r);
-        res = math.multiply(res, this.r);
-        this.transformation = res;
+        this.transformation = math.multiply(this.tss, this.r);
     }
 
     hitTest(x,y){

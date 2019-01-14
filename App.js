@@ -60,7 +60,7 @@ function draw(){
     world.drawElements();
 }
 
-world.translateAdd(500,500);
+//world.translateAdd(300,300);
 world.scale(1,1);
 world.applyTransform(ctx);
 
@@ -68,8 +68,8 @@ let el = new Logo();
 
 
 el.setSource("./img/arch_crop.png").then(e =>{
-    el.setCenter(el.getImageDimension().w / 2, el.getImageDimension().h / 2 );
-    //el.scale(0.5,0.5)
+    //el.setRotationCenter(el.getImageDimension().w / 2, el.getImageDimension().h / 2 );
+    el.scale(0.5,0.5)
     //el.rotate(math.pi/8)
     world.addElement(el);
     world.drawElements();
@@ -231,7 +231,10 @@ c.addEventListener("wheel", function(e) {
     }
     //rotazione dell'oggetto
     if(!(mask ^ (ALT | SHIFT))){
-        el.rotate(rotate_angle * math.sign(e.deltaY));
+        //el.rotate(rotate_angle * math.sign(e.deltaY));
+        //prendo le coordinate del mouse e le porto nel mondo
+        let wp = math.multiply(math.inv(world.getTransformation()), math.matrix([x,y,1]))
+        el.rotateOnWorldPoint( math.sign(e.deltaY) * rotate_angle , math.subset(wp,math.index(0)), math.subset(wp,math.index(1)));
     }
 
     if(!(mask ^ (ALT | META))){
@@ -251,7 +254,7 @@ c.addEventListener("wheel", function(e) {
     }
 
     if(!(mask ^ ( SHIFT | META | ALT))){
-        }
+    }
 
     if(!(mask ^ ( SHIFT | META | CTRL))){
         el.translate(translatelL * e.deltaX, translatelL * e.deltaY);
@@ -271,11 +274,13 @@ c.addEventListener("wheel", function(e) {
         } else {
             z = zoom_inL;
         }
-        el.scale(z,z)
+        let wp = math.multiply(math.inv(world.getTransformation()), math.matrix([x,y,1]))
+        el.scaleOnWorldPoint(z,z,math.subset(wp,math.index(0)), math.subset(wp,math.index(1)))
     }
     //rotazione veloce dell'oggetto
     if(!(mask ^ (ALT | CTRL | SHIFT))){
-        el.rotate(rotate_angleL * math.sign(e.deltaY));
+        let wp = math.multiply(math.inv(world.getTransformation()), math.matrix([x,y,1]))
+        el.rotateOnWorldPoint( math.sign(e.deltaY) * rotate_angleL , math.subset(wp,math.index(0)), math.subset(wp,math.index(1)));
     }
     //zoom normale
     if(!mask){
@@ -286,6 +291,7 @@ c.addEventListener("wheel", function(e) {
             z = zoom_out;
         }
         world.scaleOnPoint(z,z,x,y);
+        
     }
     world.applyTransform(ctx)
     draw();

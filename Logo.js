@@ -54,8 +54,8 @@ class Logo extends Element{
             0,                      //clip start y
             this.img.width-0,         //clip width
             this.img.height-0,        //clip height
-            -this.center.x+0,
-            -this.center.y+0,
+            0,//-this.center.x+0,
+            0,//-this.center.y+0,
             this.img.width-0,
             this.img.height-0
         );
