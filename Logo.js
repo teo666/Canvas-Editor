@@ -24,13 +24,18 @@ class Logo extends Element{
         }
     }
 
-    hitTest(x,y){
+    hitTest(x,y,tr){
         //x and y are coordinates relative to canvas including world transformations
         //
-        let p = math.multiply(math.inv(this.transformation), math.matrix([x,y,1]))
-        console.log(math.subset(p, math.index(0)) , math.subset(p, math.index(1)) )
+        let t = math.multiply(tr ,this.getTransformation() )
+        let p = math.multiply(math.inv(t), [x,y,1])
+        let radius = this.img.width/2
+        p = math.subtract(p, [radius, radius,1])
 
-
+        //console.log(math.multiply(p,p))
+        if(math.multiply(p,p) < (radius*radius) ){
+            return true;
+        }
         return false;
     }
 

@@ -73,25 +73,28 @@ class World{
 
     addElement(el){
         if( el instanceof Element){
+            if(!el.parent){
+                el.parent = this;
+            }
             this.elements.push(el);
         } else {
             throw "Try to add non Element instance"
         }
     }
 
-    drawElements(){
+    draw(){
         this.elements.forEach(element => {
-            element.draw(this.transformation);
+            element.draw(this.getTransformation());
         });
     }
 
     hitTest(x,y){
         let htl = [];
+        let tr = this.getTransformation();
         this.elements.forEach(element => {
-            if(element.hitTest(x,y)){
-                htl.push(element);
-            }        
+            htl = htl.concat(element.hitTest(x,y,tr))
         })
+        //console.log(this.name + " ht: ",htl)
         return htl;
     }
 

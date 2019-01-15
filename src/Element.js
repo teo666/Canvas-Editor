@@ -1,13 +1,16 @@
 'use strict'
 
+let _nel = 0;
+
 class Element{
-    constructor(){
+    constructor(name){
+        this.name = name || ("element"+_nel++);
         this.center = {};
-        this.parent = world;
         this.transformation = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
         this.r = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
         this.tss = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
         this.setCenter();
+        this.elements = [];
     }
 
     setCenter(x,y){
@@ -122,8 +125,40 @@ class Element{
         this.transformation = math.multiply(this.tss, this.r);
     }
 
-    hitTest(x,y){
-        return false;
+    getTransformation(){
+        return math.clone(this.transformation);
+    }
+
+    hitTest(x,y,tr){
+        let ht = [];
+        let t = math.multiply(tr ,this.getTransformation() )
+        this.elements.forEach(element => {
+            let ret = element.hitTest(x,y,t);
+            if(ret instanceof Array){
+                ht = ht.concat(ret);
+            } else if(ret){
+                ht.push(element);
+            }
+        });
+        //console.log(this.name + " ht: ",ht)
+        return ht;
+    }
+
+    addElement(el){
+        if( el instanceof Element){
+            if(!el.parent){
+                el.parent = this;
+            }
+            this.elements.push(el);
+        } else {
+            throw "Try to add non Element instance"
+        }
+    }
+
+    draw(parentT){
+        this.elements.forEach(element => {
+            element.draw( math.multiply(parentT ,this.getTransformation() ) );
+        });
     }
     
     
