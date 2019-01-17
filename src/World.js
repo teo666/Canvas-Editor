@@ -92,7 +92,12 @@ class World{
         let htl = [];
         let tr = this.getTransformation();
         this.elements.forEach(element => {
-            htl = htl.concat(element.hitTest(x,y,tr))
+            let ret = element.hitTest(x,y,tr);
+            if(ret instanceof Array){
+                htl = htl.concat(ret);
+            } else if(ret){
+                htl.push(element);
+            }
         })
         //console.log(this.name + " ht: ",htl)
         return htl;

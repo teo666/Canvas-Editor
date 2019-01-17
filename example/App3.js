@@ -54,49 +54,32 @@ function clear(){
 
 function draw(){
     clear();
-    world.draw();
     draw_axis();
     draw_center();
+    world.draw();
 }
 
-const container0 = new Container();
-const container1 = new Container();
 const logo = new Logo();
 //const logo2 = new Logo();
 
-container1.scale(0.5,0.5);
+logo.scale(0.5,0.5);
+logo.translate(200,200)
 
 world.translate(100,100);
 world.applyTransform(ctx);
-container0.translate(30, 30);
 
-logo.scale(0.4,0.4)
 logo.setSource("../img/arch_crop.png").then(e =>{
-    //animationStart();
-    //logo2.setSource("../img/arch_crop.png").then(e =>{
-        animationStart();
-        //draw()
-    //})
+    animationStart();
 })
 
-world.addElement(container0);
-container0.addElement(container1);
-container1.addElement(logo);
-//world.addElement(logo2)
-//logo2.translate(200,200);
-//logo2.scale(0.2,0.2)
-
+world.addElement(logo);
 
 let animation;
 
 function step() {
-    container0.rotateOnElementPoint(math.pi/400, 200, 200);
-    container1.rotateOnElementPoint(-math.pi/360, 200, 200);
-    //world.translate(1,0)
-    //world.rotate(-math.pi/500)
-    //world.applyTransform(ctx);
+    logo.rotateOnElementPoint(math.pi/200,325,325);
     draw();
-    animation = window.requestAnimationFrame(step);
+    //animation = window.requestAnimationFrame(step);
   }
 
 function animationStop(){
@@ -153,7 +136,7 @@ c.addEventListener("mouseup", function(e){
         //handle hitttest
         //let res = math.multiply(math.inv(world.getTransformation()), [x, y, 1]);
         //console.log(world.hitTest(math.subset(res,math.index(0)), math.subset(res,math.index(1))));
-        console.log(world.hitTest(x,y));
+        //console.log(world.hitTest(x,y));
     }
     is_dragging = false;
     drag = false;

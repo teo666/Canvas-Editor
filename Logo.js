@@ -30,6 +30,7 @@ class Logo extends Element{
         let t = math.multiply(tr ,this.getTransformation() )
         let p = math.multiply(math.inv(t), [x,y,1])
         let radius = this.img.width/2
+        console.log(math.subset(p, math.index(0)), math.subset(p,math.index(1)))
         p = math.subtract(p, [radius, radius,1])
 
         //console.log(math.multiply(p,p))
@@ -64,6 +65,8 @@ class Logo extends Element{
             this.img.width-0,
             this.img.height-0
         );
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 0, this.img.width, this.img.height);
         ctx.restore();
     }
 }

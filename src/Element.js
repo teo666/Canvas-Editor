@@ -65,9 +65,10 @@ class Element{
 
     rotateOnElementPoint(teta, x, y){
         /******** */
+        console.log("coordinate elemento:" ,x,y)
         //ritorna le coordinate dell'attuale centro di rotazione sul mondo
         let _old = math.multiply( this.transformation , math.matrix([x,y,1]) )
-        //console.log(math.subset(_old,math.index(0)) , math.subset(_old,math.index(1)))
+        console.log("coordinate del centro sul mondo",math.subset(_old,math.index(0)) , math.subset(_old,math.index(1)))
         this.rotate(teta);
         let _new = math.multiply( this.transformation , math.matrix([x,y,1]) )
         let res = math.subtract(_new , _old);
@@ -130,18 +131,18 @@ class Element{
     }
 
     hitTest(x,y,tr){
-        let ht = [];
+        let htl = [];
         let t = math.multiply(tr ,this.getTransformation() )
         this.elements.forEach(element => {
             let ret = element.hitTest(x,y,t);
             if(ret instanceof Array){
-                ht = ht.concat(ret);
+                htl = htl.concat(ret);
             } else if(ret){
-                ht.push(element);
+                htl.push(element);
             }
         });
         //console.log(this.name + " ht: ",ht)
-        return ht;
+        return htl;
     }
 
     addElement(el){
