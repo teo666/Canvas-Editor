@@ -65,8 +65,47 @@ class Element{
 
     rotateOnElementPoint(teta, x, y){
         /******** */
-        console.log("coordinate elemento:" ,x,y)
+        //console.log("coordinate elemento:" ,x,y)
+        /*
+        1) applico tutte le trasformazioni sull'oggetto (qui è già fatto)
+        2) vado a prendere il punto dell'oggetto in questione e guardo dov'è sul mondo
+        3) applico la rotazione
+        4) vado a prendere il punto dell'oggetto in questione e guardo dov'è sul mondo
+        5) calcolo la differenza fra 2 e 4
+        6) faccio la diferenza e traslo
+        */
+        /*
+        VERSIONE 2
+        let p = this.getParentsTransformations();
+
+        let base1 = math.multiply(p ,this.getTransformation());
+
+        //prende il centro di rotazione prima della trasformazione relativamente al canvas
+        let centro_old_c = math.multiply(base1, [x,y,1]);
+        //console.log("centro di rotazione prima della rotazione relativamente al canvas: ", centro_old._data)
+        //effettuo la rotazione
+        this.rotate(teta);
+        //prende il centro di rotazione dopo la trasformazione relativamente al canvas
+        let base2 = math.multiply(p ,this.getTransformation());
+        let centro_new_c = math.multiply(base2, [x,y,1]);
+
+        //calcolo la differenza di distanza fra nuovo e vecchio
+        let diff_c = math.subtract(centro_old_c, centro_new_c)
+        let diff_w = math.multiply(base2,diff_c);
+        //questi sono pixel sullo schermo quindi comprende tutte le trasformazioni effettuate
+        //console.log("differenza: ", diff_c._data,)
+        //console.log("differenza2: ", diff_w._data)
+
+        //console.log("norma1: ", math.norm(diff_c))
+        //console.log("norma2: ", math.norm(diff_w))
+
+        let scale = math.norm(diff_c) / math.norm(diff_w)
+        //diff = math.multiply( math.inv(base2), diff )
+        this.translate(  math.subset(diff_c, math.index(0))*scale,  math.subset(diff_c, math.index(1) )*scale );*/
+
+
         //ritorna le coordinate dell'attuale centro di rotazione sul mondo
+       /* VERSIONE 1
         let _old = math.multiply( this.transformation , math.matrix([x,y,1]) )
         console.log("coordinate del centro sul mondo",math.subset(_old,math.index(0)) , math.subset(_old,math.index(1)))
         this.rotate(teta);
@@ -76,6 +115,7 @@ class Element{
         let scale = math.matrix([[1/math.subset(this.tss,math.index(0,0)),0,0],[0,1/math.subset(this.tss,math.index(1,1)),0],[0,0,1.0]]);
         res = math.multiply(scale, res );
         this.translate(- math.subset(res,math.index(0)) ,- math.subset(res,math.index(1)) )
+        */
     }
 
     rotateOnWorldPoint(teta, x, y){
@@ -162,5 +202,8 @@ class Element{
         });
     }
     
+    getParentsTransformations(){
+        return math.multiply(this.parent.getParentsTransformations(), this.parent.getTransformation());
+    }
     
 }

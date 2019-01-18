@@ -103,4 +103,8 @@ class World{
         return htl;
     }
 
+    getParentsTransformations(){
+        return math.identity(3);
+    }
+
 }

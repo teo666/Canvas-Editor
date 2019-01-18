@@ -74,8 +74,8 @@ logo.scale(0.4,0.4)
 logo.setSource("../img/arch_crop.png").then(e =>{
     //animationStart();
     //logo2.setSource("../img/arch_crop.png").then(e =>{
-        animationStart();
-        //draw()
+        //animationStart();
+        draw()
     //})
 })
 
