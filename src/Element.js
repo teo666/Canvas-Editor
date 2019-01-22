@@ -74,24 +74,32 @@ class Element{
         5) calcolo la differenza fra 2 e 4
         6) faccio la diferenza e traslo
         */
-        /*
-        VERSIONE 2
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //VERSIONE 2
+        
         let p = this.getParentsTransformations();
 
         let base1 = math.multiply(p ,this.getTransformation());
+        let m1 = math.multiply(this.transformation, [x,y,1])
 
         //prende il centro di rotazione prima della trasformazione relativamente al canvas
         let centro_old_c = math.multiply(base1, [x,y,1]);
-        //console.log("centro di rotazione prima della rotazione relativamente al canvas: ", centro_old._data)
+        //console.log("centro di rotazione prima della rotazione relativamente al canvas: ", centro_old_c._data)
         //effettuo la rotazione
         this.rotate(teta);
         //prende il centro di rotazione dopo la trasformazione relativamente al canvas
         let base2 = math.multiply(p ,this.getTransformation());
         let centro_new_c = math.multiply(base2, [x,y,1]);
+        let m2 = math.multiply(this.transformation, [x,y,1])
+        //console.log("centro di rotazione dopo larotazione relativamente al canvas: ", centro_new_c._data)
 
         //calcolo la differenza di distanza fra nuovo e vecchio
         let diff_c = math.subtract(centro_old_c, centro_new_c)
         let diff_w = math.multiply(base2,diff_c);
+        let diff_m = math.subtract(m1,m2)
+        let eq = math.multiply(p,diff_m)
+        console.log(eq,diff_c)
         //questi sono pixel sullo schermo quindi comprende tutte le trasformazioni effettuate
         //console.log("differenza: ", diff_c._data,)
         //console.log("differenza2: ", diff_w._data)
@@ -99,15 +107,20 @@ class Element{
         //console.log("norma1: ", math.norm(diff_c))
         //console.log("norma2: ", math.norm(diff_w))
 
-        let scale = math.norm(diff_c) / math.norm(diff_w)
+        
         //diff = math.multiply( math.inv(base2), diff )
-        this.translate(  math.subset(diff_c, math.index(0))*scale,  math.subset(diff_c, math.index(1) )*scale );*/
+        let ec = math.multiply( this.transformation , math.matrix([x,y,1]) )
+        let a_1 = math.inv(base2)
+        //console.log(a_1)
+        //console.log(math.multiply(math.transpose(centro_old_c), a_1))
 
+        this.translate(  math.subset(diff_c, math.index(0)),  math.subset(diff_c, math.index(1) ) );
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //ritorna le coordinate dell'attuale centro di rotazione sul mondo
-       /* VERSIONE 1
-        let _old = math.multiply( this.transformation , math.matrix([x,y,1]) )
-        console.log("coordinate del centro sul mondo",math.subset(_old,math.index(0)) , math.subset(_old,math.index(1)))
+        //VERSIONE 1
+        /*let _old = math.multiply( this.transformation , math.matrix([x,y,1]) )
+        //console.log("coordinate del centro sul mondo",math.subset(_old,math.index(0)) , math.subset(_old,math.index(1)))
         this.rotate(teta);
         let _new = math.multiply( this.transformation , math.matrix([x,y,1]) )
         let res = math.subtract(_new , _old);

@@ -68,34 +68,25 @@ world.addElement(logo);
 
 //const logo2 = new Logo();
 
-logo.scale(0.5,0.5);
+//logo.scale(0.5,0.5);
 //logo.translate(50,50)
 //logo.translate(200,200)
-logo.shearX(math.pi/5)
+//logo.shearX(math.pi/5)
 
-world.translate(100,100);
+//world.translate(400,400);
 //world.scale(0.5,0.5)
 world.applyTransform(ctx);
 
 logo.setSource("../img/arch_crop.png").then(e =>{
     animationStart();
-    /*draw()
-    logo.shearX(math.pi/5)
-    let p = logo.getParentsTransformations();
-    let base2 = math.multiply(p ,logo.getTransformation());
-    let centro_new_c = math.multiply(base2, [325,325,1]);
-    console.log(centro_new_c._data)
-    centro_new_c  = math.subtract(centro_new_c, [325,325,1])
-    logo.translate(-math.subset(centro_new_c, math.index(0)),  -math.subset(centro_new_c, math.index(1) ) )
-    draw()*/
 })
 
 let animation;
 
 function step() {
-    logo.rotateOnElementPoint(math.pi/500,325,325);
+    logo.rotateOnElementPoint(math.pi/4,325,325);
     draw();
-    animation = window.requestAnimationFrame(step);
+    //animation = window.requestAnimationFrame(step);
   }
 
 function animationStop(){
