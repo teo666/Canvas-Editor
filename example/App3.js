@@ -55,25 +55,24 @@ function clear(){
 function draw(){
     clear();
     draw_axis();
-    //draw_center();
-    let _old = math.multiply( logo.getTransformation() , math.matrix([0,0,1]) )
-    draw_point(1,1,1)
+    draw_center()
     world.draw();
-    draw_point(math.subset(_old, math.index(0)), math.subset(_old, math.index(1)),3)
+
 }
 
 const logo = new Logo();
+const container = new Container();
 
-world.addElement(logo);
+world.addElement(container);
+container.addElement(logo);
 
-//const logo2 = new Logo();
+container.translate(100,0);
 
 logo.scale(0.5,0.5);
-logo.translate(200,200)
-logo.shearX(math.pi/4)
+logo.translate(125,200)
+//logo.shearX(math.pi/4)
 
-//world.translate(400,400);
-//world.scale(0.5,0.5)
+
 world.applyTransform(ctx);
 
 logo.setSource("../img/arch_crop.png").then(e =>{
@@ -83,9 +82,12 @@ logo.setSource("../img/arch_crop.png").then(e =>{
 let animation;
 
 function step() {
-    logo.rotateOnElementPoint(math.pi/200,325,325);
+    //world.translate(1,0)
+    //world.applyTransform(ctx)
+    //logo.rotateOnElementPoint(math.pi/200,325,325);
+    //container.rotateOnElementPoint(-math.pi/400,200,225);
     draw();
-    animation = window.requestAnimationFrame(step);
+    //animation = window.requestAnimationFrame(step);
   }
 
 function animationStop(){

@@ -24,7 +24,7 @@ class Element{
         this.applyTransform();
     }
 
-    scaleOnPoint(w,h,cx,cy){
+    scaleOnElementPoint(w,h,cx,cy){
         /******** */
         let _old = math.multiply( this.transformation , math.matrix([cx,cy,1]) )
         this.scale(w,h);
@@ -40,7 +40,7 @@ class Element{
         //prendo le coordinate del mondo e le porto nell'immagine e poi utilizzo l'altra funzione
         let toimage = math.multiply( math.inv(this.transformation) , math.matrix([cx,cy,1]) )
         //console.log(math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)))
-        this.scaleOnPoint( w,h, math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)) ) 
+        this.scaleOnElementPoint( w,h, math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)) ) 
     }
     
     translate(x,y){
