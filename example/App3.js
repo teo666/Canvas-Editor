@@ -68,10 +68,9 @@ world.addElement(logo);
 
 //const logo2 = new Logo();
 
-//logo.scale(0.5,0.5);
-//logo.translate(50,50)
-//logo.translate(200,200)
-//logo.shearX(math.pi/5)
+logo.scale(0.5,0.5);
+logo.translate(200,200)
+logo.shearX(math.pi/4)
 
 //world.translate(400,400);
 //world.scale(0.5,0.5)
@@ -84,9 +83,9 @@ logo.setSource("../img/arch_crop.png").then(e =>{
 let animation;
 
 function step() {
-    logo.rotateOnElementPoint(math.pi/4,325,325);
+    logo.rotateOnElementPoint(math.pi/200,325,325);
     draw();
-    //animation = window.requestAnimationFrame(step);
+    animation = window.requestAnimationFrame(step);
   }
 
 function animationStop(){
@@ -143,7 +142,7 @@ c.addEventListener("mouseup", function(e){
         //handle hitttest
         //let res = math.multiply(math.inv(world.getTransformation()), [x, y, 1]);
         //console.log(world.hitTest(math.subset(res,math.index(0)), math.subset(res,math.index(1))));
-        world.hitTest(x,y);
+        console.log(world.hitTest(x,y));
     }
     is_dragging = false;
     drag = false;
