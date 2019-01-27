@@ -47,11 +47,6 @@ class Element{
         let tm = math.matrix([[1.0,0,x],[0,1.0,y],[0,0,1.0]]);
         this.tss = math.multiply(this.tss, tm);
         this.applyTransform();
-    } 
-
-    postTranslate(x,y){
-        let tm = math.matrix([[1.0,0,x],[0,1.0,y],[0,0,1.0]]);
-        this.transformation = math.multiply(tm,this.getTransformation())
     }
 
     translateAdd(x,y){

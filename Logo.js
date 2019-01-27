@@ -29,11 +29,11 @@ class Logo extends Element{
         let t = math.multiply(tr ,this.getTransformation())
         //effettuare il prodotto di tutte le trasformazioni equivale ad effettuare un cambio di base
         // t rappresenta la trasformazione che porta il sistema di riferimento sull'origine della figura
-        console.log("trasformazione globale dell'oggetto rispetto al angolo in alto a sinistra" ,t )
+        //console.log("trasformazione globale dell'oggetto rispetto al angolo in alto a sinistra" ,t )
         //console.log(math.multiply(t, [0,0,1]))
         let p = math.multiply(math.inv(t), [x,y,1])
         let radius = this.img.width/2
-        console.log("coordinate del punto sull'elemento originale senza considerare le trasformazioni",math.subset(p, math.index(0)), math.subset(p,math.index(1)))
+        //console.log("coordinate del punto sull'elemento originale senza considerare le trasformazioni",math.subset(p, math.index(0)), math.subset(p,math.index(1)))
         p = math.subtract(p, [radius, radius,1])
 
         //console.log(math.multiply(p,p))
