@@ -73,18 +73,26 @@ const container2 = new Container({x: 250,y :250});
 container2.translate(50,20);
 container1.translate(100,40);
 container1.addElement(container2)
-
 world.addElement(logo2)
 world.addElement(container1);
 container2.addElement(logo1);
-
 logo1.scale(0.5,0.5);
 logo1.translate(125,200)
 logo2.translate(-500,0)
-logo2.scale(0.5,0.7)
+logo2.scale(0.5,1)
 world.translate(500,300)
-world.scale(0.5,0.5)
+//world.scale(0.5,0.5)
 
+let vertices =[
+    [0, 0],
+    [100, 0],
+    [100, 500],
+    [0, 500]
+]
+
+let polygon = new Polygon({vertices: vertices})
+polygon.translate(-50,-250)
+world.addElement(polygon);
 
 world.applyTransform(ctx);
 
@@ -94,7 +102,9 @@ logo1.setSource("../img/arch_crop.png").then(e => {
     })
 });
 
+
 let animation;
+
 
 function step() {
     //world.rotate(math.pi/1000)
@@ -103,7 +113,7 @@ function step() {
     container1.rotateOnElementPoint(math.pi/500,100,100)
     container2.rotateOnElementPoint(-math.pi/300,0,0)
     logo1.rotateOnElementPoint(math.pi/200,325,325);
-    //container.rotateOnElementPoint(-math.pi/400,200,225);
+    polygon.rotateOnElementPoint(math.pi/200,50,250)
     draw();
     animation = window.requestAnimationFrame(step);
   }
@@ -250,7 +260,8 @@ c.addEventListener("wheel", function(e) {
         } else{
             z = zoom_outL;
         }
-        world.scaleOnPoint(z,z,x,y);
+        let diff = math.multiply( math.inv(world.getTransformation()), [x,y,1]);
+        world.scaleOnPoint(z, z, math.subset(diff, math.index(0)), math.subset(diff, math.index(1)));
     }
     
     //zoom dell'oggetto
