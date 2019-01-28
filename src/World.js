@@ -2,65 +2,60 @@
 
 class World{
     constructor(){
-        this.ts = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
-        this.r = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
-
-        this.transformation = math.matrix([[1.0,0,0],[0,1.0,0],[0,0,1.0]]);
+        this.transformation = math.identity(3,3);
         this.elements = [];
+        this.scale_factor = {
+            x: 1,
+            y: 1
+        }
     }
 
     getScaleFactor(){
-        return{
-                x : math.subset(this.ts,math.index(0,0)),
-                y : math.subset(this.ts,math.index(1,1))
-            }
+        return {
+            x: this.scale_factor.x ,
+            y: this.scale_factor.y
+        }
     }
 
     getTransformation(){
         return math.clone(this.transformation);
     }
 
-    getTranslationSkew(){
-        return math.clone(this.ts);
-    }
-
-    getRotation(){
-        return math.clone(this.r);
-    }
-
     translate(x,y) {
         let tm = math.matrix([[1.0,0,x],[0,1.0,y],[0,0,1.0]]);
-        this.ts = math.multiply(this.ts, tm);
+        this.transformation = math.multiply(this.transformation, tm);
+        return tm;
     }
 
     translateAdd(x,y){
         let tm = math.matrix([[0,0,x],[0,0,y],[0,0,0]]);
-        this.ts = math.add(this.ts, tm);
+        this.transformation = math.add(this.transformation, tm);
+        return tm;
     }
     
     rotate(teta) {
         let cos = math.cos(teta);
         let sin = math.sin(teta);
         let tm = math.matrix([[cos,sin,0],[-sin,cos,0],[0,0,1]]);
-        this.r = math.multiply(this.r, tm);
+        this.transformation = math.multiply(this.transformation, tm);
+        return tm;
     }
     
     scale(w,h) {
+        this.scale_factor.x *= w;
+        this.scale_factor.y *= h;
         let tm = math.matrix([[w,0,0],[0,h,0],[0,0,1]]);
-        this.ts = math.multiply(this.ts, tm);
+        this.transformation = math.multiply(this.transformation, tm);
+        return tm;
     }
     
     scaleOnPoint(w,h,cx,cy){
-        let old_point = math.multiply(math.inv(this.ts), [cx,cy,1]);
-        this.scale(w,h);
-        let new_point = math.multiply(math.inv(this.ts), [cx,cy,1]);
-        let diff = math.subtract(new_point, old_point);
-        this.translate( math.subset(diff,math.index(0)) , math.subset(diff,math.index(1)) );
+        let c = math.multiply( math.inv(this.scale(w,h)), [cx,cy,1]);
+        let t = math.subtract(c, [cx,cy,0]);
+        this.translate( math.subset(t, math.index(0)), math.subset(t, math.index(1)));
     }
     
     applyTransform(ctx){
-        this.transformation = math.multiply(this.ts, this.r);
-
         ctx.setTransform(
             math.subset(this.transformation,math.index(0,0)),
             math.subset(this.transformation,math.index(1,0)),

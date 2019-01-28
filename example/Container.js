@@ -1,8 +1,9 @@
 'use strict'
 
 class Container extends Element{
-    constructor(){
+    constructor(size){
         super();
+        this.size = size;
     }
 
     draw(parentT){
@@ -18,8 +19,14 @@ class Container extends Element{
             math.subset(ts,math.index(1,2))
         )
         ctx.lineWidth = 2;
-        ctx.strokeRect(0, 0, 300, 300);
+        ctx.strokeRect(0, 0, this.size.x, this.size.y);
         ctx.restore();
         super.draw(parentT);
+    }
+
+    /* if u want to return always the container that contains hitted element*/
+    hitTestssss(...args){
+        let htl = [this];
+        return htl.concat(super.hitTest(...arguments))
     }
 }

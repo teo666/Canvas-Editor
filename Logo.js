@@ -4,6 +4,7 @@ class Logo extends Element{
     constructor(s){
         super();
         this.radius = 325;
+        this.rotatez = 0;
     }
 
     setSource(s){
@@ -27,6 +28,11 @@ class Logo extends Element{
     hitTest(x,y,tr){
         //x e y coordinate dell'evento, quindi relative al canvas
         let t = math.multiply(tr ,this.getTransformation())
+        let rz = math.matrix([[math.cos(this.rotatez),0,0],[0,1,0],[0,0,1]]);
+        let diff = math.subtract( math.multiply( math.inv(rz), [this.img.width/2, 0, 1]), [this.img.width/2, 0, 1]);
+        let tm = math.matrix([[1.0,0,math.subset(diff, math.index(0)) ],[0,1.0, math.subset(diff, math.index(1)) ],[0,0,1.0]]) ;
+        t = math.multiply(t, rz);
+        t = math.multiply(t, tm)
         //effettuare il prodotto di tutte le trasformazioni equivale ad effettuare un cambio di base
         // t rappresenta la trasformazione che porta il sistema di riferimento sull'origine della figura
         //console.log("trasformazione globale dell'oggetto rispetto al angolo in alto a sinistra" ,t )
@@ -43,10 +49,26 @@ class Logo extends Element{
         return false;
     }
 
+    rotateZ(teta){
+        this.rotatez += teta;
+    }
+
     draw(world){
         ctx.save();
     
         let ts = math.multiply(world, this.transformation);
+
+        /*solo per gestire la rotazione sull'asse z*/
+        let rz = math.matrix([[math.cos(this.rotatez),0,0],[0,1,0],[0,0,1]]);
+        let diff = math.subtract( math.multiply( math.inv(rz), [this.img.width/2, 0, 1]), [this.img.width/2, 0, 1]);
+        let tm = math.matrix([[1.0,0,math.subset(diff, math.index(0)) ],[0,1.0, math.subset(diff, math.index(1)) ],[0,0,1.0]]);
+        /*************** */
+
+
+        ts = math.multiply(ts, rz);
+        /**solo per gestire la rotazione sull'azze z */
+        ts = math.multiply(ts, tm)
+        /*************** */
         
         ctx.setTransform(
             math.subset(ts,math.index(0,0)),
