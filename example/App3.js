@@ -37,16 +37,15 @@ function draw_center(){
     draw_point(0,0,1);
 };
 
+
 function draw_axis(){
-    let lt = math.multiply( math.inv(world.getTransformation()), [0,0,1]);
-    let br = math.multiply( math.inv(world.getTransformation()), [c.width, c.height,1]);
     ctx.lineWidth = 1 / world.getScaleFactor().x;
     ctx.beginPath();
-    ctx.moveTo( math.subset(lt, math.index(0)), 0);
-    ctx.lineTo(math.subset(br, math.index(0)), 0);
+    ctx.moveTo( -(2<<30), 0);
+    ctx.lineTo( (2<<30), 0);
     ctx.lineWidth = 1 / world.getScaleFactor().y;
-    ctx.moveTo(0, math.subset(lt, math.index(1)));
-    ctx.lineTo(0, math.subset(br, math.index(1)));
+    ctx.moveTo(0, -(2<<30));
+    ctx.lineTo(0, (2<<30));
     ctx.stroke();
 };
 
@@ -86,8 +85,9 @@ world.translate(500,300)
 let vertices =[
     [0, 0],
     [100, 0],
-    [100, 500],
-    [0, 500]
+    [70, 50],
+    [100, 100],
+    [0,100]
 ]
 
 let polygon = new Polygon({vertices: vertices})
@@ -102,7 +102,6 @@ logo1.setSource("../img/arch_crop.png").then(e => {
     })
 });
 
-
 let animation;
 
 
@@ -113,7 +112,7 @@ function step() {
     container1.rotateOnElementPoint(math.pi/500,100,100)
     container2.rotateOnElementPoint(-math.pi/300,0,0)
     logo1.rotateOnElementPoint(math.pi/200,325,325);
-    polygon.rotateOnElementPoint(math.pi/200,50,250)
+    polygon.rotateOnElementPoint(math.pi/200,100,100)
     draw();
     animation = window.requestAnimationFrame(step);
   }
@@ -149,6 +148,15 @@ c.addEventListener("mousemove", function(e){
         }
         world.applyTransform(ctx);
         draw();
+    } else{
+        
+        e.preventDefault();
+        //handle hitttest
+        el = world.hitTest(x,y);
+        //console.log(el)
+        el = el[el.length - 1];
+        sel.innerHTML = (el && el.name) ? el.name : "";
+
     }
 });
 
@@ -236,7 +244,7 @@ document.body.addEventListener("keyup", function(e) {
             break;
     }
     world.applyTransform(ctx);
-    draw();
+    //draw();
 });
 
 c.addEventListener("wheel", function(e) {
