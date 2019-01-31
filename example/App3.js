@@ -81,7 +81,7 @@ logo2.translate(-500,0)
 logo2.scale(0.5,1)
 world.translate(500,300)
 
-//world.scale(0.5,0.5)
+world.scale(0.5,0.5)
 
 let vertices =[
     [0, 0],
@@ -91,15 +91,25 @@ let vertices =[
     [0,100]
 ]
 
+let pentagon_vertices = [
+    [-100, 0],
+    [100, 0],
+    [161.8, -190.2],
+    [0, -307.7],
+    [-161.8, -190.2],
+]
+
 let polygon = new Polygon({vertices: vertices})
+let pentagon = new Polygon({vertices: pentagon_vertices})
 polygon.translate(50,250)
-world.addElement(polygon);
+container1.addElement(polygon);
+world.addElement(pentagon)
 
 world.applyTransform(ctx);
 
 logo1.setSource("../img/arch_crop.png").then(e => {
     logo2.setSource("../img/arch_crop.png").then( e=> { 
-        //animationStart()
+        animationStart()
     })
 });
 
@@ -111,7 +121,8 @@ function step() {
     container1.rotateOnElementPoint(math.pi/500,100,100)
     container2.rotateOnElementPoint(-math.pi/300,0,0)
     logo1.rotateOnElementPoint(math.pi/200,325,325);
-    //polygon.rotateOnElementPoint(math.pi/200,100,100)
+    polygon.rotateOnElementPoint(-math.pi/200,0,0)
+    pentagon.rotateOnElementPoint(math.pi/500,0,-137.63819204711734)
     draw();
     animation = window.requestAnimationFrame(step);
   }
@@ -151,10 +162,10 @@ c.addEventListener("mousemove", function(e){
         
         e.preventDefault();
         //handle hitttest
-        el = world.hitTest(x,y);
+        //el = world.hitTest(x,y);
         //console.log(el)
-        el = el[el.length - 1];
-        sel.innerHTML = (el && el.name) ? el.name : "";
+        //el = el[el.length - 1];
+        //sel.innerHTML = (el && el.name) ? el.name : "";
 
     }
 });

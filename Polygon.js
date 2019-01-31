@@ -26,11 +26,15 @@ class Polygon extends Element {
     }
 
     hitTest(x,y,tr){
+        /** 
+         * questa cosa mi permette di evitare id moltiplicare tutti i punti del path per la matrice di trasformazione
+         * dell'elemento e moltiplicare invece solo il punto di cui voglio fare il test
+        */
         let t = math.multiply( math.inv(math.multiply(tr,this.getTransformation())), [x,y,1]);
         ctx.save();
         ctx.setTransform(1,0,0,1,0,0);
 
-        ctx.stroke(this.path)
+        //ctx.stroke(this.path)
         let tx = math.subset(t, math.index(0) )
         let ty = math.subset(t, math.index(1) )
         let ret = ctx.isPointInPath(this.path, tx, ty)   
@@ -59,7 +63,7 @@ class Polygon extends Element {
             
             os_ctx.lineWidth = 0;
             os_ctx.strokeStyle = "red";
-            os_ctx.fillStyle = "green";
+            os_ctx.fillStyle = "yellow";
             os_ctx.fill(this.path);
             os_ctx.stroke(this.path);
 
@@ -96,6 +100,7 @@ class Polygon extends Element {
             0,
             this.img.width,
             this.img.height,
+            /**nel caso in cui la nuvola di punto copra più quadranti devo effetturare una traslazione del disegno */
             this.minx,
             this.miny,
             this.img.width,
