@@ -80,39 +80,38 @@ logo1.translate(125,200)
 logo2.translate(-500,0)
 logo2.scale(0.5,1)
 world.translate(500,300)
+
 //world.scale(0.5,0.5)
 
 let vertices =[
     [0, 0],
     [100, 0],
-    [70, 50],
+    [-20, 50],
     [100, 100],
     [0,100]
 ]
 
 let polygon = new Polygon({vertices: vertices})
-polygon.translate(-50,-250)
+polygon.translate(50,250)
 world.addElement(polygon);
 
 world.applyTransform(ctx);
 
 logo1.setSource("../img/arch_crop.png").then(e => {
     logo2.setSource("../img/arch_crop.png").then( e=> { 
-        animationStart()
+        //animationStart()
     })
 });
 
 let animation;
 
-
 function step() {
-    //world.rotate(math.pi/1000)
-    //world.applyTransform(ctx)
+
     logo2.rotateZ(math.pi/300)
     container1.rotateOnElementPoint(math.pi/500,100,100)
     container2.rotateOnElementPoint(-math.pi/300,0,0)
     logo1.rotateOnElementPoint(math.pi/200,325,325);
-    polygon.rotateOnElementPoint(math.pi/200,100,100)
+    //polygon.rotateOnElementPoint(math.pi/200,100,100)
     draw();
     animation = window.requestAnimationFrame(step);
   }

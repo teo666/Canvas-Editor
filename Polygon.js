@@ -10,36 +10,38 @@ class Polygon extends Element {
         this.miny = Infinity;
         this.maxx = -Infinity;
         this.maxy = -Infinity;
-        this.loadP = new Promise();
     }
 
     buildPath(){
         let len = this.vertices.length;
         this.path = new Path2D();
-        let tt = this.getTransformation()
-        let transformed_path = this.vertices.map(function(v){
-            let tmp =  math.multiply(tt, math.concat(v, [1]))
-            //console.log(math.resize(tmp,[2])._data)
-            return math.resize(tmp,[2])._data
-        });
-        transformed_path.forEach((e, i) => {
+
+        this.vertices.forEach((e, i) => {
             if (!i) {
                 this.path.moveTo(e[0], e[1]);
             }
-            this.path.lineTo(transformed_path[(i + 1) % len][0], transformed_path[(i + 1) % len][1]);
+            this.path.lineTo(this.vertices[(i + 1) % len][0], this.vertices[(i + 1) % len][1]);
         });
         this.path.closePath();
     }
 
     hitTest(x,y,tr){
-        this.buildPath()
-        return ctx.isPointInPath(this.path, x, y)   
+        let t = math.multiply( math.inv(math.multiply(tr,this.getTransformation())), [x,y,1]);
+        ctx.save();
+        ctx.setTransform(1,0,0,1,0,0);
+
+        ctx.stroke(this.path)
+        let tx = math.subset(t, math.index(0) )
+        let ty = math.subset(t, math.index(1) )
+        let ret = ctx.isPointInPath(this.path, tx, ty)   
+        ctx.restore();
+        return ret; 
     }
 
     draw(parentT) {
 
         if (!this.img) {
-            console.log("aaaa")
+            //console.log("aaaa")
             let offsecren_canvas = document.createElement('canvas');
 
             let os_ctx = offsecren_canvas.getContext('2d');
@@ -61,12 +63,20 @@ class Polygon extends Element {
             os_ctx.fill(this.path);
             os_ctx.stroke(this.path);
 
-            //console.log(os_ctx.isPointInPath(this.path, 20,20))
+            //chace image for future paint
 
             this.img = new Image();
+            this.img.onload = ()=>{
+                this.postload(parentT);
+            }
             this.img.src = offsecren_canvas.toDataURL("image/png");
+        } else {
+            this.postload(parentT);
         }
+    }
 
+    postload(parentT) {
+        
         ctx.save();
 
         let ts = math.multiply(parentT, this.transformation);
@@ -86,8 +96,8 @@ class Polygon extends Element {
             0,
             this.img.width,
             this.img.height,
-            0,
-            0,
+            this.minx,
+            this.miny,
             this.img.width,
             this.img.height
         );

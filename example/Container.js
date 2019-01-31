@@ -25,8 +25,10 @@ class Container extends Element{
     }
 
     /* if u want to return always the container that contains hitted element*/
-    hitTestssss(...args){
+    /*
+    hitTest(...args){
         let htl = [this];
         return htl.concat(super.hitTest(...arguments))
     }
+    */
 }
