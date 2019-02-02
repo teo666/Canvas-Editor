@@ -1,298 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Matrix Transformation</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Transformation</title>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.0.0/math.js"></script>
-    <script type="text/javascript" src="MatrixTransformation.js"></script>
-    <script type="text/javascript" src="Element.js"></script>
+    <script type="text/javascript" src="../src/World.js"></script>
+    <script type="text/javascript" src="../src/Element.js"></script>
+    <script type="text/javascript" src="../Container.js"></script>
     <script type="text/javascript" src="../Logo.js"></script>
-</head>
-<body style="margin:0px">
-<canvas id="c" width="1000" height="700" style="border: 1px solid black; margin: 0px"></canvas>
-<p id="">VISTA</p>
-<p id="x"></p>
-<p id="y"></p>
-
-<p id="">MONDO</p>
-<p id="mx"></p>
-<p id="my"></p>
-
-</body>
-<script type="text/javascript">
-    let px = document.getElementById("x");
-    let py = document.getElementById("y");
-    let mx = document.getElementById("mx");
-    let my = document.getElementById("my");
-    let c = document.getElementById("c");
-    let ctx = c.getContext("2d");
-
-    const CTRL = 0b0001;
-    const ALT = 0b0010;
-    const SHIFT = 0b0100;
-    const META = 0b1000
-
-    let zoom_in = 1.05;
-    let zoom_out = 1/1.05;
-    let zoom_inL = 1.15;
-    let zoom_outL = 1/1.15;
-    let rotate_angle = math.pi / 500;
-    let rotate_angleL = math.pi / 50;
-    let translatel = 1;
-    let translatelL = 5;
-
-    let drag = false;
-    let drag_point = null;
-
-    let logo = new Logo();
-    logo.setSource("./font.jpg").then(() => {
-        let d = logo.getImageDimension();
-        logo.setCenter(d.w / 2 ,d.h / 2)
-        //logo.scale(1/3,1/3)
-        //logo.reflectX()
-        //logo.rotate(math.pi/4)
-        //logo.translate(50,50)
-        logo.draw()
-    })
     
-    translate(500,350);
-    draw();
+</head>
+<body>
+    <canvas id="c" width="1000" height="700" style="border: 1px solid black; margin: 0px"></canvas>
+</body>
+<script type="text/javascript" src="App2.js"></script>
+<script type="text/javascript">
 
-    document.body.addEventListener("keyup", function(e) {
-        //console.log(e);
-        switch(e.key){
-            case "w":
-                translateAdd(0,-10);
-                break;
-            case "s":
-                translateAdd(0,10);
-                break;
-            case "a":
-                translateAdd(-10,0);
-                break;
-            case "d":
-                translateAdd(10,0);
-                break;
-            case "q":
-                rotate(math.pi/20);
-                break;
-            case "e":
-                rotate(-math.pi/20);
-                break;
-            case "z":
-                scale_on_point(zoom_out,zoom_out,0,0);
-                break;
-            case "x":
-                scale_on_point(zoom_in,zoom_in,0,0);
-                break;
-            case "n":
-                logo.rotate(math.pi/100);
-                break;
-        }
+var canvas = document.createElement('canvas');
+var gl;
+var debugInfo;
+var vendor;
+var renderer;
 
-        draw();
-    });
+try {
+  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+} catch (e) {
+}
 
-    function get_mask(e){
-        let m = 0b0000;
-        if(e.ctrlKey){
-            m |= CTRL;
-        }
-        if(e.altKey){
-            m |= ALT;
-        }
-        if(e.shiftKey){
-            m |= SHIFT;
-        }
-        if(e.metaKey){
-            m |= META;
-        }
-        //console.log(m)
-        return m;
-    }
+if (gl) {
+  debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+  vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+  renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+}
 
-    c.addEventListener("mouseleave",function(){
-        drag = false;
-    })
-
-    c.addEventListener("wheel", function(e) {
-        e.preventDefault();
-        //console.log(e.metaKey)
-        mask = get_mask(e);
-        
-        //rotazione globale
-        if(!(mask ^ ALT)){
-            rotate(math.sign(e.deltaY) * rotate_angle);
-        }
-        
-        //zoom veloce
-        if(!(mask ^ CTRL)){
-            let z = 0;
-            if(e.deltaY < 0){
-                z = zoom_inL;
-            } else{
-                z = zoom_outL;
-            }
-            scale_on_point(z,z,e.clientX,e.clientY);
-        }
-        
-        //zoom dell'oggetto
-        if(!(mask ^ SHIFT)){
-            let z = 0;
-            if(math.sign(e.deltaY) > 0){
-                z = zoom_out;
-            } else {
-                z = zoom_in;
-            }
-            logo.scale(z,z)
-        }
-
-        if(!(mask ^ META)){
-            translate(translatel * e.deltaX,translatel *e.deltaY)
-        }
-        //rotazione globale veloce
-        if(!(mask ^ (ALT | CTRL) ) ){
-            rotate(math.sign(e.deltaY) * rotate_angleL);
-        }
-        //rotazione dell'oggetto
-        if(!(mask ^ (ALT | SHIFT))){
-            logo.rotate(rotate_angle * math.sign(e.deltaY));
-        }
-
-        if(!(mask ^ (ALT | META))){
-            
-        }
-
-        if(!(mask ^ ( META | CTRL))){
-            translate(translatelL * e.deltaX,translatelL *e.deltaY)
-        }
-
-        if(!(mask ^ ( META | CTRL | ALT))){
-
-        }
-
-        if(!(mask ^ ( SHIFT | META ))){
-            logo.translate(translatel * e.deltaX, translatel * e.deltaY);
-        }
-
-        if(!(mask ^ ( SHIFT | META | ALT))){
-            }
-
-        if(!(mask ^ ( SHIFT | META | CTRL))){
-            logo.translate(translatelL * e.deltaX, translatelL * e.deltaY);
-        }
-
-        if(!(mask ^ ( SHIFT | META | CTRL | ALT))){
-           
-        }
-
-
-        
-        //zoom velore dell'oggetto
-        if(!(mask ^ (CTRL | SHIFT))){
-            let z = 0;
-            if(math.sign(e.deltaY) > 0){
-                z = zoom_outL
-            } else {
-                z = zoom_inL;
-            }
-            logo.scale(z,z)
-        }
-        //rotazione veloce dell'oggetto
-        if(!(mask ^ (ALT | CTRL | SHIFT))){
-            logo.rotate(rotate_angleL * math.sign(e.deltaY));
-        }
-        //zoom normale
-        if(!mask){
-            let z = 0;
-            if(e.deltaY < 0){
-                z = zoom_in;
-            } else{
-                z = zoom_out;
-            }
-            scale_on_point(z,z,e.clientX,e.clientY);
-        }
-
-        draw();
-    });
-
-
-    function draw_point(x,y){
-        ctx.beginPath();
-        ctx.arc(x, y, 5, 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'blue';
-        ctx.fill();
-        ctx.strokeStyle = '#003300';
-        ctx.stroke();
-    };
-
-    function draw_center(){
-        draw_point(0,0);
-    };
-
-    function draw_axis(){
-        ctx.lineWidth = 1 / math.subset(ts,math.index(0,0));
-        ctx.beginPath();
-        ctx.moveTo(-1000, 0);
-        ctx.lineTo(1000, 0);
-        ctx.moveTo(0, -1000);
-        ctx.lineTo(0, 1000);
-        ctx.stroke();
-    };
-
-    c.addEventListener("mousemove", function(e){
-        x.innerText = e.clientX;
-        y.innerText = e.clientY;
-
-
-
-        let res = math.multiply(math.inv(transformation), [e.clientX, e.clientY, 1]);
-
-        if(drag){
-            let rest = {
-                x : (e.clientX - drag_point.x) / math.subset(ts,math.index(0,0)),
-                y : (e.clientY - drag_point.y) / math.subset(ts,math.index(1,1))
-            }
-            translate( rest.x, rest.y );
-            drag_point = {
-                x: e.clientX,
-                y: e.clientY
-            }
-            draw();
-        }
-
-        mx.innerText = math.subset(res,math.index(0));
-        my.innerText = math.subset(res,math.index(1));
-        
-
-    });
-
-    c.addEventListener("mousedown", function(e){
-        drag = true;
-        drag_point = {
-            x: e.clientX,
-            y: e.clientY
-        }
-
-    });
-
-    c.addEventListener("mouseup", function(e){
-        drag = false;
-    });
-
-    function draw(){
-        clear();
-        applyTransform(ctx);
-        draw_axis();
-        draw_point(100,100);
-        logo.draw();
-        draw_center();
-    }
-
-    function clear(){
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, c.width, c.height);
-    }
+// Sample output:
+//
+console.log(renderer);
 
 </script>
 </html>

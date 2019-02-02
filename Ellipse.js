@@ -1,80 +1,63 @@
 'use strict'
 
-class Polygon extends Element {
-    constructor(obj) {
+class Ellipse extends Element{
+    constructor(w, h){
         super();
-        this.vertices = (obj && obj.vertices && obj.vertices instanceof Array) ? obj.vertices : [];
-        this.buildPath();
-        this.img = null;
-        this.minx = Infinity;
-        this.miny = Infinity;
-        this.maxx = -Infinity;
-        this.maxy = -Infinity;
+        this.path = null;
+        this.buildPath(w,h);
+        this.width = w;
+        this.height = h;
     }
 
-    buildPath() {
-        let len = this.vertices.length;
+    buildPath(w,h){
+        
         this.path = new Path2D();
 
-        this.vertices.forEach((e, i) => {
-            if (!i) {
-                this.path.moveTo(e[0], e[1]);
-            }
-            this.path.lineTo(this.vertices[(i + 1) % len][0], this.vertices[(i + 1) % len][1]);
-        });
+        this.path.ellipse(0, 0, w, h, 0, 0, 2 * Math.PI);
         this.path.closePath();
     }
 
-    hitTest(x, y, tr) {
+    hitTest(x,y,tr){
         /** 
          * questa cosa mi permette di evitare id moltiplicare tutti i punti del path per la matrice di trasformazione
          * dell'elemento e moltiplicare invece solo il punto di cui voglio fare il test
         */
-        let t = math.multiply(math.inv(math.multiply(tr, this.getTransformation())), [x, y, 1]);
+        let t = math.multiply( math.inv(math.multiply(tr,this.getTransformation())), [x,y,1]);
         ctx.save();
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.setTransform(1,0,0,1,0,0);
 
         //ctx.stroke(this.path)
-        let tx = math.subset(t, math.index(0))
-        let ty = math.subset(t, math.index(1))
-        let ret = ctx.isPointInPath(this.path, tx, ty)
+        let tx = math.subset(t, math.index(0) )
+        let ty = math.subset(t, math.index(1) )
+        let ret = ctx.isPointInPath(this.path, tx, ty)   
         ctx.restore();
-        return ret;
+        return ret; 
     }
 
     draw(parentT) {
 
         if (!this.img) {
-            let cb = function (p1, p2) {
-                if (p1 < this.minx) this.minx = p1;
-                if (p2 < this.miny) this.miny = p2;
-                if (p1 > this.maxx) this.maxx = p1;
-                if (p2 > this.maxy) this.maxy = p2;
-            }
             //console.log("aaaa")
             let offsecren_canvas = document.createElement('canvas');
 
             let os_ctx = offsecren_canvas.getContext('2d');
 
-            this.vertices.forEach((e, i) => {
-                cb.apply(this, e)
-            });
-            offsecren_canvas.width = (this.maxx - this.minx)
-            offsecren_canvas.height = (this.maxy - this.miny)
+           
+            offsecren_canvas.width = this.width * 2
+            offsecren_canvas.height = this.height * 2
 
-            os_ctx.translate((this.minx < 0) ? math.abs(this.minx) : 0, (this.miny < 0) ? math.abs(this.miny) : 0)
-
+            os_ctx.translate( this.width , this.height)  
+            
             os_ctx.lineWidth = 0;
             os_ctx.strokeStyle = "red";
-            os_ctx.fillStyle = "yellow";
-            //os_ctx.clip()
+            os_ctx.fillStyle = "red";
             os_ctx.fill(this.path);
             //os_ctx.stroke(this.path);
 
             //chace image for future paint
 
             this.img = new Image();
-            this.img.onload = () => {
+            this.img.onload = ()=>{
                 this.postload(parentT);
             }
             this.img.src = offsecren_canvas.toDataURL("image/png");
@@ -84,7 +67,7 @@ class Polygon extends Element {
     }
 
     postload(parentT) {
-
+        
         ctx.save();
 
         let ts = math.multiply(parentT, this.transformation);
@@ -105,12 +88,11 @@ class Polygon extends Element {
             this.img.width,
             this.img.height,
             /**nel caso in cui la nuvola di punto copra più quadranti devo effetturare una traslazione del disegno */
-            this.minx,
-            this.miny,
+            -this.width,
+            -this.height,
             this.img.width,
             this.img.height
         );
         ctx.restore();
     }
-
 }

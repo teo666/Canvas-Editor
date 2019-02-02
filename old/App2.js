@@ -1,6 +1,5 @@
-let c = document.querySelector("#c");
+let c = document.getElementById("c");
 let ctx = c.getContext("2d");
-let sel = document.querySelector("#sel");
 
 const CTRL = 0b0001;
 const ALT = 0b0010;
@@ -20,13 +19,11 @@ let drag = false;
 let drag_point = null;
 let is_dragging = false;
 
-let el = null;
-
 const world = new World();
 
-function draw_point(x,y,r){
+function draw_point(x,y){
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+    ctx.arc(x, y, 5, 0, 2 * Math.PI, false);
     ctx.fillStyle = 'blue';
     ctx.fill();
     ctx.strokeStyle = '#003300';
@@ -34,18 +31,17 @@ function draw_point(x,y,r){
 };
 
 function draw_center(){
-    draw_point(0,0,1);
+    draw_point(0,0);
 };
-
 
 function draw_axis(){
     ctx.lineWidth = 1 / world.getScaleFactor().x;
     ctx.beginPath();
-    ctx.moveTo( -(2<<30), 0);
-    ctx.lineTo( (2<<30), 0);
+    ctx.moveTo(-1000, 0);
+    ctx.lineTo(1000, 0);
     ctx.lineWidth = 1 / world.getScaleFactor().y;
-    ctx.moveTo(0, -(2<<30));
-    ctx.lineTo(0, (2<<30));
+    ctx.moveTo(0, -1000);
+    ctx.lineTo(0, 1000);
     ctx.stroke();
 };
 
@@ -58,72 +54,47 @@ function clear(){
 
 function draw(){
     clear();
-    draw_axis();
-    draw_center()
     world.draw();
-
+    draw_axis();
+    draw_center();
 }
 
-const logo1 = new Logo();
-const logo2 = new Logo();
-const container1 = new Container({x: 500,y :500});
-const container2 = new Container({x: 250,y :250});
+const container0 = new Container({x:50,y:100});
+const container1 = new Container({x:50,y:100});
+const logo = new Logo();
+//const logo2 = new Logo();
 
-container2.translate(50,20);
-container1.translate(100,40);
-container1.addElement(container2)
-world.addElement(logo2)
-world.addElement(container1);
-container2.addElement(logo1);
-logo1.scale(0.5,0.5);
-logo1.translate(125,200)
-logo2.translate(-500,0)
-logo2.scale(0.5,1)
+container1.scale(0.5,0.5);
 
-world.translate(500,300)
-
-world.scale(0.5,0.5)
-
-let vertices =[
-    [0, 0],
-    [100, 0],
-    [-20, 50],
-    [100, 100],
-    [0,100]
-]
-
-let pentagon_vertices = [
-    [-100, 0],
-    [100, 0],
-    [161.8, -190.2],
-    [0, -307.7],
-    [-161.8, -190.2],
-]
-
-let polygon = new Polygon({vertices: vertices})
-let pentagon = new Polygon({vertices: pentagon_vertices})
-polygon.translate(50,250)
-world.addElement(polygon);
-world.addElement(pentagon)
-
+world.translate(100,100);
 world.applyTransform(ctx);
+container0.translate(30, 30);
 
-logo1.setSource("../img/arch_crop.png").then(e => {
-    logo2.setSource("../img/arch_crop.png").then( e=> { 
-        animationStart()
-    })
+logo.scale(0.4,0.4)
+logo.setSource("../img/arch_crop.png").then(e =>{
+    //animationStart();
+    //logo2.setSource("../img/arch_crop.png").then(e =>{
+        //animationStart();
+        draw()
+    //})
 })
+
+world.addElement(container0);
+container0.addElement(container1);
+container1.addElement(logo);
+//world.addElement(logo2)
+//logo2.translate(200,200);
+//logo2.scale(0.2,0.2)
+
 
 let animation;
 
 function step() {
-
-    logo2.rotateZ(math.pi/300)
-    container1.rotateOnElementPoint(math.pi/500,100,100)
-    container2.rotateOnElementPoint(-math.pi/300,0,0)
-    logo1.rotateOnElementPoint(math.pi/200,325,325);
-    polygon.rotateOnElementPoint(-math.pi/200,0,0)
-    pentagon.rotateOnElementPoint(math.pi/500,0,-137.63819204711734)
+    container0.rotateOnElementPoint(math.pi/400, 200, 200);
+    container1.rotateOnElementPoint(-math.pi/360, 200, 200);
+    //world.translate(1,0)
+    //world.rotate(-math.pi/500)
+    //world.applyTransform(ctx);
     draw();
     animation = window.requestAnimationFrame(step);
   }
@@ -147,10 +118,10 @@ c.addEventListener("mousemove", function(e){
 
     if(drag){
         is_dragging = true;
-        let sf = world.getScaleFactor()
+        let tmp = world.getTranslationSkew();
         let rest = {
-            x : (x - drag_point.x) / sf.x,
-            y : (y - drag_point.y) / sf.y
+            x : (x - drag_point.x) / math.subset(tmp,math.index(0,0)),
+            y : (y - drag_point.y) / math.subset(tmp,math.index(1,1))
         }
         world.translate( rest.x, rest.y );
         drag_point = {
@@ -159,20 +130,10 @@ c.addEventListener("mousemove", function(e){
         }
         world.applyTransform(ctx);
         draw();
-    } else{
-        
-        e.preventDefault();
-        //handle hitttest
-        //el = world.hitTest(x,y);
-        //console.log(el)
-        //el = el[el.length - 1];
-        //sel.innerHTML = (el && el.name) ? el.name : "";
-
     }
 });
 
 c.addEventListener("mousedown", function(e){
-    e.preventDefault()
     let rect = e.target.getBoundingClientRect();
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
@@ -189,13 +150,11 @@ c.addEventListener("mouseup", function(e){
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
     if(!is_dragging){
-        e.preventDefault();
         //handle hitttest
-        el = world.hitTest(x,y);
-        console.log(el)
-        el = el[el.length - 1];
-        sel.innerHTML = (el && el.name) ? el.name : "";
-     }
+        //let res = math.multiply(math.inv(world.getTransformation()), [x, y, 1]);
+        //console.log(world.hitTest(math.subset(res,math.index(0)), math.subset(res,math.index(1))));
+        console.log(world.hitTest(x,y));
+    }
     is_dragging = false;
     drag = false;
 });
@@ -251,11 +210,11 @@ document.body.addEventListener("keyup", function(e) {
             world.scaleOnPoint(zoom_in,zoom_in,c.width/2,c.height/2);
             break;
         case "n":
-            el && el.rotate(math.pi/100);
+            el.rotate(math.pi/100);
             break;
     }
     world.applyTransform(ctx);
-    //draw();
+    draw();
 });
 
 c.addEventListener("wheel", function(e) {
@@ -279,8 +238,7 @@ c.addEventListener("wheel", function(e) {
         } else{
             z = zoom_outL;
         }
-        let diff = math.multiply( math.inv(world.getTransformation()), [x,y,1]);
-        world.scaleOnPoint(z, z, math.subset(diff, math.index(0)), math.subset(diff, math.index(1)));
+        world.scaleOnPoint(z,z,x,y);
     }
     
     //zoom dell'oggetto
@@ -291,7 +249,7 @@ c.addEventListener("wheel", function(e) {
         } else {
             z = zoom_in;
         }
-        el && el.scale(z,z)
+        el.scale(z,z)
     }
 
     if(!(mask ^ META)){
@@ -306,7 +264,7 @@ c.addEventListener("wheel", function(e) {
         //el.rotate(rotate_angle * math.sign(e.deltaY));
         //prendo le coordinate del mouse e le porto nel mondo
         let wp = math.multiply(math.inv(world.getTransformation()), math.matrix([x,y,1]))
-        el && el.rotateOnWorldPoint( math.sign(e.deltaY) * rotate_angle , math.subset(wp,math.index(0)), math.subset(wp,math.index(1)));
+        el.rotateOnWorldPoint( math.sign(e.deltaY) * rotate_angle , math.subset(wp,math.index(0)), math.subset(wp,math.index(1)));
     }
 
     if(!(mask ^ (ALT | META))){
@@ -322,14 +280,14 @@ c.addEventListener("wheel", function(e) {
     }
 
     if(!(mask ^ ( SHIFT | META ))){
-        el && el.translate(translatel * e.deltaX, translatel * e.deltaY);
+        el.translate(translatel * e.deltaX, translatel * e.deltaY);
     }
 
     if(!(mask ^ ( SHIFT | META | ALT))){
     }
 
     if(!(mask ^ ( SHIFT | META | CTRL))){
-        el && el.translate(translatelL * e.deltaX, translatelL * e.deltaY);
+        el.translate(translatelL * e.deltaX, translatelL * e.deltaY);
     }
 
     if(!(mask ^ ( SHIFT | META | CTRL | ALT))){
@@ -347,12 +305,12 @@ c.addEventListener("wheel", function(e) {
             z = zoom_inL;
         }
         let wp = math.multiply(math.inv(world.getTransformation()), math.matrix([x,y,1]))
-        el && el.scaleOnWorldPoint(z,z,math.subset(wp,math.index(0)), math.subset(wp,math.index(1)))
+        el.scaleOnWorldPoint(z,z,math.subset(wp,math.index(0)), math.subset(wp,math.index(1)))
     }
     //rotazione veloce dell'oggetto
     if(!(mask ^ (ALT | CTRL | SHIFT))){
         let wp = math.multiply(math.inv(world.getTransformation()), math.matrix([x,y,1]))
-        el && el.rotateOnWorldPoint( math.sign(e.deltaY) * rotate_angleL , math.subset(wp,math.index(0)), math.subset(wp,math.index(1)));
+        el.rotateOnWorldPoint( math.sign(e.deltaY) * rotate_angleL , math.subset(wp,math.index(0)), math.subset(wp,math.index(1)));
     }
     //zoom normale
     if(!mask){
@@ -362,8 +320,7 @@ c.addEventListener("wheel", function(e) {
         } else{
             z = zoom_out;
         }
-        let diff = math.multiply( math.inv(world.getTransformation()), [x,y,1]);
-        world.scaleOnPoint(z, z, math.subset(diff, math.index(0)), math.subset(diff, math.index(1)));
+        world.scaleOnPoint(z,z,x,y);
         
     }
     world.applyTransform(ctx)

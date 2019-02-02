@@ -54,58 +54,29 @@ function clear(){
 
 function draw(){
     clear();
-    world.draw();
     draw_axis();
     draw_center();
+    draw_point(150,150)
+    world.drawElements();
 }
 
-const container0 = new Container();
-const container1 = new Container();
-const logo = new Logo();
-//const logo2 = new Logo();
-
-container1.scale(0.5,0.5);
-
-world.translate(100,100);
+//world.translateAdd(300,300);
+world.scale(1,1);
 world.applyTransform(ctx);
-container0.translate(30, 30);
 
-logo.scale(0.4,0.4)
-logo.setSource("../img/arch_crop.png").then(e =>{
-    //animationStart();
-    //logo2.setSource("../img/arch_crop.png").then(e =>{
-        //animationStart();
-        draw()
-    //})
+let el = new Logo();
+
+
+el.setSource("./img/arch_crop.png").then(e =>{
+    //el.setRotationCenter(el.getImageDimension().w / 2, el.getImageDimension().h / 2 );
+    el.scale(0.5,0.5)
+    //el.rotate(math.pi/8)
+    world.addElement(el);
+    world.drawElements();
 })
 
-world.addElement(container0);
-container0.addElement(container1);
-container1.addElement(logo);
-//world.addElement(logo2)
-//logo2.translate(200,200);
-//logo2.scale(0.2,0.2)
-
-
-let animation;
-
-function step() {
-    container0.rotateOnElementPoint(math.pi/400, 200, 200);
-    container1.rotateOnElementPoint(-math.pi/360, 200, 200);
-    //world.translate(1,0)
-    //world.rotate(-math.pi/500)
-    //world.applyTransform(ctx);
-    draw();
-    animation = window.requestAnimationFrame(step);
-  }
-
-function animationStop(){
-    cancelAnimationFrame(animation);
-}
-
-function animationStart(){
-    animation = window.requestAnimationFrame(step);
-}
+draw_center();
+draw_axis();
 
 ///////////////////////// event handler ////////////////////////////////
 
@@ -151,9 +122,8 @@ c.addEventListener("mouseup", function(e){
     let y = e.clientY - rect.top;
     if(!is_dragging){
         //handle hitttest
-        //let res = math.multiply(math.inv(world.getTransformation()), [x, y, 1]);
-        //console.log(world.hitTest(math.subset(res,math.index(0)), math.subset(res,math.index(1))));
-        console.log(world.hitTest(x,y));
+        let res = math.multiply(math.inv(world.getTransformation()), [x, y, 1]);
+        console.log(world.hitTest(math.subset(res,math.index(0)), math.subset(res,math.index(1))));
     }
     is_dragging = false;
     drag = false;

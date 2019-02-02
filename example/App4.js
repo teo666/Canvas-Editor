@@ -64,77 +64,31 @@ function draw(){
 
 }
 
-const logo1 = new Logo();
-const logo2 = new Logo();
-const container1 = new Container({x: 500,y :500});
-const container2 = new Container({x: 250,y :250});
+//const ellipse = new Ellipse(300,220);
+//world.addElement(ellipse)
 
-container2.translate(50,20);
-container1.translate(100,40);
-container1.addElement(container2)
-world.addElement(logo2)
-world.addElement(container1);
-container2.addElement(logo1);
-logo1.scale(0.5,0.5);
-logo1.translate(125,200)
-logo2.translate(-500,0)
-logo2.scale(0.5,1)
+const bezier_verices = {
+    start : [125,40],
+    points : [
+        [ 95,-60,-125,60,125,210 ],
+        [ 375,60,155,-60,125,40 ]
+    ]
+}
+
+//M 249, 230 C 219, 129, 13, 251, 251, 410
+
+const bezier = new Bezier(bezier_verices);
+world.addElement(bezier)
+
 
 world.translate(500,300)
 
-world.scale(0.5,0.5)
-
-let vertices =[
-    [0, 0],
-    [100, 0],
-    [-20, 50],
-    [100, 100],
-    [0,100]
-]
-
-let pentagon_vertices = [
-    [-100, 0],
-    [100, 0],
-    [161.8, -190.2],
-    [0, -307.7],
-    [-161.8, -190.2],
-]
-
-let polygon = new Polygon({vertices: vertices})
-let pentagon = new Polygon({vertices: pentagon_vertices})
-polygon.translate(50,250)
-world.addElement(polygon);
-world.addElement(pentagon)
-
 world.applyTransform(ctx);
 
-logo1.setSource("../img/arch_crop.png").then(e => {
-    logo2.setSource("../img/arch_crop.png").then( e=> { 
-        animationStart()
-    })
-})
 
-let animation;
+draw();
 
-function step() {
 
-    logo2.rotateZ(math.pi/300)
-    container1.rotateOnElementPoint(math.pi/500,100,100)
-    container2.rotateOnElementPoint(-math.pi/300,0,0)
-    logo1.rotateOnElementPoint(math.pi/200,325,325);
-    polygon.rotateOnElementPoint(-math.pi/200,0,0)
-    pentagon.rotateOnElementPoint(math.pi/500,0,-137.63819204711734)
-    draw();
-    animation = window.requestAnimationFrame(step);
-  }
-
-function animationStop(){
-    cancelAnimationFrame(animation);
-}
-
-function animationStart(){
-    animation = window.requestAnimationFrame(step);
-}
 
 ///////////////////////// event handler ////////////////////////////////
 
