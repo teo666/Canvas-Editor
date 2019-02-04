@@ -38,9 +38,10 @@ class Bezier extends Element {
 
 
     draw(parentT) {
-
+        //ctx.stroke(this.path)
+        //return
         if (!this.img) {
-            //console.log("aaaa")
+
             let offsecren_canvas = document.createElement('canvas');
 
             let os_ctx = offsecren_canvas.getContext('2d');
