@@ -10,14 +10,14 @@ class World{
         }
     }
 
-    getScaleFactor(){
+     get getScaleFactor(){
         return {
             x: this.scale_factor.x ,
             y: this.scale_factor.y
         }
     }
 
-    getTransformation(){
+    get getTransformation(){
         return math.clone(this.transformation);
     }
 
@@ -79,13 +79,13 @@ class World{
 
     draw(){
         this.elements.forEach(element => {
-            element.draw(this.getTransformation());
+            element.draw(this.getTransformation);
         });
     }
 
     hitTest(x,y){
         let htl = [];
-        let tr = this.getTransformation();
+        let tr = this.getTransformation;
         this.elements.forEach(element => {
             let ret = element.hitTest(x,y,tr);
             if(ret instanceof Array){
@@ -98,8 +98,49 @@ class World{
         return htl;
     }
 
-    getParentsTransformations(){
+    get getParentsTransformations(){
         return math.identity(3);
     }
 
+
+    //////////////////////////////////// event handling //////////////////////////////////
+    
+    mousedown(e){
+        let rvt = Object.assign(e, {parentTransformation : math.multiply( e.parentTransformation, this.getTransformation )})
+        //console.log("world handle mousedown")
+        let ret = true;
+        this.elements.forEach( el => {
+            if(!el.mousedown(rvt)){
+                ret = false
+                return false
+            }
+        })
+        return ret;
+    }
+
+    mousemove(e){
+        let rvt = Object.assign(e, {parentTransformation : math.multiply( e.parentTransformation, this.getTransformation ) })
+        //console.log("world handle mousedown")
+        let ret = true;
+        this.elements.forEach( el => {
+            if(!el.mousemove(rvt)){
+                ret = false
+                return false
+            }
+        })
+        return ret;
+    }
+
+    mouseup(e){
+        let rvt = Object.assign(e, {parentTransformation : math.multiply( e.parentTransformation, this.getTransformation )})
+        //console.log("world handle mousedown")
+        let ret = true;
+        this.elements.forEach( el => {
+            if(!el.mouseup(rvt)){
+                ret = false
+                return false
+            }
+        })
+        return ret;
+    }
 }

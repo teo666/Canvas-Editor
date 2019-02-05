@@ -27,7 +27,7 @@ class Logo extends Element{
 
     hitTest(x,y,tr){
         //x e y coordinate dell'evento, quindi relative al canvas
-        let t = math.multiply(tr ,this.getTransformation())
+        let t = math.multiply(tr ,this.getTransformation)
         let rz = math.matrix([[math.cos(this.rotatez),0,0],[0,1,0],[0,0,1]]);
         let diff = math.subtract( math.multiply( math.inv(rz), [this.img.width/2, 0, 1]), [this.img.width/2, 0, 1]);
         let tm = math.matrix([[1.0,0,math.subset(diff, math.index(0)) ],[0,1.0, math.subset(diff, math.index(1)) ],[0,0,1.0]]) ;

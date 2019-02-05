@@ -35,11 +35,11 @@ function draw_center(){
 };
 
 function draw_axis(){
-    ctx.lineWidth = 1 / world.getScaleFactor().x;
+    ctx.lineWidth = 1 / world.getScaleFactor.x;
     ctx.beginPath();
     ctx.moveTo(-1000, 0);
     ctx.lineTo(1000, 0);
-    ctx.lineWidth = 1 / world.getScaleFactor().y;
+    ctx.lineWidth = 1 / world.getScaleFactor.y;
     ctx.moveTo(0, -1000);
     ctx.lineTo(0, 1000);
     ctx.stroke();

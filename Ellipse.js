@@ -22,7 +22,7 @@ class Ellipse extends Element{
          * questa cosa mi permette di evitare id moltiplicare tutti i punti del path per la matrice di trasformazione
          * dell'elemento e moltiplicare invece solo il punto di cui voglio fare il test
         */
-        let t = math.multiply( math.inv(math.multiply(tr,this.getTransformation())), [x,y,1]);
+        let t = math.multiply( math.inv(math.multiply(tr,this.getTransformation)), [x,y,1]);
         ctx.save();
         ctx.setTransform(1,0,0,1,0,0);
 
@@ -36,40 +36,12 @@ class Ellipse extends Element{
 
     draw(parentT) {
 
-        if (!this.img) {
-            //console.log("aaaa")
-            let offsecren_canvas = document.createElement('canvas');
-
-            let os_ctx = offsecren_canvas.getContext('2d');
-
-           
-            offsecren_canvas.width = this.width * 2
-            offsecren_canvas.height = this.height * 2
-
-            os_ctx.translate( this.width , this.height)  
-            
-            os_ctx.lineWidth = 0;
-            os_ctx.strokeStyle = "red";
-            os_ctx.fillStyle = "red";
-            os_ctx.fill(this.path);
-            //os_ctx.stroke(this.path);
-
-            //chace image for future paint
-
-            this.img = new Image();
-            this.img.onload = ()=>{
-                this.postload(parentT);
-            }
-            this.img.src = offsecren_canvas.toDataURL("image/png");
-        } else {
-            this.postload(parentT);
-        }
-    }
-
-    postload(parentT) {
-        
         ctx.save();
-
+        
+        ctx.lineWidth = 0;
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "black";
+        
         let ts = math.multiply(parentT, this.transformation);
 
         ctx.setTransform(
@@ -81,18 +53,8 @@ class Ellipse extends Element{
             math.subset(ts, math.index(1, 2))
         )
 
-        ctx.drawImage(
-            this.img,
-            0,
-            0,
-            this.img.width,
-            this.img.height,
-            /**nel caso in cui la nuvola di punto copra più quadranti devo effetturare una traslazione del disegno */
-            -this.width,
-            -this.height,
-            this.img.width,
-            this.img.height
-        );
+        ctx.fill(this.path);
+
         ctx.restore();
     }
 }

@@ -22,7 +22,7 @@ class Line extends Element{
          * questa cosa mi permette di evitare id moltiplicare tutti i punti del path per la matrice di trasformazione
          * dell'elemento e moltiplicare invece solo il punto di cui voglio fare il test
         */
-        /*let t = math.multiply( math.inv(math.multiply(tr,this.getTransformation())), [x,y,1]);
+        /*let t = math.multiply( math.inv(math.multiply(tr,this.getTransformation)), [x,y,1]);
         ctx.save();
         ctx.setTransform(1,0,0,1,0,0);
 

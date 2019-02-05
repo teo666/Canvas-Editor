@@ -39,11 +39,11 @@ function draw_center() {
 
 
 function draw_axis() {
-    ctx.lineWidth = 1 / world.getScaleFactor().x;
+    ctx.lineWidth = 1 / world.getScaleFactor.x;
     ctx.beginPath();
     ctx.moveTo(-(2 << 30), 0);
     ctx.lineTo((2 << 30), 0);
-    ctx.lineWidth = 1 / world.getScaleFactor().y;
+    ctx.lineWidth = 1 / world.getScaleFactor.y;
     ctx.moveTo(0, -(2 << 30));
     ctx.lineTo(0, (2 << 30));
     ctx.stroke();
@@ -83,32 +83,12 @@ c.addEventListener("mousemove", function (e) {
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
 
-    //console.log(x,y)
-
-    if (drag) {
-        is_dragging = true;
-        let sf = world.getScaleFactor()
-        let rest = {
-            x: (x - drag_point.x) / sf.x,
-            y: (y - drag_point.y) / sf.y
-        }
-        world.translate(rest.x, rest.y);
-        drag_point = {
-            x: x,
-            y: y
-        }
-        world.applyTransform(ctx);
-        draw();
-    } else {
-
-        e.preventDefault();
-        //handle hitttest
-        //el = world.hitTest(x, y);
-        //console.log(el)
-        // = el[el.length - 1];
-        //sel.innerHTML = (el && el.name) ? el.name : "";
-
+    let event = {
+        x: x,
+        y: y,
+        parentTransformation: math.identity(3)
     }
+    world.mousemove(event);
 });
 
 c.addEventListener("mousedown", function (e) {
@@ -116,28 +96,25 @@ c.addEventListener("mousedown", function (e) {
     let rect = e.target.getBoundingClientRect();
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
-    drag = true;
-    drag_point = {
-        x: x,
-        y: y
-    }
 
+    let event = {
+        x: x,
+        y: y,
+        parentTransformation: math.identity(3)
+    }
+    world.mousedown(event);
 });
 
 c.addEventListener("mouseup", function (e) {
     let rect = e.target.getBoundingClientRect();
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
-    if (!is_dragging) {
-        e.preventDefault();
-        //handle hitttest
-        el = world.hitTest(x, y);
-        console.log(el)
-        el = el[el.length - 1];
-        sel.innerHTML = (el && el.name) ? el.name : "";
+    let event = {
+        x: x,
+        y: y,
+        parentTransformation: math.identity(3)
     }
-    is_dragging = false;
-    drag = false;
+    world.mouseup(event);
 });
 
 c.addEventListener("mouseleave", function () {

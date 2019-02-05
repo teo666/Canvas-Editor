@@ -13,7 +13,7 @@ class Element{
         }
     }
 
-    getScaleFactor(){
+    get getScaleFactor(){
         return {
             x: this.scale_factor.x ,
             y: this.scale_factor.y
@@ -127,13 +127,13 @@ class Element{
         this.shearYOnElementPoint(teta, x, y);
     }
 
-    getTransformation(){
+    get getTransformation(){
         return math.clone(this.transformation);
     }
 
     hitTest(x,y,tr){
         let htl = [];
-        let t = math.multiply(tr ,this.getTransformation() )
+        let t = math.multiply(tr ,this.getTransformation )
         this.elements.forEach(element => {
             let ret = element.hitTest(x,y,t);
             if(ret instanceof Array){
@@ -159,12 +159,52 @@ class Element{
 
     draw(parentT){
         this.elements.forEach(element => {
-            element.draw( math.multiply(parentT ,this.getTransformation() ) );
+            element.draw( math.multiply(parentT ,this.getTransformation ) );
         });
     }
     
-    getParentsTransformations(){
+    get getParentsTransformations(){
         return math.multiply(this.parent.getParentsTransformations(), this.parent.getTransformation());
     }
+
+    //////////////////////////////////// event handling //////////////////////////////////
     
+    mousedown(e){
+        //console.log("element handle mousedown")
+        let rvt = Object.assign(e, {parentTransformation : this.getTransformation})
+        let ret = true;
+        this.elements.forEach( el => {
+            if(!el.mousedown(rvt)){
+                ret = false
+                return false;
+            }
+        })
+        return ret;
+    }
+
+    mousemove(e){
+        //console.log("element handle mousedown")
+        let rvt = Object.assign(e, {parentTransformation : this.getTransformation})
+        let ret = true;
+        this.elements.forEach( el => {
+            if(!el.mousemove(rvt)){
+                ret = false
+                return false;
+            }
+        })
+        return ret;
+    }
+
+    mouseup(e){
+        //console.log("element handle mousedown")
+        let rvt = Object.assign(e, {parentTransformation : this.getTransformation})
+        let ret = true;
+        this.elements.forEach( el => {
+            if(!el.mouseup(rvt)){
+                ret = false
+                return false;
+            }
+        })
+        return ret;
+    }
 }

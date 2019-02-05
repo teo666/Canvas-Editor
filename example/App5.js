@@ -39,11 +39,11 @@ function draw_center() {
 
 
 function draw_axis() {
-    ctx.lineWidth = 1 / world.getScaleFactor().x;
+    ctx.lineWidth = 1 / world.getScaleFactor.x;
     ctx.beginPath();
     ctx.moveTo(-(2 << 30), 0);
     ctx.lineTo((2 << 30), 0);
-    ctx.lineWidth = 1 / world.getScaleFactor().y;
+    ctx.lineWidth = 1 / world.getScaleFactor.y;
     ctx.moveTo(0, -(2 << 30));
     ctx.lineTo(0, (2 << 30));
     ctx.stroke();
@@ -92,7 +92,7 @@ c.addEventListener("mousemove", function (e) {
 
     if (drag) {
         is_dragging = true;
-        let sf = world.getScaleFactor()
+        let sf = world.getScaleFactor
         let rest = {
             x: (x - drag_point.x) / sf.x,
             y: (y - drag_point.y) / sf.y

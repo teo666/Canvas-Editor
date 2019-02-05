@@ -13,7 +13,7 @@ class SVG2 extends Element {
     }
 
     draw(parentT) {
-        let t = math.multiply( parentT, this.getTransformation());
+        let t = math.multiply( parentT, this.getTransformation);
         
         ctx.save()
 
