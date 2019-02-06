@@ -63,12 +63,12 @@ function draw() {
     world.draw();
 }
 
-const bezier = new BezierElement()
+const bez = new BezierElement(new Point2D(0,0), new Point2D(0,100), new Point2D(100,100), new Point2D(100,0))
+//lh.rotate(math.pi/4)
+world.addElement(bez)
 
-world.addElement(bezier)
 
-
-world.translate(20, 20)
+world.translate(200, 200)
 
 world.applyTransform(ctx);
 

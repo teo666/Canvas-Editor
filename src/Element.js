@@ -4,7 +4,8 @@ let _nel = 0;
 
 class Element{
     constructor(name){
-        this.name = name || ("element"+_nel++);
+        this.name = name || ("element"+ ++_nel);
+        this.id = _nel;
         this.transformation = math.identity(3,3);
         this.elements = [];
         this.scale_factor = {
@@ -158,8 +159,9 @@ class Element{
     }
 
     draw(parentT){
+        let ts = math.multiply(parentT ,this.getTransformation )
         this.elements.forEach(element => {
-            element.draw( math.multiply(parentT ,this.getTransformation ) );
+            element.draw(ts);
         });
     }
     

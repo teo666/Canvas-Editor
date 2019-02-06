@@ -1,22 +1,29 @@
 'use strict'
 
 class Bezier extends Element {
-    constructor(vertices) {
+    constructor(...args) {
         super();
-        this.vertices = vertices;
-        this.buildPath();
+        this.value(...args)
         this.img = null;
     }
 
-    buildPath() {
-        console.log("anche uqui")
-        this.path = new Path2D();
-        this.path.moveTo.apply(this.path, this.vertices.start)
+    value(...args){
+        if(args.length == 4 &&
+            args[0] instanceof Point2D &&
+            args[1] instanceof Point2D &&
+            args[2] instanceof Point2D &&
+            args[3] instanceof Point2D){
+            this.buildPath(args[0], args[1], args[2], args[3])
+            }
+    }
 
-        this.vertices.points.forEach((e, i) => {
-            this.path.bezierCurveTo.apply(this.path, e);
-        });
-        this.path.closePath();
+    buildPath(p1, p2, p3, p4) {
+        //console.log("anche uqui")
+        this.path = new Path2D();
+        this.path.moveTo( p1.x , p1.y )
+
+        this.path.bezierCurveTo( p2.x , p2.y, p3.x , p3.y , p4.x , p4.y );
+
     }
 
     hitTest(x, y, tr) {
@@ -39,39 +46,6 @@ class Bezier extends Element {
 
 
     draw(parentT) {
-        //ctx.stroke(this.path)
-        //return
-        if (!this.img) {
-
-            let offsecren_canvas = document.createElement('canvas');
-
-            let os_ctx = offsecren_canvas.getContext('2d');
-            //document.body.appendChild(offsecren_canvas)
-
-        
-            offsecren_canvas.width = 250
-            offsecren_canvas.height = 220
-
-            os_ctx.lineWidth = 0;
-            os_ctx.strokeStyle = "red";
-            os_ctx.fillStyle = "red";
-            //os_ctx.clip()
-            os_ctx.fill(this.path);
-            //os_ctx.stroke(this.path);
-
-            //chace image for future paint
-
-            this.img = new Image();
-            this.img.onload = () => {
-                this.postload(parentT);
-            }
-            this.img.src = offsecren_canvas.toDataURL("image/png");
-        } else {
-            this.postload(parentT);
-        }
-    }
-
-    postload(parentT) {
 
         ctx.save();
 
@@ -86,17 +60,7 @@ class Bezier extends Element {
             math.subset(ts, math.index(1, 2))
         )
 
-        ctx.drawImage(
-            this.img,
-            0,
-            0,
-            this.img.width,
-            this.img.height,
-            0,
-            0,
-            this.img.width,
-            this.img.height
-        );
+        ctx.stroke(this.path)
         ctx.restore();
     }
 

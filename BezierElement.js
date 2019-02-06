@@ -2,139 +2,70 @@
 
 class BezierElement extends Element{
 
-    constructor(){
-        super()
-        this.selected = null;
-        let handle1 = new Ellipse(5,5);
-        let handle2 = new Ellipse(5,5);
-        let handle3 = new Ellipse(5,5);
-        let handle4 = new Ellipse(5,5);
-
-        let line1 = new Line(10,10,10,110);
-        let line2 = new Line(110,10,110,110);
-
-        const bezier_verices = {
-            start: [10, 10],
-            points: [
-                [10, 110, 110, 110, 110, 10]
-            ]
-        }
-
-        let bez = new Bezier(bezier_verices);
-        
-        this.addElement(bez)
-
-        handle1.translate(10,10);
-        handle2.translate(110,10);
-        handle3.translate(110,110);
-        handle4.translate(10,110);
-
-        this.addElement(handle1)
-        this.addElement(handle2)
-        this.addElement(handle3)
-        this.addElement(handle4)
-
-        this.addElement(line1)
-        this.addElement(line2)
-
-        bez.buildPath = function(){
-            //console.log("asdasd")
-            this.path = new Path2D();
-            this.path.moveTo.apply(this.path, this.vertices.start)
-
-            this.vertices.points.forEach((e, i) => {
-                this.path.bezierCurveTo.apply(this.path, e);
-            });
-        }
-
-        bez.draw = function(parentT){
-            ctx.save();
-
-            let ts = math.multiply(parentT, this.transformation);
-    
-            ctx.setTransform(
-                math.subset(ts, math.index(0, 0)),
-                math.subset(ts, math.index(1, 0)),
-                math.subset(ts, math.index(0, 1)),
-                math.subset(ts, math.index(1, 1)),
-                math.subset(ts, math.index(0, 2)),
-                math.subset(ts, math.index(1, 2))
-            )
-            ctx.lineWidth = "3"
-            ctx.stroke(this.path)
-            ctx.restore();
-        }
-
-        bez.buildPath.apply(bez);
-
+    constructor(...args){
+        super();
+        this.value(...args);
+        let size = new Size2D(5,5)
     }
 
-    hitTest(){
-        return false
+    value(...args){
+        if(args.length == 4 &&
+            args[0] instanceof Point2D &&
+            args[1] instanceof Point2D &&
+            args[2] instanceof Point2D &&
+            args[3] instanceof Point2D){
+                let size = new Size2D(5,5)
+                this.lh1 = new LineHandle(args[0], size, args[1], size)
+                this.lh2 = new LineHandle(args[2], size,args[3], size)
+
+                this.bezier = new Bezier(args[0], args[1], args[2], args[3]);
+
+                this.addElement(this.bezier)
+                this.addElement(this.lh1)
+                this.addElement(this.lh2)
+            } else {
+                throw "invalid arguments"
+            }
     }
-
-    draw(parentT){
-        
-        ctx.save();
-
-        let ts = math.multiply(parentT, this.transformation);
-
-        ctx.setTransform(
-            math.subset(ts, math.index(0, 0)),
-            math.subset(ts, math.index(1, 0)),
-            math.subset(ts, math.index(0, 1)),
-            math.subset(ts, math.index(1, 1)),
-            math.subset(ts, math.index(0, 2)),
-            math.subset(ts, math.index(1, 2))
-        )
-        //non disegno nulla per ora
-        ctx.restore();
-
-        super.draw(ts)
-
-    }
-
-    //////////////////////////////////// event handling //////////////////////////////////
-
 
     mousedown(e){
-        this.selected = null;
-        //console.log("bezier editor handling mouse down")
+        //console.log("be")
         let rvt = Object.assign(e, {parentTransformation : math.multiply( e.parentTransformation, this.getTransformation )})
-        console.log(rvt)
-        this.elements.forEach(el => {
-            if(el instanceof Ellipse && el.hitTest(rvt.x, rvt.y, rvt.parentTransformation )){
-                this.selected = el;
-                this.selection_point = {
-                    x : rvt.x,
-                    y : rvt.y
-                }
-                return false;
+        return this.elements.some(el => {
+            if(el instanceof LineHandle){
+                return el.mousedown(rvt)
             }
         });
-        console.log(this.selected)
-        return false
     }
 
     mousemove(e){
         let rvt = Object.assign(e, {parentTransformation : math.multiply( e.parentTransformation, this.getTransformation )})
-        if(this.selected){
-            this.selected.translate(rvt.x - this.selection_point.x , rvt.y - this.selection_point.y )
-            
-            this.selection_point.x = rvt.x;
-            this.selection_point.y = rvt.y;
+        return this.elements.some(el => {
+            if(el instanceof LineHandle){
+                let ret = el.mousemove(rvt)
 
-            draw();    
-        }
-        //stop propagation
-        return false;
+                //the event has been handled by someone
+                if(ret){
+                    this.bezier.value(
+                        this.lh1.startHandle.transformedCenter(),
+                        this.lh1.endHandle.transformedCenter(),
+                        this.lh2.startHandle.transformedCenter(),
+                        this.lh2.endHandle.transformedCenter()
+                    )
+                    draw()
+                    return true
+                }
+            }
+        });
     }
 
     mouseup(e){
-        if(this.selected){
-            this.selected = null;
-        }
-        return false;
+        let rvt = Object.assign(e, {parentTransformation : math.multiply( e.parentTransformation, this.getTransformation )})
+        return this.elements.forEach(el => {
+            if(el instanceof LineHandle){
+                return el.mouseup(rvt)
+            }
+        });
     }
 
 }

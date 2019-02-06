@@ -1,19 +1,40 @@
 'use strict'
 
 class Ellipse extends Element{
-    constructor(w, h){
+    constructor(...args){
         super();
-        this.path = null;
-        this.buildPath(w,h);
-        this.width = w;
-        this.height = h;
+        this.path = null;    
+
+        if(args.length == 2 && args[0] instanceof Point2D && args[1] instanceof Size2D){
+            this.center = args[0].clone();
+            this.size = args[1].clone()
+            this.buildPath(args[0].x, args[0].y, args[1].w, args[1].h);
+        } else {
+            throw "Invalid arguments"
+        }
     }
 
-    buildPath(w,h){
+    get getCenter(){
+        return this.center.clone();
+    }
+
+    get getCenterSHALLOW(){
+        return this.center;
+    }
+
+    transformedCenter(){
+        return new Point2D(math.multiply( this.transformation, this.center.point3).valueOf())
+    }
+
+    setCenter(c){
+        this.center = c.clone();
+    }
+    
+    buildPath(cx, cy, w, h){
         
         this.path = new Path2D();
 
-        this.path.ellipse(0, 0, w, h, 0, 0, 2 * Math.PI);
+        this.path.ellipse(cx, cy, w, h, 0, 0, 2 * Math.PI);
         this.path.closePath();
     }
 

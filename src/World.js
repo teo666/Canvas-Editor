@@ -108,14 +108,10 @@ class World{
     mousedown(e){
         let rvt = Object.assign(e, {parentTransformation : math.multiply( e.parentTransformation, this.getTransformation )})
         //console.log("world handle mousedown")
-        let ret = true;
-        this.elements.forEach( el => {
-            if(!el.mousedown(rvt)){
-                ret = false
-                return false
-            }
+        return this.elements.some( el => {
+            return el.mousedown(rvt)
         })
-        return ret;
+
     }
 
     mousemove(e){
