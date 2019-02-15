@@ -46,6 +46,13 @@ class Point2D extends Element{
     get y(){
         return this.toArray2[1];
     }
+    get w(){
+        return this.x;
+    }
+
+    get h(){
+        return this.y;
+    }
 
     hitTest(x,y,tr){
         return false;

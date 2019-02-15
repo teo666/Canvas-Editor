@@ -63,9 +63,18 @@ function draw() {
     world.draw();
 }
 
-const bez = new BezierElement(new Point2D(0,0), new Point2D(0,100), new Point2D(100,100), new Point2D(100,0))
+const bez0 = new BezierElement(new Point2D(0,0), new Point2D(0,100), new Point2D(100,100), new Point2D(100,0))
+const bez1 = new BezierElement(new Point2D(0,0), new Point2D(0,100), new Point2D(100,100), new Point2D(100,0))
+const bez2 = new BezierElement(new Point2D(0,0), new Point2D(0,100), new Point2D(100,100), new Point2D(100,0))
+const bez3 = new BezierElement(new Point2D(0,0), new Point2D(0,100), new Point2D(100,100), new Point2D(100,0))
 //lh.rotate(math.pi/4)
-world.addElement(bez)
+
+world.addElement(bez0)
+/*world.addElement(bez1)
+world.addElement(bez2)
+world.addElement(bez3)*/
+
+bez1.translate(200,100)
 
 
 world.translate(200, 200)

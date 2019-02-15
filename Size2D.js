@@ -7,7 +7,7 @@ class Size2D extends Element{
             this.array = args[0].size;
         } else if (args.length == 2 && typeof args[0] == "number" && typeof args[1] == "number"){
             this.array = math.matrix([ args[0], args[1] ]);
-        }else{
+        } else{
             throw "Invalid arguments"
         }
         
@@ -40,9 +40,4 @@ class Size2D extends Element{
     get h(){
         return this.y;
     }
-
-    hitTest(x,y,tr){
-        return false;
-    }
-
 }

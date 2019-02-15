@@ -2,57 +2,19 @@
 
 let _nel = 0;
 
-class Element{
-    constructor(name){
-        this.name = name || ("element"+ ++_nel);
+class Element extends Common {
+    constructor() {
+        super();
+        this.name = ("element" + ++_nel);
         this.id = _nel;
-        this.transformation = math.identity(3,3);
-        this.elements = [];
-        this.scale_factor = {
-            x: 1,
-            y: 1
-        }
-    }
-
-    get getScaleFactor(){
-        return {
-            x: this.scale_factor.x ,
-            y: this.scale_factor.y
-        }
-    }
-
-    scale(w,h){
-        let tm = math.matrix([[w,0,0],[0,h,0],[0,0,1]]);
-        this.transformation = math.multiply(this.transformation, tm);
-        return tm;
-    }
-
-    translate(x,y){
-        let tm = math.matrix([[1.0,0,x],[0,1.0,y],[0,0,1.0]]);
-        this.transformation = math.multiply(this.transformation, tm);
-    }
-
-    translateAdd(x,y){
-        let tm = math.matrix([[0,0,x],[0,0,y],[0,0,0]]);
-        this.transformation = math.add(this.transformation, tm);
-    }
-
-    rotate(teta){
-        let cos = math.cos(teta);
-        let sin = math.sin(teta);
-        let tm = math.matrix([[cos,sin,0],[-sin,cos,0],[0,0,1]]);
-        this.transformation = math.multiply(this.transformation, tm);
-        return tm;
     }
 
     reflectX() {
-        this.transformation = math.subset(this.transformation, math.index(0,0), - math.subset(this.transformation, math.index(0,0)))
-        this.applyTransform();
+        this.transformation = math.subset(this.transformation, math.index(0, 0), - math.subset(this.transformation, math.index(0, 0)))
     }
 
     reflectY() {
-        this.transformation = math.subset(this.transformation, math.index(1,1), - math.subset(this.transformation, math.index(1,1)))
-        this.applyTransform();
+        this.transformation = math.subset(this.transformation, math.index(1, 1), - math.subset(this.transformation, math.index(1, 1)))
     }
 
     reflectXY() {
@@ -61,85 +23,163 @@ class Element{
     }
 
     shearX(psi) {
-        if(math.abs(psi % (2 * math.pi)) == math.pi/2){
+        if (! typeof psi == "number" || math.abs(psi % (2 * math.pi)) == math.pi / 2) {
             return;
         }
         let tan = math.tan(psi);
-        let tm = math.matrix([[1.0,0,0],[tan,1.0,0],[0,0,1.0]]);
+        let tm = math.matrix([[1.0, 0, 0], [tan, 1.0, 0], [0, 0, 1.0]]);
         this.transformation = math.multiply(this.transformation, tm);
         return tm;
     }
     shearY(psi) {
-        if(math.abs(psi % (2 * math.pi)) == math.pi/2){
+        if (! typeof psi == "number" || math.abs(psi % (2 * math.pi)) == math.pi / 2) {
             return;
         }
         let tan = math.tan(psi);
-        let tm = math.matrix([[1.0,tan,0],[0,1.0,0],[0,0,1.0]]);
+        let tm = math.matrix([[1.0, tan, 0], [0, 1.0, 0], [0, 0, 1.0]]);
         this.transformation = math.multiply(this.transformation, tm);
         return tm;
     }
-    shearXY(psix,psiy) {
+    shearXY(psix, psiy) {
         this.shearX(psix);
         this.shearY(psiy);
     }
 
-    scaleOnElementPoint(w,h,cx,cy){
-        let c = math.multiply( math.inv(this.scale(w,h)), [cx,cy,1]);
-        let t = math.subtract(c, [cx,cy,0]);
-        this.translate( math.subset(t, math.index(0)), math.subset(t, math.index(1)));
+    scaleOnElementPoint(...args) {
+        this.scaleOnPoint(...args)
     }
 
-    scaleOnWorldPoint(w,h, cx, cy){
-        /******** */
+    scaleOnWorldPoint(...args) {
+        let w, h, cx, cy;
+        if (args.length == 2) {
+            if ((args[0] instanceof Point2D || args[0] instanceof Size2D) &&
+                (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
+                w = args[0].w
+                h = args[0].h
+                cx = args[1].x
+                cy = args[1].y
+            }
+        } else if (args.length == 4 &&
+            typeof args[0] == "number" &&
+            typeof args[1] == "number" &&
+            typeof args[2] == "number" &&
+            typeof args[3] == "number") {
+            w = args[0];
+            h = args[1];
+            cx = args[2];
+            cy = args[3];
+        } else if (args.length == 0 && args[0] instanceof Array) {
+            w = args[0][0];
+            h = args[0][1];
+            cx = args[0][2];
+            cy = args[0][3];
+        } else {
+            throw "invalid arguments"
+        }
         //prendo le coordinate del mondo e le porto nell'immagine e poi utilizzo l'altra funzione
-        let toimage = math.multiply( math.inv(this.transformation) , math.matrix([cx,cy,1]) )
+        let toimage = math.multiply(math.inv(this.transformation), math.matrix([cx, cy, 1])).valueOf()
         //console.log(math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)))
-        this.scaleOnElementPoint( w,h, math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)) ) 
-    }
-    
-    rotateOnElementPoint(teta, x, y){
-        let c = math.multiply( math.inv(this.rotate(teta)), [x,y,1]);
-        let t = math.subtract(c, [x,y,0]);
-        this.translate( math.subset(t, math.index(0)), math.subset(t, math.index(1)));
+        this.scaleOnElementPoint(w, h, toimage[0], toimage[1])
     }
 
-    rotateOnWorldPoint(teta, x, y){
-        /******** */
+    rotateOnElementPoint(...args) {
+        let teta, x, y;
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+            teta = args[0];
+            x = args[1].x;
+            y = args[1].y
+        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+            teta = args[0];
+            x = args[1];
+            y = args[2];
+        } else {
+            throw "Invalid arguments"
+        }
+        let c = math.multiply(math.inv(this.rotate(teta)), [x, y, 1]);
+        let t = math.subtract(c, [x, y, 0]).valueOf();
+        this.translate(t[0], t[1]);
+    }
+
+    rotateOnWorldPoint(...args) {
+        let teta, x, y;
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+            teta = args[0];
+            x = args[1].x;
+            y = args[1].y
+        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+            teta = args[0];
+            x = args[1];
+            y = args[2];
+        } else {
+            throw "Invalid arguments"
+        }
         //prendo le coordinate del mondo e le porto nell'immagine e poi utilizzo l'altra funzione
-        let toimage = math.multiply( math.inv(this.transformation) , math.matrix([x,y,1]) )
+        let t = math.multiply(math.inv(this.transformation), math.matrix([x, y, 1])).valueOf()
         //console.log(math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)))
-        this.rotateOnElementPoint( teta, math.subset(toimage,math.index(0)) , math.subset(toimage,math.index(1)) ) 
+        this.rotateOnElementPoint(teta, t[0], t[1])
     }
 
-    shearXOnElementPoint(teta, x, y){
-        let c = math.multiply( math.inv(this.shearX(teta)), [x,y,1]);
-        let t = math.subtract(c, [x,y,0]);
-        this.translate( math.subset(t, math.index(0)), math.subset(t, math.index(1)));
+    shearXOnElementPoint(...args) {
+        let teta, x, y;
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+            teta = args[0];
+            x = args[1].x;
+            y = args[1].y
+        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+            teta = args[0];
+            x = args[1];
+            y = args[2];
+        } else {
+            throw "Invalid arguments"
+        }
+        let c = math.multiply(math.inv(this.shearX(teta)), [x, y, 1]);
+        let t = math.subtract(c, [x, y, 0]).valueOf();
+        this.translate( t[0], t[1] );
     }
 
-    shearYOnElementPoint(teta, x, y){
-        let c = math.multiply( math.inv(this.shearY(teta)), [x,y,1]);
-        let t = math.subtract(c, [x,y,0]);
-        this.translate( math.subset(t, math.index(0)), math.subset(t, math.index(1)));
+    shearYOnElementPoint(...args) {
+        let teta, x, y;
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+            teta = args[0];
+            x = args[1].x;
+            y = args[1].y
+        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+            teta = args[0];
+            x = args[1];
+            y = args[2];
+        } else {
+            throw "Invalid arguments"
+        }
+        let c = math.multiply(math.inv(this.shearY(teta)), [x, y, 1]);
+        let t = math.subtract(c, [x, y, 0]).valueOf();
+        this.translate( t[0], t[1] );
     }
 
-    shearXYOnElementPoint(teta, x, y){
+    shearXYOnElementPoint(...args) {
+        let teta, x, y;
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+            teta = args[0];
+            x = args[1].x;
+            y = args[1].y
+        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+            teta = args[0];
+            x = args[1];
+            y = args[2];
+        } else {
+            throw "Invalid arguments"
+        }
         this.shearXOnElementPoint(teta, x, y);
         this.shearYOnElementPoint(teta, x, y);
     }
 
-    get getTransformation(){
-        return math.clone(this.transformation);
-    }
-
-    hitTest(x,y,tr){
+    hitTest(x, y, tr) {
         let htl = [];
-        let t = math.multiply(tr ,this.getTransformation )
+        let t = math.multiply(tr, this.getTransformation)
         this.elements.forEach(element => {
-            let ret = element.hitTest(x,y,t);
-            if(ret instanceof Array){
+            let ret = element.hitTest(x, y, t);
+            if (ret instanceof Array) {
                 htl = htl.concat(ret);
-            } else if(ret){
+            } else if (ret) {
                 htl.push(element);
             }
         });
@@ -147,36 +187,25 @@ class Element{
         return htl;
     }
 
-    addElement(el){
-        if( el instanceof Element){
-            if(!el.parent){
-                el.parent = this;
-            }
-            this.elements.push(el);
-        } else {
-            throw "Try to add non Element instance"
-        }
-    }
-
-    draw(parentT){
-        let ts = math.multiply(parentT ,this.getTransformation )
+    draw(parentT) {
+        let ts = math.multiply(parentT, this.getTransformation)
         this.elements.forEach(element => {
             element.draw(ts);
         });
     }
-    
-    get getParentsTransformations(){
+
+    get getParentsTransformations() {
         return math.multiply(this.parent.getParentsTransformations(), this.parent.getTransformation());
     }
 
     //////////////////////////////////// event handling //////////////////////////////////
-    
-    mousedown(e){
+
+    mousedown(e) {
         //console.log("element handle mousedown")
-        let rvt = Object.assign(e, {parentTransformation : this.getTransformation})
+        let rvt = Object.assign(e, { parentTransformation: this.getTransformation })
         let ret = true;
-        this.elements.forEach( el => {
-            if(!el.mousedown(rvt)){
+        this.elements.forEach(el => {
+            if (!el.mousedown(rvt)) {
                 ret = false
                 return false;
             }
@@ -184,12 +213,12 @@ class Element{
         return ret;
     }
 
-    mousemove(e){
+    mousemove(e) {
         //console.log("element handle mousedown")
-        let rvt = Object.assign(e, {parentTransformation : this.getTransformation})
+        let rvt = Object.assign(e, { parentTransformation: this.getTransformation })
         let ret = true;
-        this.elements.forEach( el => {
-            if(!el.mousemove(rvt)){
+        this.elements.forEach(el => {
+            if (!el.mousemove(rvt)) {
                 ret = false
                 return false;
             }
@@ -197,12 +226,12 @@ class Element{
         return ret;
     }
 
-    mouseup(e){
+    mouseup(e) {
         //console.log("element handle mousedown")
-        let rvt = Object.assign(e, {parentTransformation : this.getTransformation})
+        let rvt = Object.assign(e, { parentTransformation: this.getTransformation })
         let ret = true;
-        this.elements.forEach( el => {
-            if(!el.mouseup(rvt)){
+        this.elements.forEach(el => {
+            if (!el.mouseup(rvt)) {
                 ret = false
                 return false;
             }
