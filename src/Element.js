@@ -7,6 +7,11 @@ class Element extends Common {
         super();
         this.name = ("element" + ++_nel);
         this.id = _nel;
+        this.pending = false;
+    }
+
+    get isPending(){
+        return this.pending
     }
 
     reflectX() {
@@ -187,10 +192,10 @@ class Element extends Common {
         return htl;
     }
 
-    draw(parentT) {
+    draw(context, parentT) {
         let ts = math.multiply(parentT, this.getTransformation)
         this.elements.forEach(element => {
-            element.draw(ts);
+            element.draw(context,ts);
         });
     }
 

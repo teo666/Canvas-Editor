@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Transformation</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.0.0/math.js"></script>
+    <script type="text/javascript" src="../src/Common.js"></script>
+    <script type="text/javascript" src="../src/World.js"></script>
+    <script type="text/javascript" src="../src/Adder.js"></script>
+    <script type="text/javascript" src="../src/Element.js"></script>
+    <script type="text/javascript" src="../Point2D.js"></script>
+    <script type="text/javascript" src="../Size2D.js"></script>
+    <script type="text/javascript" src="../src/Cursor.js"></script>
+    <script type="text/javascript" src="../Net.js"></script>
+    
+</head>
+<body>
+    <canvas id="c" width="1000" height="700" style="border: 1px solid black; margin: 0px"></canvas>
+    <p>Selected element: <span id="sel"></span></p>
+</body>
+<script type="text/javascript" src="App1.js"></script>
+<script type="text/javascript">
+
+var canvas = document.createElement('canvas');
+var gl;
+var debugInfo;
+var vendor;
+var renderer;
+
+try {
+  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+} catch (e) {
+}
+
+if (gl) {
+  debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+  vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+  renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+}
+
+// Sample output:
+//
+console.log(renderer);
+
+</script>
+</html>

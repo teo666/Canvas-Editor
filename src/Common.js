@@ -34,6 +34,8 @@ class Common{
         } else {
             throw "invalid arguments"
         }
+        this.scale_factor.x *= w;
+        this.scale_factor.y *= h;
         let tm = math.matrix([[w, 0, 0], [0, h, 0], [0, 0, 1]]);
         this.transformation = math.multiply(this.transformation, tm);
         return tm;

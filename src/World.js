@@ -3,10 +3,16 @@
 class World extends Common{
     constructor() {
         super();
+        this.cursor = new Cursor();
+        this.draw_cursor = true;
     }
 
     get getTransformation() {
         return math.clone(this.transformation);
+    }
+
+    get drawCursor(){
+        return this.draw_cursor;
     }
 
     applyTransform(ctx) {
@@ -24,9 +30,9 @@ class World extends Common{
         )
     }
 
-    draw() {
+    draw(context) {
         this.elements.forEach(element => {
-            element.draw(this.getTransformation);
+            element.draw(context, this.getTransformation);
         });
     }
 
