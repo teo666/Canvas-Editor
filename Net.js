@@ -5,7 +5,10 @@ class Net extends Element {
         super()
         this.start = new Point2D(0, 0);
         this.end = new Point2D(100, 0)
-        this.width = 20
+        this.lineWidth = 1;
+        this.lineDash = [10,10];
+        this.strokeStyle = '#ff0000'
+        this.fillStyle = '#ff0000'
         this.buildPath();
     }
 
@@ -25,12 +28,20 @@ class Net extends Element {
         this.setEnd(ex, ey)
     }
 
-    setWidth(w) {
-        this.width = w
+    width(...args) {
+        if (args.length == 1) {
+            if (typeof args[0] == 'number') {
+                this.lineWidth = args[0]
+                this.buildPath()
+            } else {
+                throw 'Invalid arguments'
+            }
+        }
+        return this.lineWidth;
     }
 
     buildPath() {
-        let r = this.width / 2;
+        let r = this.lineWidth / 2;
         let dy = this.end.y() - this.start.y()
         let dx = this.end.x() - this.start.x()
 
@@ -50,27 +61,29 @@ class Net extends Element {
     }
 
     draw(context, parentT) {
-        if (!this.isPending) {
 
-            context.save();
+        context.save();
 
-            let ts = math.multiply(parentT, this.transformation);
+        let ts = math.multiply(parentT, this.transformation);
 
-            context.setTransform(
-                math.subset(ts, math.index(0, 0)),
-                math.subset(ts, math.index(1, 0)),
-                math.subset(ts, math.index(0, 1)),
-                math.subset(ts, math.index(1, 1)),
-                math.subset(ts, math.index(0, 2)),
-                math.subset(ts, math.index(1, 2))
-            )
+        context.setTransform(
+            math.subset(ts, math.index(0, 0)),
+            math.subset(ts, math.index(1, 0)),
+            math.subset(ts, math.index(0, 1)),
+            math.subset(ts, math.index(1, 1)),
+            math.subset(ts, math.index(0, 2)),
+            math.subset(ts, math.index(1, 2))
+        )
 
-            context.strokeStyle = "black";
-            context.fillStyle = "red";
-            //ctx.stroke(this.path)
-            context.fill(this.path)
-            context.restore();
-        }
+        context.strokeStyle = 'black';
+        context.lineWidth = this.lineWidth
+        context.fillStyle = this.fillStyle
+        context.strokeStyle = this.strokeStyle
+        context.setLineDash(this.lineDash);
+        context.stroke(this.path)
+        context.fill(this.path)
+        context.restore();
+
     }
 
     mousemove() { }

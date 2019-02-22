@@ -10,7 +10,7 @@ class Element extends Common {
         this.pending = false;
     }
 
-    get isPending(){
+    get isPending() {
         return this.pending
     }
 
@@ -89,11 +89,11 @@ class Element extends Common {
 
     rotateOnElementPoint(...args) {
         let teta, x, y;
-        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
             teta = args[0];
             x = args[1].x;
             y = args[1].y
-        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+        } else if (args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
             teta = args[0];
             x = args[1];
             y = args[2];
@@ -107,11 +107,11 @@ class Element extends Common {
 
     rotateOnWorldPoint(...args) {
         let teta, x, y;
-        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
             teta = args[0];
             x = args[1].x;
             y = args[1].y
-        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+        } else if (args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
             teta = args[0];
             x = args[1];
             y = args[2];
@@ -126,11 +126,11 @@ class Element extends Common {
 
     shearXOnElementPoint(...args) {
         let teta, x, y;
-        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
             teta = args[0];
             x = args[1].x;
             y = args[1].y
-        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+        } else if (args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
             teta = args[0];
             x = args[1];
             y = args[2];
@@ -139,16 +139,16 @@ class Element extends Common {
         }
         let c = math.multiply(math.inv(this.shearX(teta)), [x, y, 1]);
         let t = math.subtract(c, [x, y, 0]).valueOf();
-        this.translate( t[0], t[1] );
+        this.translate(t[0], t[1]);
     }
 
     shearYOnElementPoint(...args) {
         let teta, x, y;
-        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
             teta = args[0];
             x = args[1].x;
             y = args[1].y
-        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+        } else if (args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
             teta = args[0];
             x = args[1];
             y = args[2];
@@ -157,16 +157,16 @@ class Element extends Common {
         }
         let c = math.multiply(math.inv(this.shearY(teta)), [x, y, 1]);
         let t = math.subtract(c, [x, y, 0]).valueOf();
-        this.translate( t[0], t[1] );
+        this.translate(t[0], t[1]);
     }
 
     shearXYOnElementPoint(...args) {
         let teta, x, y;
-        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)){
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
             teta = args[0];
             x = args[1].x;
             y = args[1].y
-        } else if( args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+        } else if (args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
             teta = args[0];
             x = args[1];
             y = args[2];
@@ -177,11 +177,11 @@ class Element extends Common {
         this.shearYOnElementPoint(teta, x, y);
     }
 
-    hitTest(x, y, tr) {
+    hitTest(x, y, tr, context) {
         let htl = [];
         let t = math.multiply(tr, this.getTransformation)
         this.elements.forEach(element => {
-            let ret = element.hitTest(x, y, t);
+            let ret = element.hitTest(x, y, t, context);
             if (ret instanceof Array) {
                 htl = htl.concat(ret);
             } else if (ret) {
@@ -195,7 +195,9 @@ class Element extends Common {
     draw(context, parentT) {
         let ts = math.multiply(parentT, this.getTransformation)
         this.elements.forEach(element => {
-            element.draw(context,ts);
+            if(!element.pending){
+                element.draw(context, ts);
+            }
         });
     }
 

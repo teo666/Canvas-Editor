@@ -17,6 +17,10 @@ class Common{
         }
     }
 
+    getElements(){
+        return this.elements
+    }
+
     scale(...args) {
         let w, h;
         if (args.length == 1) {

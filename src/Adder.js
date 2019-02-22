@@ -5,31 +5,28 @@ const shapeType = {
     1: "Line",
     2: "Ellipse",
     3: "Net",
-    "Point2D" : 0,
-    "Line" : 1,
-    "Ellipse" : 2,
-    "Net" : 3
+    "Point2D": 0,
+    "Line": 1,
+    "Ellipse": 2,
+    "Net": 3
 }
 
 class Adder {
     constructor() {
         this.cursor = null
-        this.adding = true;
-        this.eventRegister = [];
-        this.callbackRegister = [];
-        this.eventSave = [];
+        this.adding = false;
         this.completeEventRegister = [];
-        this.listener = document.createElement("adder")
-        this.listener.addEventListener('mouseup', e => { this.eventConsumer(e) }, false);
-        this.listener.addEventListener('mousemove', e => { this.eventConsumer(e) }, false);
-    }
-
-    dispatchEvent(e) {
-        this.listener.dispatchEvent(e)
+        this.state = -1;
     }
 
     setCursor(c) {
-        this.cursor = c;
+        if(c instanceof Cursor){
+            this.cursor = c;
+        }
+    }
+
+    getCursor(){
+        return this.cursor;
     }
 
     isAdding() {
@@ -44,80 +41,97 @@ class Adder {
             case shapeType.Ellipse:
                 break;
             case shapeType.Line:
+                this.addLine(parent)
                 break;
             case shapeType.Net:
                 this.addNet(parent);
                 break;
         }
+        this.prepare(parent)
+    }
+
+    prepare(p){
+        this.clearCompleteEventRegister()
+        //prevent rendering
+        this.pending.pending = true;
+        this.parentElement = p;
+        this.parentElement.addElement(this.pending)
+
+        this.state = this.descriptor[0];
+
+        this.clearAllowedEvents()
+        this.readAllowedEvents();
+    }
+
+    addLine() {
+        this.descriptor = __addLine;
+        this.pending = new Line();
+        this.pendingType = shapeType.Line;
     }
 
     //necessita di ottenere due eventi di mouseup
-    addNet(p) {
-        this.clearEventRegister();
-        this.clearCompleteEventRegister()
-        this.registerEvent.apply(this, addNet.events);
-        this.registerCallback.apply(this, addNet.callbacks);
-        this.registerSave.apply(this, addNet.eventSave);
+    addNet() {
+        this.descriptor = __addNet;
         this.pending = new Net();
-        //prevent rendering
-        this.pending.pending = true;
         this.pendingType = shapeType.Net;
-        this.parentElement = p; 
-        editor.world.addElement(this.pending)
     }
 
-    clearEventRegister() {
-        this.eventRegister = [];
+    cancel() {
+        let els = this.parentElement.getElements();
+        let index = els.indexOf(this.pending)
+        els.splice(index, 1)
+        this.resetAdd();
     }
+
+    clearAllowedEvents() {
+        this.allowedEvents = []
+        this.allowedEventsNum = []
+    }
+
+    readAllowedEvents() {
+        this.state.next.forEach(element => {
+            this.allowedEvents.push(this.descriptor[element].event);
+            this.allowedEventsNum.push(element);
+        });
+    }
+
     clearCompleteEventRegister() {
         this.completeEventRegister = [];
     }
 
-    clearEventSave(){
-        this.eventSave = []
+    resetAdd() {
+        this.adding = false;
+        this.descriptor = null;
+        this.pending.pending = false;
+        this.pending = null;
+        this.parentElement = null;
     }
 
-    registerSave(...save) {
-        save.forEach(element => {
-            this.eventSave.push(element);
-        });
-    }
+    eventProcess(e) {
+        if (!this.isAdding()) {
+            return;
+        }
 
-    registerEvent(...evt) {
-        evt.forEach(element => {
-            this.eventRegister.push(element);
-        });
-    }
+        //console.log(e)
 
-    registerCallback(...cb) {
-        cb.forEach(element => {
-            this.callbackRegister.push(element);
-        });
-    }
+        if(this.cursor != null){
+            this.cursor.processCoordinates(e)
+        }
 
-    eventConsumer(e) {
-        if (this.eventRegister.length > 0) {
-            let s = this.eventRegister[0].split(" ")
-            if (e.type == s[0]) {
-                let cb = this.callbackRegister[0];
-                if (this.eventSave[0]) {
-                    this.completeEventRegister.push(e);
-                }
-                if (!(s.length > 1 && s[1] == 'multi')) {
-                    this.callbackRegister.shift();
-                    this.eventRegister.shift();
-                    this.eventSave.shift();
-                }
-                if (cb && typeof cb == 'function') {
-                    cb(this.pending, this.parentElement, this.completeEventRegister, e);
-                }
-            } else if (this.eventRegister.length > 1 && e.type == this.eventRegister[1].split(' ')[0] && this.eventRegister[0].split(' ')[1] == 'multi') {
-                this.callbackRegister.shift();
-                this.eventRegister.shift();
-                this.eventSave.shift();
-                this.eventConsumer(e);
+        let index = this.allowedEvents.indexOf(e.type)
+        if (index != -1) {
+            this.state = this.descriptor[this.allowedEventsNum[index]];
+            if (this.state.saveEvent) {
+                this.completeEventRegister.push(e);
             }
-
+            if (this.state.callback && typeof this.state.callback == 'function') {
+                this.state.callback(this.pending, this.parentElement, this.completeEventRegister, e);
+            }
+            this.clearAllowedEvents();
+            this.readAllowedEvents();
+            if (this.allowedEvents.length == 0) {
+                this.resetAdd()
+            }
         }
     }
 }

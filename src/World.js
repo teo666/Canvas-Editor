@@ -32,15 +32,17 @@ class World extends Common{
 
     draw(context) {
         this.elements.forEach(element => {
-            element.draw(context, this.getTransformation);
+            if(!element.pending){
+                element.draw(context, this.getTransformation);
+            }
         });
     }
 
-    hitTest(x, y) {
+    hitTest(x, y, context) {
         let htl = [];
         let tr = this.getTransformation;
         this.elements.forEach(element => {
-            let ret = element.hitTest(x, y, tr);
+            let ret = element.hitTest(x, y, tr, context);
             if (ret instanceof Array) {
                 htl = htl.concat(ret);
             } else if (ret) {

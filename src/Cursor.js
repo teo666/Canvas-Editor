@@ -5,7 +5,7 @@ class Cursor extends Element {
         super()
         this.center = new Point2D(0, 0);
         this.size = new Size2D(30, 30);
-        this.snap = 30
+        this.snap = 2.54
         this.buildPath();
         this.enabledraw = false;
     }
@@ -43,13 +43,10 @@ class Cursor extends Element {
         }
     }
 
-    mousemove(e) {
-        let p = math.multiply(math.inv(e.parentTransformation), [e.x, e.y, 1]).valueOf();
-        //console.log(p._data)
-        this.center.x(math.round(p[0] / this.snap) * this.snap)
-        this.center.y(math.round(p[1] / this.snap) * this.snap)
-        //this.buildPath();
-        //draw(ctx)
-        //console.log(this.center.x(), this.center.y())
+    processCoordinates(e) {
+        if(this.snap){
+            e.detail.x = math.round(e.detail.x / this.snap) * this.snap
+            e.detail.y = math.round(e.detail.y / this.snap) * this.snap
+        }
     }
 }

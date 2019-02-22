@@ -14,6 +14,9 @@ class Editor {
 
         this.world = new World();
         this.adder = new Adder();
+        this.cursor = new Cursor();
+        this.colors = new Colors();
+        this.adder.setCursor(this.cursor);
 
         this.CTRL = 0b0001;
         this.ALT = 0b0010;
@@ -101,6 +104,7 @@ class Editor {
         this.addMouseLeave()
         this.addMouseUp()
         this.addMouseWheel()
+        this.addKeyUp()
     }
 
     addMouseMove() {
@@ -138,6 +142,27 @@ class Editor {
         });
     }
 
+    addKeyUp() {
+        let self = this;
+        document.body.addEventListener("keyup", function () {
+            self.keyUpCallback.apply(self, arguments)
+        });
+    }
+
+    keyUpCallback(e) {
+        //console.log(e);
+        switch (e.key) {
+            case "Escape":
+                if (this.adder.isAdding()) {
+                    this.adder.cancel();
+                    this.draw()
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     mouseMoveCallback(e) {
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
@@ -156,9 +181,16 @@ class Editor {
             }
             this.world.applyTransform(this.context);
             this.draw();
-        } else if(this.adder.isAdding()){
-            let mmv = new CustomEvent('mousemove',{detail:{x:x,y:y}});
-            this.adder.dispatchEvent(mmv);
+        } else if (this.adder.isAdding()) {
+            let mmv = {
+                type: 'mousemove',
+                detail: {
+                    x: x,
+                    y: y
+                },
+                evt: e
+            }
+            this.adder.eventProcess(mmv);
         } else {
 
             e.preventDefault();
@@ -189,13 +221,20 @@ class Editor {
         let y = e.clientY - rect.top;
         if (!this.is_dragging) {
             e.preventDefault();
-            if(this.adder.isAdding()){
-                let mup = new CustomEvent('mouseup',{detail:{x:x,y:y}});
-                this.adder.dispatchEvent(mup);
+            if (this.adder.isAdding()) {
+                let mmv = {
+                    type: 'mouseup',
+                    detail: {
+                        x: x,
+                        y: y
+                    },
+                    evt: e
+                }
+                this.adder.eventProcess(mmv);
             } else {
 
                 //handle hitttest
-                this.element = this.world.hitTest(x, y);
+                this.element = this.world.hitTest(x, y, this.context);
                 console.log(this.element)
                 this.element = this.element[this.element.length - 1];
             }
@@ -214,6 +253,21 @@ class Editor {
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
         e.preventDefault();
+
+        if (this.adder.isAdding()) {
+            let mmv = {
+                type: 'mousewheel',
+                detail: {
+                    x: x,
+                    y: y,
+                    dx: e.deltaX,
+                    dy: e.deltaY
+                },
+                evt: e
+            }
+            this.adder.eventProcess(mmv);
+            return;
+        }
         //console.log(e.metaKey)
         let mask = this.get_mask(e);
 
