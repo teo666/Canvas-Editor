@@ -13,16 +13,9 @@ const shapeType = {
 
 class Adder {
     constructor() {
-        this.cursor = null
         this.adding = false;
         this.completeEventRegister = [];
         this.state = -1;
-    }
-
-    setCursor(c) {
-        if(c instanceof Cursor){
-            this.cursor = c;
-        }
     }
 
     getCursor(){
@@ -110,12 +103,6 @@ class Adder {
     eventProcess(e) {
         if (!this.isAdding()) {
             return;
-        }
-
-        //console.log(e)
-
-        if(this.cursor != null){
-            this.cursor.processCoordinates(e)
         }
 
         let index = this.allowedEvents.indexOf(e.type)

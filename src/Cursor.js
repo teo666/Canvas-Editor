@@ -5,13 +5,20 @@ class Cursor extends Element {
         super()
         this.center = new Point2D(0, 0);
         this.size = new Size2D(30, 30);
-        this.snap = 2.54
+        this.snapSize = 0
         this.buildPath();
         this.enabledraw = false;
     }
 
     get coordinates() {
         return this.center;
+    }
+
+    snap(s) {
+        if (s && typeof s == 'number') {
+            this.snapSize = math.abs(s);
+        }
+        return this.snapSize
     }
 
     buildPath() {
@@ -24,15 +31,15 @@ class Cursor extends Element {
 
             ctx.save();
 
-            let ts = math.multiply(parentT, this.transformation);
+            let ts = math.multiply(parentT, this.transformation).valueOf();
 
-            ctx.setTransform(
-                math.subset(ts, math.index(0, 0)),
-                math.subset(ts, math.index(1, 0)),
-                math.subset(ts, math.index(0, 1)),
-                math.subset(ts, math.index(1, 1)),
-                math.subset(ts, math.index(0, 2)),
-                math.subset(ts, math.index(1, 2))
+            context.setTransform(
+                ts[0][0],
+                ts[1][0],
+                ts[0][1],
+                ts[1][1],
+                ts[0][2],
+                ts[1][2]
             )
 
             ctx.strokeStyle = "black";
@@ -43,10 +50,15 @@ class Cursor extends Element {
         }
     }
 
-    processCoordinates(e) {
-        if(this.snap){
-            e.detail.x = math.round(e.detail.x / this.snap) * this.snap
-            e.detail.y = math.round(e.detail.y / this.snap) * this.snap
+    snapToWorldCoordinates(e, wtr) {
+        if (this.snapSize) {
+            let p = math.multiply(math.inv(wtr), [e.detail.x, e.detail.y, 1]).valueOf();
+            p[0] = math.round(p[0] / this.snapSize) * this.snapSize
+            p[1] = math.round(p[1] / this.snapSize) * this.snapSize
+            console.log(p[0],p[1])
+            let r = math.multiply(wtr, [p[0], p[1], 1]).valueOf();
+            e.detail.x = r[0]
+            e.detail.y = r[1]
         }
     }
 }

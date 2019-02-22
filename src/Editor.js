@@ -9,14 +9,25 @@ class Editor {
         if (!obj.canvas) {
             throw "Canvas has not been specify"
         }
+
+        if (obj.canvas.nodeName != 'CANVAS') {
+            throw "Not a valid canvas"
+        }
         this.canvas = obj.canvas;
         this.context = this.canvas.getContext("2d");
 
         this.world = new World();
         this.adder = new Adder();
         this.cursor = new Cursor();
+        this.cursor.snap(2.54)
         this.colors = new Colors();
-        this.adder.setCursor(this.cursor);
+        this.canvasStyle = new CanvasStyle();
+
+        if (obj.gridCanvas && obj.gridCanvas.nodeName && obj.gridCanvas.nodeName == 'CANVAS') {
+            this.grid = new Grid();
+            this.grid.setCanvas(obj.gridCanvas)
+            this.grid.snap(2.54)
+        }
 
         this.CTRL = 0b0001;
         this.ALT = 0b0010;
@@ -190,6 +201,7 @@ class Editor {
                 },
                 evt: e
             }
+            this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation)
             this.adder.eventProcess(mmv);
         } else {
 
@@ -230,6 +242,7 @@ class Editor {
                     },
                     evt: e
                 }
+                this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation)
                 this.adder.eventProcess(mmv);
             } else {
 
@@ -265,6 +278,7 @@ class Editor {
                 },
                 evt: e
             }
+            this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation)
             this.adder.eventProcess(mmv);
             return;
         }

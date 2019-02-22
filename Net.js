@@ -64,15 +64,15 @@ class Net extends Element {
 
         context.save();
 
-        let ts = math.multiply(parentT, this.transformation);
+        let ts = math.multiply(parentT, this.transformation).valueOf();
 
         context.setTransform(
-            math.subset(ts, math.index(0, 0)),
-            math.subset(ts, math.index(1, 0)),
-            math.subset(ts, math.index(0, 1)),
-            math.subset(ts, math.index(1, 1)),
-            math.subset(ts, math.index(0, 2)),
-            math.subset(ts, math.index(1, 2))
+            ts[0][0],
+            ts[1][0],
+            ts[0][1],
+            ts[1][1],
+            ts[0][2],
+            ts[1][2]
         )
 
         context.strokeStyle = 'black';
