@@ -5,9 +5,10 @@ class Net extends Element {
         super()
         this.start = new Point2D(0, 0);
         this.end = new Point2D(100, 0)
+        this.thicknessSize = 1;
         this.lineWidth = 1;
-        this.lineDash = [10,10];
-        this.strokeStyle = '#ff0000'
+        this.lineDash = [];
+        this.strokeStyle = '#000000'
         this.fillStyle = '#ff0000'
         this.buildPath();
     }
@@ -32,7 +33,6 @@ class Net extends Element {
         if (args.length == 1) {
             if (typeof args[0] == 'number') {
                 this.lineWidth = args[0]
-                this.buildPath()
             } else {
                 throw 'Invalid arguments'
             }
@@ -40,8 +40,20 @@ class Net extends Element {
         return this.lineWidth;
     }
 
+    thickness(...args) {
+        if (args.length == 1) {
+            if (typeof args[0] == 'number') {
+                this.thicknessSize = args[0]
+                this.buildPath()
+            } else {
+                throw 'Invalid arguments'
+            }
+        }
+        return this.thicknessSize;
+    }
+
     buildPath() {
-        let r = this.lineWidth / 2;
+        let r = this.thicknessSize / 2;
         let dy = this.end.y() - this.start.y()
         let dx = this.end.x() - this.start.x()
 
@@ -75,7 +87,6 @@ class Net extends Element {
             ts[1][2]
         )
 
-        context.strokeStyle = 'black';
         context.lineWidth = this.lineWidth
         context.fillStyle = this.fillStyle
         context.strokeStyle = this.strokeStyle
@@ -84,6 +95,17 @@ class Net extends Element {
         context.fill(this.path)
         context.restore();
 
+    }
+
+    hitTest(x, y, tr, context) {
+        //console.log('hittest', arguments)
+        let t = math.multiply(math.inv(math.multiply(tr, this.getTransformation)), [x, y, 1]).valueOf();
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+
+        let ret = context.isPointInPath(this.path, t[0], t[1])
+        context.restore();
+        return ret;
     }
 
     mousemove() { }

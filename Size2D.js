@@ -1,43 +1,83 @@
 'use strict'
 
-class Size2D extends Element{
-    constructor(...args){
+class Size2D extends Element {
+    constructor(...args) {
         super();
-        if(args.length == 1 && args[0] instanceof Size2D){
+        if (args.length == 1 && args[0] instanceof Size2D) {
             this.array = args[0].size;
-        } else if (args.length == 2 && typeof args[0] == "number" && typeof args[1] == "number"){
-            this.array = math.matrix([ args[0], args[1] ]);
-        } else{
+        } else if (args.length == 2 && typeof args[0] == "number" && typeof args[1] == "number") {
+            this.array = math.matrix([args[0], args[1]]);
+        } else {
             throw "Invalid arguments"
         }
-        
+
     }
 
-    clone(){
+    static atan(...args) {
+        if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
+            let a = math.atan2(args[0], args[1])
+            if (a < 0) {
+                a += math.pi * 2
+            }
+            return a
+        } else if (args.length == 1 && (args[0] instanceof Size2D || args[0] instanceof Point2D)) {
+            let a = math.atan2(args[0].y(), args[0].x())
+            if (a < 0) {
+                a += math.pi * 2
+            }
+            return a
+        }
+        throw "Invalid arguments"
+
+    }
+
+    static tan(...args) {
+        if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
+            return math.tan(args[0], args[1])
+        } else if (args.length == 1 && args[0] instanceof Size2D) {
+            return math.tan(args[0].y(), args[0].x())
+        }
+        throw "Invalid arguments"
+
+    }
+
+    clone() {
         return new Size2D(this)
     }
 
-    get size(){
-        return math.clone(this.array);
+    x(...args) {
+        if (args.length > 0) {
+            if (args.length == 1 && typeof args[0] == "number") {
+                this.array.valueOf()[0] = args[0]
+            } else {
+                throw "Invalid arguments"
+            }
+        }
+        return this.toArray[0];
     }
 
-    get sizeArray(){
+    y(...args) {
+        if (args.length > 0) {
+            if (args.length == 1 && typeof args[0] == "number") {
+                this.array.valueOf()[1] = args[0]
+            } else {
+                throw "Invalid arguments"
+            }
+        }
+        return this.toArray[1];
+    }
+
+    get toArray() {
         return this.array.valueOf()
     }
 
-    get x(){
-        return this.sizeArray[0];
+    //TODO eliminare getter
+
+    get size() {
+        return math.clone(this.array);
     }
 
-    get y(){
-        return this.sizeArray[1];
-    }
-
-    get w(){
-        return this.x;
-    }
-
-    get h(){
-        return this.y;
+    get sizeArray() {
+        return this.array.valueOf()
     }
 }

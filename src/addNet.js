@@ -7,7 +7,7 @@ __addNet = {
         callback: function (elem, parent, events, current_ev) {
             elem.pending = false;
             //console.log('esecuzione callback mouseup', args.length)
-            let p = math.multiply(math.inv(math.multiply(parent.getParentsTransformations, parent.getTransformation)), [current_ev.detail.x, current_ev.detail.y, 1]).valueOf()
+            let p = math.multiply(math.inv(math.multiply(parent.getParentsTransformations, parent.getTransformation)), [current_ev.detail.snap_x, current_ev.detail.snap_y, 1]).valueOf()
             elem.setStart(p[0], p[1]);
             elem.setEnd(p[0], p[1]);
             editor.draw();
@@ -20,7 +20,7 @@ __addNet = {
         event: 'mousemove',
         callback: function (elem, parent, events, current_ev) {
             //console.log('esecuzione callback mousemove', args)
-            let p = math.multiply(math.inv(math.multiply(parent.getParentsTransformations, parent.getTransformation)), [current_ev.detail.x, current_ev.detail.y, 1]).valueOf()
+            let p = math.multiply(math.inv(math.multiply(parent.getParentsTransformations, parent.getTransformation)), [current_ev.detail.snap_x, current_ev.detail.snap_y, 1]).valueOf()
             elem.setEnd(p[0], p[1]);
             editor.draw();
         },
@@ -36,7 +36,7 @@ __addNet = {
             } else {
                 inc = 1
             }
-            elem.width(Math.max(1,elem.width()+inc));
+            elem.thickness(Math.max(1,elem.thickness()+inc));
             editor.draw();
         },
         next: [2, 3, 4],

@@ -5,10 +5,16 @@ const shapeType = {
     1: "Line",
     2: "Ellipse",
     3: "Net",
+    4: "Rectangle",
+    5: "Square",
+    6: "Arc",
     "Point2D": 0,
     "Line": 1,
     "Ellipse": 2,
-    "Net": 3
+    "Net": 3,
+    "Rectangle": 4,
+    "Square": 5,
+    "Arc": 6
 }
 
 class Adder {
@@ -18,7 +24,7 @@ class Adder {
         this.state = -1;
     }
 
-    getCursor(){
+    getCursor() {
         return this.cursor;
     }
 
@@ -39,11 +45,20 @@ class Adder {
             case shapeType.Net:
                 this.addNet(parent);
                 break;
+            case shapeType.Rectangle:
+                this.addRectangle(parent);
+                break;
+            case shapeType.Square:
+                this.addSquare(parent);
+                break;
+            case shapeType.Arc:
+                this.addArc(parent);
+                break;
         }
         this.prepare(parent)
     }
 
-    prepare(p){
+    prepare(p) {
         this.clearCompleteEventRegister()
         //prevent rendering
         this.pending.pending = true;
@@ -67,6 +82,24 @@ class Adder {
         this.descriptor = __addNet;
         this.pending = new Net();
         this.pendingType = shapeType.Net;
+    }
+
+    addRectangle() {
+        this.descriptor = __addRectangle;
+        this.pending = new Quadrangle();
+        this.pendingType = shapeType.Rectangle;
+    }
+
+    addSquare() {
+        this.descriptor = __addSquare;
+        this.pending = new Quadrangle();
+        this.pendingType = shapeType.Square;
+    }
+
+    addArc() {
+        this.descriptor = __addArc;
+        this.pending = new Arc();
+        this.pendingType = shapeType.Arc;
     }
 
     cancel() {

@@ -6,12 +6,21 @@ class Cursor extends Element {
         this.center = new Point2D(0, 0);
         this.size = new Size2D(30, 30);
         this.snapSize = 0
+        this.enable = true
         this.buildPath();
         this.enabledraw = false;
     }
 
     get coordinates() {
         return this.center;
+    }
+
+    enable(){
+        this.enable = true
+    }
+
+    disable(){
+        this.enable = false
     }
 
     snap(s) {
@@ -51,14 +60,17 @@ class Cursor extends Element {
     }
 
     snapToWorldCoordinates(e, wtr) {
-        if (this.snapSize) {
+        if (this.snapSize && this.enable) {
             let p = math.multiply(math.inv(wtr), [e.detail.x, e.detail.y, 1]).valueOf();
             p[0] = math.round(p[0] / this.snapSize) * this.snapSize
             p[1] = math.round(p[1] / this.snapSize) * this.snapSize
-            console.log(p[0],p[1])
+            //console.log(p[0],p[1])
             let r = math.multiply(wtr, [p[0], p[1], 1]).valueOf();
-            e.detail.x = r[0]
-            e.detail.y = r[1]
+            e.detail.snap_x = r[0]
+            e.detail.snap_y = r[1]
+        } else {
+            e.detail.snap_x = e.detail.x
+            e.detail.snap_y = e.detail.y
         }
     }
 }

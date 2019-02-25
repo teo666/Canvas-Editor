@@ -1,5 +1,5 @@
 'use strict'
-
+//TODO aggiungere controllo nan su setter
 let _nel = 0;
 
 class Element extends Common {

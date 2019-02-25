@@ -19,14 +19,15 @@ class Editor {
         this.world = new World();
         this.adder = new Adder();
         this.cursor = new Cursor();
-        this.cursor.snap(2.54)
+        this.cursor.snap(25)
         this.colors = new Colors();
         this.canvasStyle = new CanvasStyle();
 
         if (obj.gridCanvas && obj.gridCanvas.nodeName && obj.gridCanvas.nodeName == 'CANVAS') {
             this.grid = new Grid();
-            this.grid.setCanvas(obj.gridCanvas)
-            this.grid.snap(2.54)
+            this.gridCanvas = obj.gridCanvas
+            this.gridContext = this.gridCanvas.getContext("2d");
+            this.grid.snap(25)
         }
 
         this.CTRL = 0b0001;
@@ -50,6 +51,9 @@ class Editor {
         this.element = null;
 
         this.addEvents()
+        this.grid.draw(this.gridContext,this.gridCanvas.width, this.gridCanvas.height,this.gridCanvas)
+
+
     }
 
     draw_point(x, y, r) {
@@ -89,6 +93,7 @@ class Editor {
         this.draw_axis();
         this.draw_center()
         this.world.draw(this.context);
+        this.grid.draw(this.gridContext,this.gridCanvas.width, this.gridCanvas.height,this.gridCanvas,this.world)
     }
 
     get_mask(e) {
@@ -191,6 +196,7 @@ class Editor {
                 y: y
             }
             this.world.applyTransform(this.context);
+            this.grid.setTransformation(this.gridContext, this.world.getTransformation);
             this.draw();
         } else if (this.adder.isAdding()) {
             let mmv = {
@@ -294,12 +300,12 @@ class Editor {
         if (!(mask ^ this.CTRL)) {
             let z = 0;
             if (e.deltaY < 0) {
-                z = zoom_inL;
+                z = this.zoom_inL;
             } else {
-                z = zoom_outL;
+                z = this.zoom_outL;
             }
-            let diff = math.multiply(math.inv(this.world.getTransformation), [x, y, 1]);
-            this.world.scaleOnPoint(z, z, math.subset(diff, math.index(0)), math.subset(diff, math.index(1)));
+            let diff = math.multiply(math.inv(this.world.getTransformation), [x, y, 1]).valueOf();
+            this.world.scaleOnPoint(z, z, diff[0], diff[1]);
         }
 
         //zoom dell'oggetto
@@ -381,11 +387,11 @@ class Editor {
             } else {
                 z = this.zoom_out;
             }
-            let diff = math.multiply(math.inv(this.world.getTransformation), [x, y, 1]);
-            this.world.scaleOnPoint(z, z, math.subset(diff, math.index(0)), math.subset(diff, math.index(1)));
-
+            let diff = math.multiply(math.inv(this.world.getTransformation), [x, y, 1]).valueOf();
+            this.world.scaleOnPoint(z, z, diff[0], diff[1]);
         }
         this.world.applyTransform(this.context)
+        this.grid.setTransformation(this.gridContext, this.world.getTransformation)
         this.draw();
     };
 }
