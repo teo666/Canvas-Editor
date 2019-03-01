@@ -6,22 +6,22 @@ class Container extends Element{
         this.size = size;
     }
 
-    draw(parentT){
-        ctx.save();
-        let ts = math.multiply(parentT, this.transformation);
+    draw(context, parentT){
+        context.save();
+        let ts = TransformationMatrix.multiply(parentT, this.transformation).valueOf();
         
-        ctx.setTransform(
-            math.subset(ts,math.index(0,0)),
-            math.subset(ts,math.index(1,0)),
-            math.subset(ts,math.index(0,1)),
-            math.subset(ts,math.index(1,1)),
-            math.subset(ts,math.index(0,2)),
-            math.subset(ts,math.index(1,2))
+        context.setTransform(
+            ts[0],
+            ts[1],
+            ts[2],
+            ts[3],
+            ts[4],
+            ts[5]
         )
-        ctx.lineWidth = 2;
-        ctx.strokeRect(0, 0, this.size.x, this.size.y);
-        ctx.restore();
-        super.draw(parentT);
+        context.lineWidth = 2;
+        context.strokeRect(0, 0, this.size.x, this.size.y);
+        context.restore();
+        super.draw(context,parentT);
     }
 
     /* if u want to return always the container that contains hitted element*/

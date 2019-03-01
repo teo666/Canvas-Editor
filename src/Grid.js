@@ -11,7 +11,7 @@ class Grid {
 
     snap(s) {
         if (s && typeof s == 'number') {
-            this.snapSize = math.abs(s);
+            this.snapSize = Math.abs(s);
         }
         return this.snapSize
     }
@@ -25,7 +25,7 @@ class Grid {
 
             ctx.save()
 
-            let min_canvas_size = math.min(w, h)
+            let min_canvas_size = Math.min(w, h)
             c.width = c.height = min_canvas_size
             let scale_factor = min_canvas_size / this.snapSize;
             ctx.setTransform(scale_factor, 0, 0, scale_factor, 0, 0);
@@ -62,10 +62,10 @@ class Grid {
 
                 //let bound = math.multiply(math.inv(tm), [[0, w, w, 0], [0, 0, h, h], [1, 1, 1, 1]]).valueOf()
                 let bound = tm.inv().toMatrix().multiply(new Matrix(3,4).value([[0, w, w, 0], [0, 0, h, h], [1, 1, 1, 1]])).valueOf()
-                let minx = math.min(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
-                let miny = math.min(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
-                let maxx = math.max(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
-                let maxy = math.max(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
+                let minx = Math.min(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
+                let miny = Math.min(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
+                let maxx = Math.max(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
+                let maxy = Math.max(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
 
                 ctx.fillStyle = this.pattern;
                 ctx.fillRect(minx, miny, maxx - minx, maxy - miny);

@@ -25,6 +25,8 @@ class Ellipse extends Element {
             this.center(args[0])
             this.radius(args[1])
             this.rotation(args[2])
+        } else {
+            throw "Invalid arguments"
         }
     }
 

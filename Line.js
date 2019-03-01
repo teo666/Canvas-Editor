@@ -9,19 +9,20 @@ class Line extends Element {
         this.lineCap = CanvasStyle.lineCap.Round
         this.lineJoin = CanvasStyle.lineJoin.Round
         this.strokeStyle = '#faba11aa'
-        this.value(...args)
+        this.startPoint = new Point2D(0, 0)
+        this.endPoint = new Point2D(0, 0)
+        if (args.length) this.value(...args)
     }
 
     value(...args) {
         if (args.length == 1 && args[0] instanceof Line) {
-            this.start = args[0].getStart;
-            this.end = args[0].getEnd;
+            this.start(args[0].start())
+            this.end(args[0].end())
         } else if (args.length == 2 && args[0] instanceof Point2D && args[1] instanceof Point2D) {
-            this.start = new Point2D(args[0]);
-            this.end = new Point2D(args[1])
+            this.start(args[0])
+            this.end(args[1])
         } else {
-            this.start = new Point2D(0, 0);
-            this.end = new Point2D(100, 100)
+            throw "Invalid arguments"
         }
         this.buildPath();
     }
@@ -30,22 +31,20 @@ class Line extends Element {
         return new Line(this)
     }
 
-    get getStart() {
-        return math.clone(this.start)
+    start(...args) {
+        if (args.length) {
+            this.startPoint.value(...args)
+            this.buildPath();
+        }
+        return this.startPoint
     }
 
-    get getEnd() {
-        return math.clone(this.end)
-    }
-
-    setStart(...args) {
-        this.start.value(...args)
-        this.buildPath();
-    }
-
-    setEnd(...args) {
-        this.end.value(...args)
-        this.buildPath();
+    end(...args) {
+        if (args.length) {
+            this.endPoint.value(...args)
+            this.buildPath();
+        }
+        return this.endPoint
     }
 
     width(...args) {
@@ -62,7 +61,7 @@ class Line extends Element {
 
     color(...args) {
         if (args.length == 1) {
-            if ((typeof args[0] == 'string' && args[0].match( /#{1}[a-fA-F0-9]{1,8}$/g)) || ( args[0] instanceof CanvasGradient)) {
+            if ((typeof args[0] == 'string' && args[0].match(/#{1}[a-fA-F0-9]{1,8}$/g)) || (args[0] instanceof CanvasGradient)) {
                 this.color = args[0]
             } else {
                 throw 'Invalid arguments'
@@ -73,7 +72,7 @@ class Line extends Element {
 
     dash(...args) {
         if (args.length == 1) {
-            if ( args[0] instanceof Array) {
+            if (args[0] instanceof Array) {
                 this.lineDash = args[0]
             } else {
                 throw 'Invalid arguments'
@@ -86,34 +85,34 @@ class Line extends Element {
 
         this.path = new Path2D();
 
-        this.path.moveTo(this.start.x(), this.start.y());
-        this.path.lineTo(this.end.x(), this.end.y())
+        this.path.moveTo(this.startPoint.x(), this.startPoint.y());
+        this.path.lineTo(this.endPoint.x(), this.endPoint.y())
         //this.buildHitTestPath()
     }
 
     buildHitTestPath() {
         let r = this.lineWidth / 2;
-        let dy = this.end.y() - this.start.y()
-        let dx = this.end.x() - this.start.x()
+        let dy = this.endPoint.y() - this.startPoint.y()
+        let dx = this.endPoint.x() - this.startPoint.x()
 
-        let alfa = -math.atan(dx / dy);
+        let alfa = -Math.atan(dx / dy);
         if (dy < 0) {
-            alfa += math.pi
+            alfa += Math.pi
         }
 
-        let diff = new Point2D(r * math.cos(alfa), r * math.sin(alfa))
+        let diff = new Point2D(r * Math.cos(alfa), r * Math.sin(alfa))
         this.hitPath = new Path2D();
 
-        this.hitPath.moveTo(this.start.x() - diff.x(), this.start.y() - diff.y());
-        this.hitPath.lineTo(this.start.x() + diff.x(), this.start.y() + diff.y());
-        this.hitPath.lineTo(this.end.x() + diff.x(), this.end.y() + diff.y());
-        this.hitPath.lineTo(this.end.x() - diff.x(), this.end.y() - diff.y());
+        this.hitPath.moveTo(this.startPoint.x() - diff.x(), this.startPoint.y() - diff.y());
+        this.hitPath.lineTo(this.startPoint.x() + diff.x(), this.startPoint.y() + diff.y());
+        this.hitPath.lineTo(this.endPoint.x() + diff.x(), this.endPoint.y() + diff.y());
+        this.hitPath.lineTo(this.endPoint.x() - diff.x(), this.endPoint.y() - diff.y());
         this.hitPath.closePath()
     }
 
     hitTest(x, y, tr, context) {
         //console.log('hittest', arguments)
-        let t = math.multiply(math.inv(math.multiply(tr, this.getTransformation)), [x, y, 1]).valueOf();
+        let t = tr.clone().multiply(this.getTransformation()).inv().multiplyPoint(x, y)
         context.save();
         context.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -123,26 +122,30 @@ class Line extends Element {
     }
 
     draw(context, parentT) {
-        context.save();
+        if (this.enableDraw) {
 
-        let ts = math.multiply(parentT, this.transformation).valueOf();
+            context.save();
 
-        context.setTransform(
-            ts[0][0],
-            ts[1][0],
-            ts[0][1],
-            ts[1][1],
-            ts[0][2],
-            ts[1][2]
-        )
-        context.strokeStyle = 'black'
-        context.strokeStyle = this.strokeStyle;
-        context.lineWidth = this.lineWidth
-        context.lineCap = this.lineCap
-        context.lineJoin = this.lineJoin
-        context.setLineDash(this.lineDash)
-        context.stroke(this.path)
-        context.restore();
+            let ts = TransformationMatrix.multiply(parentT, this.transformation).valueOf()
+
+            context.setTransform(
+                ts[0],
+                ts[1],
+                ts[2],
+                ts[3],
+                ts[4],
+                ts[5]
+            )
+
+            context.strokeStyle = 'black'
+            context.strokeStyle = this.strokeStyle;
+            context.lineWidth = this.lineWidth
+            context.lineCap = this.lineCap
+            context.lineJoin = this.lineJoin
+            context.setLineDash(this.lineDash)
+            context.stroke(this.path)
+            context.restore();
+        }
     }
 
 }

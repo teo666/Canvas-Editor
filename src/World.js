@@ -27,14 +27,14 @@ class World extends Common{
     draw(context) {
         this.elements.forEach(element => {
             if(!element.pending){
-                element.draw(context, this.getTransformation);
+                element.draw(context, this.getTransformation());
             }
         });
     }
 
     hitTest(x, y, context) {
         let htl = [];
-        let tr = this.getTransformation;
+        let tr = this.getTransformation();
         this.elements.forEach(element => {
             let ret = element.hitTest(x, y, tr, context);
             if (ret instanceof Array) {
@@ -47,7 +47,7 @@ class World extends Common{
         return htl;
     }
 
-    get getParentsTransformations() {
+    getParentsTransformations() {
         return new TransformationMatrix()
     }
 

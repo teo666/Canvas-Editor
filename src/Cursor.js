@@ -8,64 +8,66 @@ class Cursor extends Element {
         this.snapSize = 0
         this.enable = true
         this.buildPath();
-        this.enabledraw = false;
+        this.enableDraw = false;
     }
 
-    get coordinates() {
+    coordinates() {
+        //TODO setter
         return this.center;
     }
 
-    enable(){
+    enable() {
         this.enable = true
     }
 
-    disable(){
+    disable() {
         this.enable = false
     }
 
     snap(s) {
         if (s && typeof s == 'number') {
-            this.snapSize = math.abs(s);
+            this.snapSize = Math.abs(s);
         }
         return this.snapSize
     }
 
     buildPath() {
         this.path = new Path2D();
-        this.path.rect(this.center.x() - this.size.x / 2, this.center.y() - this.size.y / 2, this.size.x, this.size.y);
+        this.path.rect(this.center.x() - this.size.x / 2, this.center.y() - this.size.y() / 2, this.size.x(), this.size.y());
     }
 
     draw(context, parentT) {
         if (this.enabledraw) {
 
-            ctx.save();
+            context.save();
 
-            let ts = math.multiply(parentT, this.transformation).valueOf();
+            let ts = TransformationMatrix.multiply(parentT, this.transformation()).valueOf();
 
             context.setTransform(
-                ts[0][0],
-                ts[1][0],
-                ts[0][1],
-                ts[1][1],
-                ts[0][2],
-                ts[1][2]
+                ts[0],
+                ts[1],
+                ts[2],
+                ts[3],
+                ts[4],
+                ts[5]
             )
 
-            ctx.strokeStyle = "black";
-            ctx.fillStyle = "red";
-            ctx.stroke(this.path)
+            context.strokeStyle = "black";
+            context.fillStyle = "red";
+            context.stroke(this.path)
             //ctx.fill(this.path)
-            ctx.restore();
+            context.restore();
         }
     }
 
     snapToWorldCoordinates(e, wtr) {
         if (this.snapSize && this.enable) {
-            let p = math.multiply(math.inv(wtr), [e.detail.x, e.detail.y, 1]).valueOf();
-            p[0] = math.round(p[0] / this.snapSize) * this.snapSize
-            p[1] = math.round(p[1] / this.snapSize) * this.snapSize
+            let p = wtr.clone().inv().multiplyPoint(e.detail.x, e.detail.y).valueOf()
+
+            p[0] = Math.round(p[0] / this.snapSize) * this.snapSize
+            p[1] = Math.round(p[1] / this.snapSize) * this.snapSize
             //console.log(p[0],p[1])
-            let r = math.multiply(wtr, [p[0], p[1], 1]).valueOf();
+            let r = wtr.multiplyPoint(p[0], p[1]);
             e.detail.snap_x = r[0]
             e.detail.snap_y = r[1]
         } else {

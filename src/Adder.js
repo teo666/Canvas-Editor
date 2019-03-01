@@ -76,7 +76,7 @@ class Adder {
         this.readAllowedEvents();
     }
 
-    addEllipse(){
+    addEllipse() {
         this.descriptor = __addEllipse;
         this.pending = new Ellipse();
         this.pendingType = shapeType.Ellipse;
@@ -138,23 +138,23 @@ class Adder {
     }
 
     resetAdd() {
-        this.adding = false;
         this.descriptor = null;
         this.pending.pending = false;
         this.pending = null;
         this.mem = {};
-        if(this.continuosAdd){
-            this.add(this.pendingType, this.parentElement,this.continuosAdd) 
+        this.adding = false;
+        if (this.continuosAdd) {
+            this.add(this.pendingType, this.parentElement, this.continuosAdd)
         } else {
             this.parentElement = null;
         }
     }
 
-    eventProcess(e) {
+    eventProcess(editor, e) {
         if (!this.isAdding()) {
             return;
         }
-
+        let cancel
         let index = this.allowedEvents.indexOf(e.type)
         if (index != -1) {
             this.state = this.descriptor[this.allowedEventsNum[index]];
@@ -162,11 +162,14 @@ class Adder {
                 this.completeEventRegister.push(e);
             }
             if (this.state.callback && typeof this.state.callback == 'function') {
-                this.state.callback(this.pending, this.parentElement, this.completeEventRegister, e, this.mem);
+                cancel = this.state.callback(editor, this.pending, this.parentElement, this.completeEventRegister, e, this.mem);
             }
             this.clearAllowedEvents();
             this.readAllowedEvents();
-            if (this.allowedEvents.length == 0) {
+            if (cancel) {
+                this.cancel()
+                editor.draw()
+            } else if (this.allowedEvents.length == 0) {
                 this.resetAdd()
             }
         }

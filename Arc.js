@@ -10,7 +10,7 @@ class Arc extends Element {
         this.radiusSize = 50;
         this.arcLength = 0;
         this.centerPoint = new Point2D(0, 0)
-        this.angles = new Size2D(0, math.pi / 2)
+        this.angles = new Size2D(0, Math.PI / 2)
         this.anticlockwise = false
         this.buildPath()
 
@@ -48,15 +48,15 @@ class Arc extends Element {
 
         context.save();
 
-        let ts = math.multiply(parentT, this.transformation).valueOf();
+        let ts = TransformationMatrix.multiply(parentT, this.transformation).valueOf()
 
         context.setTransform(
-            ts[0][0],
-            ts[1][0],
-            ts[0][1],
-            ts[1][1],
-            ts[0][2],
-            ts[1][2]
+            ts[0],
+            ts[1],
+            ts[2],
+            ts[3],
+            ts[4],
+            ts[5]
         )
 
         context.lineWidth = this.lineWidth

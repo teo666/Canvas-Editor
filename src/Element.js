@@ -1,5 +1,5 @@
 'use strict'
-//TODO aggiungere controllo nan su setter
+
 let _nel = 0;
 
 class Element extends Common {
@@ -8,6 +8,8 @@ class Element extends Common {
         this.name = ("element" + ++_nel);
         this.id = _nel;
         this.pending = false;
+        this.enableDraw = true
+        //this.pivot = new Point2D(0,0)
     }
 
     get isPending() {
@@ -15,45 +17,47 @@ class Element extends Common {
     }
 
     reflectX() {
-        this.transformation = math.subset(this.transformation, math.index(0, 0), - math.subset(this.transformation, math.index(0, 0)))
+        this.transformation.reflectX()
+        return this
     }
 
     reflectY() {
-        this.transformation = math.subset(this.transformation, math.index(1, 1), - math.subset(this.transformation, math.index(1, 1)))
+        this.transformation.reflectY()
+        return this
     }
 
     reflectXY() {
-        this.reflectX();
-        this.reflectY();
+        this.transformation.reflectXY()
+        return this
     }
 
     shearX(psi) {
-        if (! typeof psi == "number" || math.abs(psi % (2 * math.pi)) == math.pi / 2) {
+        if (! typeof psi == "number" || Math.abs(psi % (2 * Math.pi)) == Math.pi / 2) {
             return;
         }
-        let tan = math.tan(psi);
-        let tm = math.matrix([[1.0, 0, 0], [tan, 1.0, 0], [0, 0, 1.0]]);
-        this.transformation = math.multiply(this.transformation, tm);
+        this.transformation.shearX(psi)
         return tm;
     }
+
     shearY(psi) {
         if (! typeof psi == "number" || math.abs(psi % (2 * math.pi)) == math.pi / 2) {
             return;
         }
-        let tan = math.tan(psi);
-        let tm = math.matrix([[1.0, tan, 0], [0, 1.0, 0], [0, 0, 1.0]]);
-        this.transformation = math.multiply(this.transformation, tm);
+        this.transformation.shearY(psi)
         return tm;
     }
+
     shearXY(psix, psiy) {
         this.shearX(psix);
         this.shearY(psiy);
     }
-
+/*
+    //TODO da rimuovere
     scaleOnElementPoint(...args) {
         this.scaleOnPoint(...args)
     }
 
+    //TODO da rimuovere
     scaleOnWorldPoint(...args) {
         let w, h, cx, cy;
         if (args.length == 2) {
@@ -87,6 +91,7 @@ class Element extends Common {
         this.scaleOnElementPoint(w, h, toimage[0], toimage[1])
     }
 
+    //TODO da rimuovere
     rotateOnElementPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -105,6 +110,7 @@ class Element extends Common {
         this.translate(t[0], t[1]);
     }
 
+    //TODO da rimuovere
     rotateOnWorldPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -124,6 +130,7 @@ class Element extends Common {
         this.rotateOnElementPoint(teta, t[0], t[1])
     }
 
+    //TODO da rimuovere
     shearXOnElementPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -142,6 +149,7 @@ class Element extends Common {
         this.translate(t[0], t[1]);
     }
 
+    //TODO da rimuovere
     shearYOnElementPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -160,6 +168,7 @@ class Element extends Common {
         this.translate(t[0], t[1]);
     }
 
+    //TODO da rimuovere
     shearXYOnElementPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -175,11 +184,11 @@ class Element extends Common {
         }
         this.shearXOnElementPoint(teta, x, y);
         this.shearYOnElementPoint(teta, x, y);
-    }
+    }*/
 
     hitTest(x, y, tr, context) {
         let htl = [];
-        let t = math.multiply(tr, this.getTransformation)
+        let t = tr.clone().multiply(this.getTransformation())
         this.elements.forEach(element => {
             let ret = element.hitTest(x, y, t, context);
             if (ret instanceof Array) {
@@ -193,7 +202,7 @@ class Element extends Common {
     }
 
     draw(context, parentT) {
-        let ts = math.multiply(parentT, this.getTransformation)
+        let ts = parentT.clone().multiply(this.getTransformation())
         this.elements.forEach(element => {
             if(!element.pending){
                 element.draw(context, ts);
@@ -201,8 +210,10 @@ class Element extends Common {
         });
     }
 
-    get getParentsTransformations() {
-        return math.multiply(this.parent.getParentsTransformations(), this.parent.getTransformation());
+    getParentsTransformations() {
+        let pp = this.parent.getParentsTransformations()
+        let p = this.parent.getTransformation()
+        return TransformationMatrix.multiply(pp,p);
     }
 
     //////////////////////////////////// event handling //////////////////////////////////

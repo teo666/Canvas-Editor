@@ -7,7 +7,7 @@ class CanvasStyle {
         this.lineDashes = {};
     }
 
-    static lineCap = Object.freeze({
+    /*static lineCap = Object.freeze({
         "Butt": "butt",
         "Round": "round",
         "Square": "square"
@@ -18,7 +18,7 @@ class CanvasStyle {
         "Round": "round",
         "Miter": "miter"
     })
-
+*/
     addOrReplaceLinearGradients(name, e) {
         if (e instanceof CanvasGradient) {
             this.linearGradients[name] = e;

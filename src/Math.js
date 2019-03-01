@@ -51,13 +51,20 @@ class Matrix {
 
 
 class TransformationMatrix extends Matrix {
-    constructor(a) {
+    constructor(m, s, r) {
         super()
         this.m = [1, 0, 0, 1, 0, 0]
         this.scaleFactor = { x: 1, y: 1 }
         this.rotationAngle = 0;
-        if (a) {
-            this.m = a
+        //SHALLOW COPY, VALUE ARE REFERENCE
+        if (m) {
+            this.m = m
+        }
+        if (s) {
+            this.scaleFactor = s
+        }
+        if (r) {
+            this.rotationAngle = r
         }
     }
 
@@ -100,7 +107,7 @@ class TransformationMatrix extends Matrix {
     }
 
     getScaleMatrix(w, h) {
-        return new TransformationMatrix([w, 0, 0, h, 0, 0])
+        return new TransformationMatrix([w, 0, 0, h, 0, 0], { x: w, y: h })
     }
 
     scaleOnPoint(w, h, cx, cy) {
@@ -118,7 +125,7 @@ class TransformationMatrix extends Matrix {
     getRotateMatrix(teta) {
         let cos = Math.cos(teta);
         let sin = Math.sin(teta);
-        return new TransformationMatrix([cos, -sin, sin, cos, 0, 0])
+        return new TransformationMatrix([cos, -sin, sin, cos, 0, 0], null, teta)
     }
 
     rotateOnPoint(teta, cx, cy) {
@@ -208,6 +215,10 @@ class TransformationMatrix extends Matrix {
         m[1] * e[4] + m[3] * e[5] + m[5]
         ]
         return this
+    }
+
+    static multiply(a, b) {
+        return a.clone().multiply(b.m)
     }
 
     multiplyChain(...args) {

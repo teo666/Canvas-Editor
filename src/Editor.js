@@ -1,5 +1,20 @@
 'use strict'
 
+/**
+ * 
+ *         this.CTRL = 0b0001;
+        this.ALT = 0b0010;
+        this.SHIFT = 0b0100;
+        this.META = 0b1000
+ */
+let Mod = Object.freeze({
+    'NONE': 0,
+    'CTRL': 1,
+    'ALT': 2,
+    'SHIFT': 4,
+    'META': 8
+})
+
 class Editor {
 
     constructor(obj) {
@@ -39,8 +54,8 @@ class Editor {
         this.zoom_out = 1 / 1.05;
         this.zoom_inL = 1.15;
         this.zoom_outL = 1 / 1.15;
-        this.rotate_angle = math.pi / 500;
-        this.rotate_angleL = math.pi / 50;
+        this.rotate_angle = Math.PI / 500;
+        this.rotate_angleL = Math.PI / 50;
         this.translatel = 1;
         this.translatelL = 5;
 
@@ -51,7 +66,7 @@ class Editor {
         this.element = null;
 
         this.addEvents()
-        this.grid.draw(this.gridContext,this.gridCanvas.width, this.gridCanvas.height,this.gridCanvas)
+        this.grid.draw(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas)
 
 
     }
@@ -93,11 +108,11 @@ class Editor {
         this.draw_axis();
         this.draw_center()
         this.world.draw(this.context);
-        this.grid.draw(this.gridContext,this.gridCanvas.width, this.gridCanvas.height,this.gridCanvas,this.world)
+        this.grid.draw(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas, this.world)
     }
 
-    get_mask(e) {
-        let m = 0b0000;
+    getModifiers(e) {
+        let m = 0;
         if (e.ctrlKey) {
             m |= this.CTRL;
         }
@@ -114,12 +129,21 @@ class Editor {
         return m;
     }
 
+    matchModifiers(val, ...mod) {
+        let v = 0;
+        mod.forEach(n => {
+            v |= n;
+        })
+        return !(val ^ v)
+    }
+
     addEvents() {
         this.addMouseMove();
         this.addMouseDown();
         this.addMouseLeave()
         this.addMouseUp()
         this.addMouseWheel()
+        this.addMouseDoubleClick()
         this.addKeyUp()
     }
 
@@ -158,6 +182,13 @@ class Editor {
         });
     }
 
+    addMouseDoubleClick() {
+        let self = this;
+        this.canvas.addEventListener("dblclick", function () {
+            self.mouseDoubleClickCallback.apply(self, arguments)
+        });
+    }
+
     addKeyUp() {
         let self = this;
         document.body.addEventListener("keyup", function () {
@@ -177,6 +208,10 @@ class Editor {
             default:
                 break;
         }
+    }
+
+    mouseDoubleClickCallback(e){
+        console.log("ma te ci credi?")
     }
 
     mouseMoveCallback(e) {
@@ -207,8 +242,8 @@ class Editor {
                 },
                 evt: e
             }
-            this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation)
-            this.adder.eventProcess(mmv);
+            this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
+            this.adder.eventProcess(this, mmv);
         } else {
 
             e.preventDefault();
@@ -226,10 +261,34 @@ class Editor {
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
+
+        let e_mod = this.getModifiers(e)
+
+        if (this.adder.isAdding()) {
+            if (this.matchModifiers(e_mod, Mod.NONE)) {
+                let mmv = {
+                    type: 'mousedown',
+                    detail: {
+                        x: x,
+                        y: y
+                    },
+                    evt: e
+                }
+                this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
+                this.adder.eventProcess(this, mmv);
+                //previene l'handling del drag
+                return
+            }
+            if (this.matchModifiers(e_mod, Mod.CTRL)) {
+                console.log("comportamento normale")
+            }
+        }
+        //se tutti i valori sono sulli e sto aggiungendo un elemento mando gli eventi all'adder
         this.drag = true;
         this.drag_point = {
             x: x,
             y: y
+
         }
     }
 
@@ -248,8 +307,8 @@ class Editor {
                     },
                     evt: e
                 }
-                this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation)
-                this.adder.eventProcess(mmv);
+                this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
+                this.adder.eventProcess(this, mmv);
             } else {
 
                 //handle hitttest
@@ -273,45 +332,50 @@ class Editor {
         let y = e.clientY - rect.top;
         e.preventDefault();
 
+        let e_mod = this.getModifiers(e)
+
         if (this.adder.isAdding()) {
-            let mmv = {
-                type: 'mousewheel',
-                detail: {
-                    x: x,
-                    y: y,
-                    dx: e.deltaX,
-                    dy: e.deltaY
-                },
-                evt: e
+            if (this.matchModifiers(e_mod, Mod.NONE)) {
+                let mmv = {
+                    type: 'mousewheel',
+                    detail: {
+                        x: x,
+                        y: y,
+                        dx: e.deltaX,
+                        dy: e.deltaY
+                    },
+                    evt: e
+                }
+                this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
+                this.adder.eventProcess(this,mmv);
+                //previene l'handling del drag
+                return;
             }
-            this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation)
-            this.adder.eventProcess(mmv);
-            return;
         }
         //console.log(e.metaKey)
-        let mask = this.get_mask(e);
+        let mask = this.getModifiers(e);
 
         //rotazione globale
-        if (!(mask ^ this.ALT)) {
-            this.world.rotate(math.sign(e.deltaY) * this.rotate_angle);
+        if (this.matchModifiers(mask, Mod.ALT)) {
+            this.world.rotate(Math.sign(e.deltaY) * this.rotate_angle);
         }
 
         //zoom veloce
-        if (!(mask ^ this.CTRL)) {
+        if (this.matchModifiers(mask, Mod.CTRL)) {
             let z = 0;
             if (e.deltaY < 0) {
                 z = this.zoom_inL;
             } else {
                 z = this.zoom_outL;
             }
-            let diff = math.multiply(math.inv(this.world.getTransformation), [x, y, 1]).valueOf();
+            let diff = this.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf();
             this.world.scaleOnPoint(z, z, diff[0], diff[1]);
         }
 
         //zoom dell'oggetto
-        if (!(mask ^ this.SHIFT)) {
+        if (this.matchModifiers(mask, Mod.SHIFT)) {
             let z = 0;
-            if (math.sign(e.deltaY) > 0) {
+            if (Math.sign(e.deltaY) > 0) {
                 z = this.zoom_out;
             } else {
                 z = this.zoom_in;
@@ -319,65 +383,65 @@ class Editor {
             this.element && this.element.scale(z, z)
         }
 
-        if (!(mask ^ this.META)) {
+        if (this.matchModifiers(mask, Mod.META)) {
             world.translate(this.translatel * e.deltaX, this.translatel * e.deltaY)
         }
         //rotazione globale veloce
-        if (!(mask ^ (this.ALT | this.CTRL))) {
-            this.world.rotate(math.sign(e.deltaY) * this.rotate_angleL);
+        if (this.matchModifiers(mask, Mod.ALT, Mod.CTRL)) {
+            this.world.rotate(Math.sign(e.deltaY) * this.rotate_angleL);
         }
         //rotazione dell'oggetto
-        if (!(mask ^ (this.ALT | this.SHIFT))) {
-            //el.rotate(rotate_angle * math.sign(e.deltaY));
+        if (this.matchModifiers(mask, Mod.ALT, Mod.SHIFT)) {
+            //el.rotate(rotate_angle * Math.sign(e.deltaY));
             //prendo le coordinate del mouse e le porto nel mondo
-            let wp = math.multiply(math.inv(this.world.getTransformation), math.matrix([x, y, 1]))
-            this.element && this.element.rotateOnWorldPoint(math.sign(e.deltaY) * this.rotate_angle, math.subset(wp, math.index(0)), math.subset(wp, math.index(1)));
+            let wp = this.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
+            this.element && this.element.rotateOnWorldPoint(Math.sign(e.deltaY) * this.rotate_angle, wp[0], wp[1]);
         }
 
-        if (!(mask ^ (this.ALT | this.META))) {
+        if (this.matchModifiers(mask, Mod.ALT, Mod.META)) {
 
         }
 
-        if (!(mask ^ (this.META | this.CTRL))) {
+        if (this.matchModifiers(mask, Mod.META, Mod.CTRL)) {
             this.world.translate(this.translatelL * e.deltaX, this.translatelL * e.deltaY)
         }
 
-        if (!(mask ^ (this.META | this.CTRL | this.ALT))) {
+        if (this.matchModifiers(mask, Mod.META, Mod.CTRL, Mod.ALT)) {
 
         }
 
-        if (!(mask ^ (this.SHIFT | this.META))) {
+        if (this.matchModifiers(mask, Mod.SHIFT, Mod.META)) {
             this.element && this.element.translate(this.translatel * e.deltaX, this.translatel * e.deltaY);
         }
 
-        if (!(mask ^ (this.SHIFT | this.META | this.ALT))) {
+        if (this.matchModifiers(mask, Mod.SHIFT, Mod.META, Mod.ALT)) {
         }
 
-        if (!(mask ^ (this.SHIFT | this.META | this.CTRL))) {
+        if (this.matchModifiers(mask, Mod.SHIFT, Mod.META, Mod.CTRL)) {
             this.element && this.element.translate(this.translatelL * e.deltaX, this.translatelL * e.deltaY);
         }
 
-        if (!(mask ^ (this.SHIFT | this.META | this.CTRL | this.ALT))) {
+        if (this.matchModifiers(mask, Mod.SHIFT, Mod.META, Mod.CTRL, Mod.ALT)) {
 
         }
 
 
 
         //zoom velore dell'oggetto
-        if (!(mask ^ (this.CTRL | this.SHIFT))) {
+        if (this.matchModifiers(mask, Mod.CTRL, Mod.SHIFT)) {
             let z = 0;
-            if (math.sign(e.deltaY) > 0) {
+            if (Math.sign(e.deltaY) > 0) {
                 z = this.zoom_outL
             } else {
                 z = this.zoom_inL;
             }
-            let wp = math.multiply(math.inv(this.world.getTransformation), math.matrix([x, y, 1]))
-            this.element && this.element.scaleOnWorldPoint(z, z, math.subset(wp, math.index(0)), math.subset(wp, math.index(1)))
+            let wp = this.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
+            this.element && this.element.scaleOnWorldPoint(z, z, wp[0], wp[1])
         }
         //rotazione veloce dell'oggetto
-        if (!(mask ^ (this.ALT | this.CTRL | this.SHIFT))) {
-            let wp = math.multiply(math.inv(this.world.getTransformation), math.matrix([x, y, 1]))
-            this.element && this.element.rotateOnWorldPoint(math.sign(e.deltaY) * this.rotate_angleL, math.subset(wp, math.index(0)), math.subset(wp, math.index(1)));
+        if (this.matchModifiers(mask, Mod.ALT, Mod.CTRL, Mod.shiftKey)) {
+            let wp = this.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
+            this.element && this.element.rotateOnWorldPoint(Math.sign(e.deltaY) * this.rotate_angleL, wp[0], wp[1]);
         }
         //zoom normale
         if (!mask) {
@@ -387,7 +451,7 @@ class Editor {
             } else {
                 z = this.zoom_out;
             }
-            let diff = this.world.getTransformation().clone().inv().multiplyPoint(x,y).valueOf()
+            let diff = this.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
             this.world.scaleOnPoint(z, z, diff[0], diff[1]);
 
         }
