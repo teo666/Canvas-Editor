@@ -6,6 +6,8 @@ class Line extends Element {
         this.path = null;
         this.lineWidth = 1;
         this.lineDash = [];
+        this.lineCap = CanvasStyle.lineCap.Round
+        this.lineJoin = CanvasStyle.lineJoin.Round
         this.strokeStyle = '#faba11aa'
         this.value(...args)
     }
@@ -136,6 +138,8 @@ class Line extends Element {
         context.strokeStyle = 'black'
         context.strokeStyle = this.strokeStyle;
         context.lineWidth = this.lineWidth
+        context.lineCap = this.lineCap
+        context.lineJoin = this.lineJoin
         context.setLineDash(this.lineDash)
         context.stroke(this.path)
         context.restore();

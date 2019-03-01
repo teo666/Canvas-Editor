@@ -5,22 +5,22 @@ class World extends Common{
         super();
     }
 
-    get getTransformation() {
-        return math.clone(this.transformation);
+    getTransformation() {
+        return this.transformation;
     }
 
     applyTransform(ctx) {
         if(! ctx instanceof CanvasRenderingContext2D){
             throw "invalid arguments"
         }
-        let val = this.transformation.valueOf();
+        let v = this.transformation.valueOf();
         ctx.setTransform(
-            val[0][0],
-            val[1][0],
-            val[0][1],
-            val[1][1],
-            val[0][2],
-            val[1][2]
+            v[0],
+            v[1],
+            v[2],
+            v[3],
+            v[4],
+            v[5]
         )
     }
 
@@ -48,14 +48,14 @@ class World extends Common{
     }
 
     get getParentsTransformations() {
-        return math.identity(3);
+        return new TransformationMatrix()
     }
 
 
     //////////////////////////////////// event handling //////////////////////////////////
 
     mousedown(e) {
-        let rvt = Object.assign(e, { parentTransformation: math.multiply(e.parentTransformation, this.getTransformation) })
+        let rvt = Object.assign(e, { parentTransformation: e.parentTransformation.multiply(this.getTransformation()) })
         //console.log("world handle mousedown")
         return this.elements.some(el => {
             return el.mousedown(rvt)
@@ -64,7 +64,7 @@ class World extends Common{
     }
 
     mousemove(e) {
-        let rvt = Object.assign(e, { parentTransformation: math.multiply(e.parentTransformation, this.getTransformation) })
+        let rvt = Object.assign(e, { parentTransformation: e.parentTransformation.multiply(this.getTransformation()) })
         //console.log("world handle mousedown")
         let ret = true;
         this.elements.forEach(el => {
@@ -77,7 +77,7 @@ class World extends Common{
     }
 
     mouseup(e) {
-        let rvt = Object.assign(e, { parentTransformation: math.multiply(e.parentTransformation, this.getTransformation) })
+        let rvt = Object.assign(e, { parentTransformation: e.parentTransformation.multiply(this.getTransformation()) })
         //console.log("world handle mousedown")
         let ret = true;
         this.elements.forEach(el => {

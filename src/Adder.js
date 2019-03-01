@@ -22,6 +22,7 @@ class Adder {
         this.adding = false;
         this.completeEventRegister = [];
         this.state = -1;
+        this.continuosAdd = true
     }
 
     getCursor() {
@@ -32,12 +33,14 @@ class Adder {
         return this.adding;
     }
 
-    add(type, parent) {
+    add(type, parent, continuosAdd = false) {
+        this.continuosAdd = continuosAdd
         this.adding = true;
         switch (type) {
             case shapeType.Point2D:
                 break;
             case shapeType.Ellipse:
+                this.addEllipse(parent)
                 break;
             case shapeType.Line:
                 this.addLine(parent)
@@ -67,8 +70,16 @@ class Adder {
 
         this.state = this.descriptor[0];
 
+        this.mem = {}
+
         this.clearAllowedEvents()
         this.readAllowedEvents();
+    }
+
+    addEllipse(){
+        this.descriptor = __addEllipse;
+        this.pending = new Ellipse();
+        this.pendingType = shapeType.Ellipse;
     }
 
     addLine() {
@@ -106,6 +117,7 @@ class Adder {
         let els = this.parentElement.getElements();
         let index = els.indexOf(this.pending)
         els.splice(index, 1)
+        this.continuosAdd = false
         this.resetAdd();
     }
 
@@ -130,7 +142,12 @@ class Adder {
         this.descriptor = null;
         this.pending.pending = false;
         this.pending = null;
-        this.parentElement = null;
+        this.mem = {};
+        if(this.continuosAdd){
+            this.add(this.pendingType, this.parentElement,this.continuosAdd) 
+        } else {
+            this.parentElement = null;
+        }
     }
 
     eventProcess(e) {
@@ -145,7 +162,7 @@ class Adder {
                 this.completeEventRegister.push(e);
             }
             if (this.state.callback && typeof this.state.callback == 'function') {
-                this.state.callback(this.pending, this.parentElement, this.completeEventRegister, e);
+                this.state.callback(this.pending, this.parentElement, this.completeEventRegister, e, this.mem);
             }
             this.clearAllowedEvents();
             this.readAllowedEvents();

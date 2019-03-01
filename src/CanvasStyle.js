@@ -7,6 +7,18 @@ class CanvasStyle {
         this.lineDashes = {};
     }
 
+    static lineCap = Object.freeze({
+        "Butt": "butt",
+        "Round": "round",
+        "Square": "square"
+    })
+
+    static lineJoin = Object.freeze({
+        "Bavel": "bevel",
+        "Round": "round",
+        "Miter": "miter"
+    })
+
     addOrReplaceLinearGradients(name, e) {
         if (e instanceof CanvasGradient) {
             this.linearGradients[name] = e;

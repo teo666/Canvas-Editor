@@ -67,15 +67,19 @@ class Size2D extends Element {
         return this.toArray[1];
     }
 
+    w(...args){
+        return this.x(...args)
+    }
+
+    h(...args){
+        return this.y(...args)
+    }
+
     get toArray() {
         return this.array.valueOf()
     }
 
     //TODO eliminare getter
-
-    get size() {
-        return math.clone(this.array);
-    }
 
     get sizeArray() {
         return this.array.valueOf()

@@ -17,8 +17,8 @@ class Arc extends Element {
     }
 
     radius(...args) {
-        if (args.length == 1) {
-            //TODO
+        if (args.length == 1 && typeof args[0] == 'number') {
+            this.radiusSize = Math.abs(args[0])
         }
     }
 

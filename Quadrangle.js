@@ -7,6 +7,7 @@ class Quadrangle extends Element {
         this.lineWidth = 1;
         this.lineDash = [];
         this.strokeStyle = '#faba11aa'
+        this.fillStyle = '#00000000'
 
         this.corners = [new Point2D(0, 0),
                         new Point2D(0, 0),

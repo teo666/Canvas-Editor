@@ -25,8 +25,47 @@ class Point2D extends Element {
         }
     }
 
+    toSize2D() {
+        return new Size2D(this.x(), this.y())
+    }
+
+    equal(...args) {
+        if (args.length == 1 && args[0] instanceof Point2D) {
+            return (this.x() == args[0].x() && this.y() == args[0].y())
+        } else {
+            return false
+        }
+    }
+
+    static equal(...args) {
+        if (args.length == 2 && args[0] instanceof Point2D && args[1] instanceof Point2D) {
+            return (args[0].x() == args[1].x() && args[0].y() == args[1].y())
+        } else {
+            return false
+        }
+    }
+
+    abs() {
+        this.x(Math.abs(this.x()))
+        this.y(Math.abs(this.y()))
+        return this
+    }
+
+    subtract(...args) {
+        if (args.length > 0) {
+            if (args.length == 1 && args[0] instanceof Point2D) {
+                ret.x(ret.x() - args[0].x())
+                ret.y(ret.y() - args[0].y())
+            } else if (args.length == 1 && typeof args[0] == 'number' && typeof args[1] == 'number') {
+                ret.x(ret.x() - args[0])
+                ret.y(ret.y() - args[1])
+            }
+        }
+        return this;
+    }
+
     static subtract(...args) {
-        let ret = new Point2D(0,0)
+        let ret = new Point2D(0, 0)
         if (args.length > 0) {
             if (args.some((element, index) => {
                 if (!element instanceof Point2D) {
@@ -35,7 +74,7 @@ class Point2D extends Element {
                 if (index) {
                     ret.x(ret.x() - element.x())
                     ret.y(ret.y() - element.y())
-                } else{
+                } else {
                     ret.x(element.x())
                     ret.y(element.y())
                 }
@@ -46,19 +85,19 @@ class Point2D extends Element {
         return ret
     }
 
-    static distance(...args){
-        if (args.length == 2 && args[0] instanceof Point2D && args[1] instanceof Point2D ) {
+    static hypot(...args) {
+        if (args.length == 2 && args[0] instanceof Point2D && args[1] instanceof Point2D) {
             let diff = Point2D.subtract(args[0], args[1])
             return math.hypot(diff.x(), diff.y())
         }
         throw "Invalid arguments"
     }
 
-    static angle(...args){
-        if (args.length == 2 && args[0] instanceof Point2D && args[1] instanceof Point2D ) {
+    static angle(...args) {
+        if (args.length == 2 && args[0] instanceof Point2D && args[1] instanceof Point2D) {
             let alfa = Size2D.atan(Point2D.subtract(args[1], args[0]))
-            if(alfa < 0){
-                alfa += math.pi*2
+            if (alfa < 0) {
+                alfa += math.pi * 2
             }
             return alfa
         }
@@ -68,13 +107,13 @@ class Point2D extends Element {
     static isUp(...args) {
         if (args.length == 3 && args[0] instanceof Point2D && args[1] instanceof Point2D && args[2] instanceof Point2D) {
             let line_angle = Size2D.atan(Point2D.subtract(args[1], args[0]))
-            if(line_angle < 0){
-                line_angle += math.pi*2
+            if (line_angle < 0) {
+                line_angle += math.pi * 2
             }
             let ldiff = Point2D.subtract(args[2], args[0])
             let line_angle_t = Size2D.atan(ldiff)
-            if(line_angle_t < 0){
-                line_angle_t += math.pi*2
+            if (line_angle_t < 0) {
+                line_angle_t += math.pi * 2
             }
 
             if (line_angle_t < line_angle) {
@@ -83,19 +122,19 @@ class Point2D extends Element {
 
             let ss = line_angle_t - line_angle
             let ret = 0
-            if(args[0].x() < args[1].x()){
-                if(ss < math.pi){
+            if (args[0].x() < args[1].x()) {
+                if (ss < math.pi) {
                     ret = 1
                 }
             } else {
-                if(ss > math.pi){
+                if (ss > math.pi) {
                     ret = 1
                 }
             }
             let d = math.sin(ss) * math.hypot(ldiff.x(), ldiff.y())
             let reto = {
                 up: ret,
-                distance :d,
+                distance: d,
                 dx: (-math.sin(line_angle)),
                 dy: math.cos(line_angle)
             }

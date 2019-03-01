@@ -1,8 +1,8 @@
 'use strict'
 
-class Common{
-    constructor(){
-        this.transformation = math.identity(3, 3);
+class Common {
+    constructor() {
+        this.transformation = new TransformationMatrix();
         this.elements = [];
         this.scale_factor = {
             x: 1,
@@ -17,7 +17,7 @@ class Common{
         }
     }
 
-    getElements(){
+    getElements() {
         return this.elements
     }
 
@@ -40,9 +40,7 @@ class Common{
         }
         this.scale_factor.x *= w;
         this.scale_factor.y *= h;
-        let tm = math.matrix([[w, 0, 0], [0, h, 0], [0, 0, 1]]);
-        this.transformation = math.multiply(this.transformation, tm);
-        return tm;
+        return this.transformation.scale(w, h)
     }
 
     translate(...args) {
@@ -62,8 +60,7 @@ class Common{
         } else {
             throw "invalid arguments"
         }
-        let tm = math.matrix([[1.0, 0, x], [0, 1.0, y], [0, 0, 1.0]]);
-        this.transformation = math.multiply(this.transformation, tm);
+        return this.transformation.translate(x, y)
     }
 
     translateAdd(...args) {
@@ -83,19 +80,14 @@ class Common{
         } else {
             throw "invalid arguments"
         }
-        let tm = math.matrix([[0, 0, x], [0, 0, y], [0, 0, 0]]);
-        this.transformation = math.add(this.transformation, tm);
+        return this.transformation.translateAdd(x, y)
     }
 
     rotate(teta) {
         if (typeof teta != "number") {
             throw "Invalid arguments"
         }
-        let cos = math.cos(teta);
-        let sin = math.sin(teta);
-        let tm = math.matrix([[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]]);
-        this.transformation = math.multiply(this.transformation, tm);
-        return tm;
+        return this.transformation.rotate(teta)
     }
 
     scaleOnPoint(...args) {
@@ -113,25 +105,23 @@ class Common{
             typeof args[1] == "number" &&
             typeof args[2] == "number" &&
             typeof args[3] == "number") {
-            w  = args[0];
-            h  = args[1];
+            w = args[0];
+            h = args[1];
             cx = args[2];
             cy = args[3];
-        } else if( args.length == 0 && args[0] instanceof Array){
-            w  = args[0][0];
-            h  = args[0][1];
+        } else if (args.length == 0 && args[0] instanceof Array) {
+            w = args[0][0];
+            h = args[0][1];
             cx = args[0][2];
             cy = args[0][3];
         } else {
             throw "invalid arguments"
         }
-        let c = math.multiply(math.inv(this.scale(w, h)), [cx, cy, 1]);
-        let t = math.subtract(c, [cx, cy, 0]).valueOf();
-        this.translate(t[0], t[1]);
+        return this.transformation.scaleOnPoint(w, h, cx, cy)
     }
 
-    get getTransformation() {
-        return math.clone(this.transformation);
+    getTransformation() {
+        return this.transformation;
     }
 
     addElement(el) {

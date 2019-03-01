@@ -196,7 +196,7 @@ class Editor {
                 y: y
             }
             this.world.applyTransform(this.context);
-            this.grid.setTransformation(this.gridContext, this.world.getTransformation);
+            this.grid.setTransformation(this.gridContext, this.world.getTransformation());
             this.draw();
         } else if (this.adder.isAdding()) {
             let mmv = {
@@ -215,7 +215,7 @@ class Editor {
             let event = {
                 x: x,
                 y: y,
-                parentTransformation: math.identity(3)
+                parentTransformation: new TransformationMatrix()
             }
             this.world.mousemove(event);
         }
@@ -387,11 +387,13 @@ class Editor {
             } else {
                 z = this.zoom_out;
             }
-            let diff = math.multiply(math.inv(this.world.getTransformation), [x, y, 1]).valueOf();
+            let diff = this.world.getTransformation().clone().inv().multiplyPoint(x,y).valueOf()
             this.world.scaleOnPoint(z, z, diff[0], diff[1]);
+
         }
         this.world.applyTransform(this.context)
-        this.grid.setTransformation(this.gridContext, this.world.getTransformation)
+        //TODO serve davvero?
+        this.grid.setTransformation(this.gridContext, this.world.getTransformation())
         this.draw();
     };
 }
