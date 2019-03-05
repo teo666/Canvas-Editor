@@ -48,13 +48,15 @@ class Grid {
                 this.pattern = ctx.createPattern(this.img, 'repeat');
                 this.scale_factor = this.snapSize / this.img.width;
                 this.ratio = this.snapSize * this.pointSizeRatio * 2
+                this.draw(ctx, w, h, c, world)
             })
             this.img.src = c.toDataURL("image/png");
             c.width = w
             c.height = h
             ctx.restore()
         } else {
-
+            //ctx.setTransform(1, 0, 0, 1, 0, 0);
+            //ctx.clearRect(0, 0, w, h);
             if (world.scale_factor.x * this.ratio > 1) {
                 //let tm = math.multiply(world.getTransformation, math.matrix([[this.scale_factor, 0, 0], [0, this.scale_factor, 0], [0, 0, 1]]));
                 let tm = world.getTransformation().clone().scale(this.scale_factor, this.scale_factor)

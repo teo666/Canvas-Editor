@@ -1,20 +1,5 @@
 'use strict'
 
-/**
- * 
- *         this.CTRL = 0b0001;
-        this.ALT = 0b0010;
-        this.SHIFT = 0b0100;
-        this.META = 0b1000
- */
-let Mod = Object.freeze({
-    'NONE': 0,
-    'CTRL': 1,
-    'ALT': 2,
-    'SHIFT': 4,
-    'META': 8
-})
-
 class Editor {
 
     constructor(obj) {
@@ -31,24 +16,17 @@ class Editor {
         this.canvas = obj.canvas;
         this.context = this.canvas.getContext("2d");
 
+        this.tool = new Tool();
         this.world = new World();
-        this.adder = new Adder();
         this.cursor = new Cursor();
-        this.cursor.snap(25)
-        this.colors = new Colors();
-        this.canvasStyle = new CanvasStyle();
+        this.cursor.snap(2.54)
 
         if (obj.gridCanvas && obj.gridCanvas.nodeName && obj.gridCanvas.nodeName == 'CANVAS') {
             this.grid = new Grid();
             this.gridCanvas = obj.gridCanvas
             this.gridContext = this.gridCanvas.getContext("2d");
-            this.grid.snap(25)
+            this.grid.snap(2.54)
         }
-
-        this.CTRL = 0b0001;
-        this.ALT = 0b0010;
-        this.SHIFT = 0b0100;
-        this.META = 0b1000
 
         this.zoom_in = 1.05;
         this.zoom_out = 1 / 1.05;
@@ -66,9 +44,9 @@ class Editor {
         this.element = null;
 
         this.addEvents()
-        this.grid.draw(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas)
-
-
+        this.world.translate(200, 200)
+        this.world.applyTransform(this.context)
+        this.draw()
     }
 
     draw_point(x, y, r) {
@@ -86,11 +64,11 @@ class Editor {
 
 
     draw_axis() {
-        this.context.lineWidth = 1 / this.world.getScaleFactor.x;
+        this.context.lineWidth = 1 / this.world.getScaleFactor().x;
         this.context.beginPath();
         this.context.moveTo(-1000000, 0);
         this.context.lineTo(1000000, 0);
-        this.context.lineWidth = 1 / this.world.getScaleFactor.y;
+        this.context.lineWidth = 1 / this.world.getScaleFactor().y;
         this.context.moveTo(0, -1000000);
         this.context.lineTo(0, 1000000);
         this.context.stroke();
@@ -111,32 +89,6 @@ class Editor {
         this.grid.draw(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas, this.world)
     }
 
-    getModifiers(e) {
-        let m = 0;
-        if (e.ctrlKey) {
-            m |= this.CTRL;
-        }
-        if (e.altKey) {
-            m |= this.ALT;
-        }
-        if (e.shiftKey) {
-            m |= this.SHIFT;
-        }
-        if (e.metaKey) {
-            m |= this.META;
-        }
-        //console.log(m)
-        return m;
-    }
-
-    matchModifiers(val, ...mod) {
-        let v = 0;
-        mod.forEach(n => {
-            v |= n;
-        })
-        return !(val ^ v)
-    }
-
     addEvents() {
         this.addMouseMove();
         this.addMouseDown();
@@ -150,58 +102,57 @@ class Editor {
     addMouseMove() {
         let self = this;
         this.canvas.addEventListener("mousemove", function () {
-            self.mouseMoveCallback.apply(self, arguments)
+            self.tool.dispatch(self, Tool.EvtType.mousemove, ...arguments)
         });
     }
 
     addMouseDown() {
         let self = this;
         this.canvas.addEventListener("mousedown", function () {
-            self.mouseDownCallback.apply(self, arguments)
+            self.tool.dispatch(self, Tool.EvtType.mousedown, ...arguments)
         });
     }
 
     addMouseUp() {
         let self = this;
         this.canvas.addEventListener("mouseup", function () {
-            self.mouseUpCallback.apply(self, arguments)
+            self.tool.dispatch(self, Tool.EvtType.mouseup, ...arguments)
         });
     }
 
     addMouseLeave() {
         let self = this;
         this.canvas.addEventListener("mouseleave", function () {
-            self.mouseLeaveCallback.apply(self, arguments)
+            self.tool.dispatch(self, Tool.EvtType.mouseleave, ...arguments)
         });
     }
 
     addMouseWheel() {
         let self = this;
         this.canvas.addEventListener("wheel", function () {
-            self.mouseWheelCallback.apply(self, arguments)
+            self.tool.dispatch(self, Tool.EvtType.mousewheel, ...arguments)
         });
     }
 
     addMouseDoubleClick() {
         let self = this;
         this.canvas.addEventListener("dblclick", function () {
-            self.mouseDoubleClickCallback.apply(self, arguments)
+            self.tool.dispatch(self, Tool.EvtType.mousedblclick, ...arguments)
         });
     }
 
     addKeyUp() {
         let self = this;
         document.body.addEventListener("keyup", function () {
-            self.keyUpCallback.apply(self, arguments)
+            self.tool.dispatch(self, Tool.EvtType.keyup, ...arguments)
         });
     }
 
-    keyUpCallback(e) {
-        //console.log(e);
+    keyUpCallback(editor, e) {
         switch (e.key) {
             case "Escape":
-                if (this.adder.isAdding()) {
-                    this.adder.cancel();
+                if (this.tool.adder.isAdding()) {
+                    this.tool.adder.cancel();
                     this.draw()
                 }
                 break;
@@ -210,11 +161,7 @@ class Editor {
         }
     }
 
-    mouseDoubleClickCallback(e){
-        console.log("ma te ci credi?")
-    }
-
-    mouseMoveCallback(e) {
+    /*mouseMoveCallback(editor,e) {
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
@@ -256,7 +203,7 @@ class Editor {
         }
     }
 
-    mouseDownCallback(e) {
+    mouseDownCallback(editor,e) {
         e.preventDefault()
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
@@ -292,7 +239,7 @@ class Editor {
         }
     }
 
-    mouseUpCallback(e) {
+    mouseUpCallback(editor,e) {
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
@@ -321,12 +268,12 @@ class Editor {
         this.drag = false;
     };
 
-    mouseLeaveCallback() {
+    mouseLeaveCallback(editor,e) {
         this.drag = false;
         this.is_dragging = false;
     };
 
-    mouseWheelCallback(e) {
+    mouseWheelCallback(editor,e) {
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
@@ -347,7 +294,7 @@ class Editor {
                     evt: e
                 }
                 this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
-                this.adder.eventProcess(this,mmv);
+                this.adder.eventProcess(this, mmv);
                 //previene l'handling del drag
                 return;
             }
@@ -459,5 +406,5 @@ class Editor {
         //TODO serve davvero?
         this.grid.setTransformation(this.gridContext, this.world.getTransformation())
         this.draw();
-    };
+    };*/
 }

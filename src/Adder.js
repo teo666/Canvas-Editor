@@ -150,19 +150,36 @@ class Adder {
         }
     }
 
-    eventProcess(editor, e) {
+    eventProcess(editor, etype, e) {
         if (!this.isAdding()) {
             return;
         }
+        //todo rimuovere tutta sta roba dello snap e portare dentro la funzione di aggiunta elementi
+        let rect = e.target.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+        e.preventDefault();
+        let mmv = {
+            type: etype,
+            detail: {
+                x: x,
+                y: y,
+                dx: e.deltaX,
+                dy: e.deltaY
+            },
+            evt: e
+        }
+        editor.cursor.snapToWorldCoordinates(mmv, editor.world.getTransformation())
+        /////////
         let cancel
-        let index = this.allowedEvents.indexOf(e.type)
+        let index = this.allowedEvents.indexOf(mmv.type)
         if (index != -1) {
             this.state = this.descriptor[this.allowedEventsNum[index]];
             if (this.state.saveEvent) {
                 this.completeEventRegister.push(e);
             }
             if (this.state.callback && typeof this.state.callback == 'function') {
-                cancel = this.state.callback(editor, this.pending, this.parentElement, this.completeEventRegister, e, this.mem);
+                cancel = this.state.callback(editor, this.pending, this.parentElement, this.completeEventRegister, mmv, this.mem);
             }
             this.clearAllowedEvents();
             this.readAllowedEvents();
@@ -172,6 +189,27 @@ class Adder {
             } else if (this.allowedEvents.length == 0) {
                 this.resetAdd()
             }
+        }
+    }
+
+    onMouseDown(...arg) { this.eventProcess(...arg) }
+    onMouseUp(...arg) { this.eventProcess(...arg) }
+    onMouseMove(...arg) { this.eventProcess(...arg) }
+    onMouseLeave(...arg) { this.eventProcess(...arg) }
+    onMouseWheel(...arg) { this.eventProcess(...arg) }
+    onMouseDblclick(...arg) { this.eventProcess(...arg) }
+
+    onKeyUp(editor, etype, e) {
+        switch (e.key) {
+            case "Escape":
+                if (this.isAdding()) {
+                    this.cancel();
+                    editor.draw()
+                }
+                break;
+            default:
+                this.eventProcess(...arguments)
+                break;
         }
     }
 }

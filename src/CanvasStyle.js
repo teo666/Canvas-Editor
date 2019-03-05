@@ -7,6 +7,7 @@ class CanvasStyle {
         this.lineDashes = {};
     }
 
+    //only chromium
     /*static lineCap = Object.freeze({
         "Butt": "butt",
         "Round": "round",
@@ -43,3 +44,15 @@ class CanvasStyle {
         }
     }
 }
+
+CanvasStyle.lineCap = Object.freeze({
+    "Butt": "butt",
+    "Round": "round",
+    "Square": "square"
+})
+
+CanvasStyle.lineJoin = Object.freeze({
+    "Bavel": "bevel",
+    "Round": "round",
+    "Miter": "miter"
+})

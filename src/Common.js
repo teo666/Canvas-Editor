@@ -10,10 +10,10 @@ class Common {
         }
     }
 
-    get getScaleFactor() {
+    getScaleFactor() {
         return {
-            x: this.scale_factor.x,
-            y: this.scale_factor.y
+            x: this.transformation.scaleFactor.x,
+            y: this.transformation.scaleFactor.y
         }
     }
 
