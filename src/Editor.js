@@ -46,6 +46,14 @@ class Editor {
         this.addEvents()
         this.world.translate(200, 200)
         this.world.applyTransform(this.context)
+
+        let l = new Line()
+        l.translate(50,50)
+        //l.rotate(Math.PI/2)
+        l.start(0,0)
+        l.end(300,300)
+        l.width(50)
+        this.world.addElement(l)
         this.draw()
     }
 

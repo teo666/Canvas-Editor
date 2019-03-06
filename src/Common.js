@@ -90,6 +90,22 @@ class Common {
         return this.transformation.rotate(teta)
     }
 
+    rotateOnPoint(...args) {
+        let teta, x, y;
+        if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
+            teta = args[0];
+            x = args[1].x;
+            y = args[1].y
+        } else if (args.length == 3 && typeof args[0] == "number" && typeof args[1] == "number" && typeof args[2] == "number") {
+            teta = args[0];
+            x = args[1];
+            y = args[2];
+        } else {
+            throw "Invalid arguments"
+        }
+        return this.transformation.rotateOnPoint(teta, x, y)
+    }
+
     scaleOnPoint(...args) {
         let w, h, cx, cy;
         if (args.length == 2) {
