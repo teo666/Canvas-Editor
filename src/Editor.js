@@ -19,13 +19,13 @@ class Editor {
         this.tool = new Tool();
         this.world = new World();
         this.cursor = new Cursor();
-        this.cursor.snap(2.54)
+        this.cursor.snap(25)
 
         if (obj.gridCanvas && obj.gridCanvas.nodeName && obj.gridCanvas.nodeName == 'CANVAS') {
             this.grid = new Grid();
             this.gridCanvas = obj.gridCanvas
             this.gridContext = this.gridCanvas.getContext("2d");
-            this.grid.snap(2.54)
+            this.grid.snap(25)
         }
 
         this.zoom_in = 1.05;
@@ -102,49 +102,49 @@ class Editor {
     addMouseMove() {
         let self = this;
         this.canvas.addEventListener("mousemove", function () {
-            self.tool.dispatch(self, Tool.EvtType.mousemove, ...arguments)
+            self.tool.dispatch(self, EventUtil.EvtType.mousemove, ...arguments)
         });
     }
 
     addMouseDown() {
         let self = this;
         this.canvas.addEventListener("mousedown", function () {
-            self.tool.dispatch(self, Tool.EvtType.mousedown, ...arguments)
+            self.tool.dispatch(self, EventUtil.EvtType.mousedown, ...arguments)
         });
     }
 
     addMouseUp() {
         let self = this;
         this.canvas.addEventListener("mouseup", function () {
-            self.tool.dispatch(self, Tool.EvtType.mouseup, ...arguments)
+            self.tool.dispatch(self, EventUtil.EvtType.mouseup, ...arguments)
         });
     }
 
     addMouseLeave() {
         let self = this;
         this.canvas.addEventListener("mouseleave", function () {
-            self.tool.dispatch(self, Tool.EvtType.mouseleave, ...arguments)
+            self.tool.dispatch(self, EventUtil.EvtType.mouseleave, ...arguments)
         });
     }
 
     addMouseWheel() {
         let self = this;
         this.canvas.addEventListener("wheel", function () {
-            self.tool.dispatch(self, Tool.EvtType.mousewheel, ...arguments)
+            self.tool.dispatch(self, EventUtil.EvtType.mousewheel, ...arguments)
         });
     }
 
     addMouseDoubleClick() {
         let self = this;
         this.canvas.addEventListener("dblclick", function () {
-            self.tool.dispatch(self, Tool.EvtType.mousedblclick, ...arguments)
+            self.tool.dispatch(self, EventUtil.EvtType.mousedblclick, ...arguments)
         });
     }
 
     addKeyUp() {
         let self = this;
         document.body.addEventListener("keyup", function () {
-            self.tool.dispatch(self, Tool.EvtType.keyup, ...arguments)
+            self.tool.dispatch(self, EventUtil.EvtType.keyup, ...arguments)
         });
     }
 
@@ -189,7 +189,7 @@ class Editor {
                 },
                 evt: e
             }
-            this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
+            this.cursor.snapToCoordinatesSystem(mmv, this.world.getTransformation())
             this.adder.eventProcess(this, mmv);
         } else {
 
@@ -221,7 +221,7 @@ class Editor {
                     },
                     evt: e
                 }
-                this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
+                this.cursor.snapToCoordinatesSystem(mmv, this.world.getTransformation())
                 this.adder.eventProcess(this, mmv);
                 //previene l'handling del drag
                 return
@@ -254,7 +254,7 @@ class Editor {
                     },
                     evt: e
                 }
-                this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
+                this.cursor.snapToCoordinatesSystem(mmv, this.world.getTransformation())
                 this.adder.eventProcess(this, mmv);
             } else {
 
@@ -293,7 +293,7 @@ class Editor {
                     },
                     evt: e
                 }
-                this.cursor.snapToWorldCoordinates(mmv, this.world.getTransformation())
+                this.cursor.snapToCoordinatesSystem(mmv, this.world.getTransformation())
                 this.adder.eventProcess(this, mmv);
                 //previene l'handling del drag
                 return;
@@ -403,7 +403,7 @@ class Editor {
 
         }
         this.world.applyTransform(this.context)
-        //TODO serve davvero?
+        //TODO: serve davvero?
         this.grid.setTransformation(this.gridContext, this.world.getTransformation())
         this.draw();
     };*/

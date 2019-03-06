@@ -4,6 +4,7 @@ class Tool {
     constructor() {
         this.activeTool = 'pan'
         this.tools = {
+            pointer: new Pointer(),
             pan: new Pan(),
             adder: new Adder(),
             colors: new Colors(),
@@ -11,13 +12,17 @@ class Tool {
         }
     }
 
+    reset() {
+        this.activeTool = 'pan'
+    }
+
     dispatch(editor, etype, e) {
         let t = this.tools[this.activeTool]
-        let m = t[Tool.EvtToMethod[etype]]
+        let m = t[EventUtil.EvtToMethod[etype]]
         let mod = this.getModifiers(e)
 
-        if(etype == Tool.EvtType.mousewheel && this.matchModifiers(mod, Tool.Mod.CTRL)){
-            this.tools.pan[Tool.EvtToMethod[etype]].call(this.tools.pan,editor,etype,e)
+        if (etype == EventUtil.EvtType.mousewheel && EventUtil.matchMask(mod, EventUtil.Modifiers.CTRL)) {
+            this.tools.pan[EventUtil.EvtToMethod[etype]].call(this.tools.pan, editor, etype, e)
             return
         }
         if (m) {
@@ -27,7 +32,7 @@ class Tool {
 
     getModifiers(e) {
         let m = 0;
-        if (e.ctrlKey) {
+        /*if (e.ctrlKey) {
             m |= Tool.Mod.CTRL;
         }
         if (e.altKey) {
@@ -39,10 +44,22 @@ class Tool {
         if (e.metaKey) {
             m |= Tool.Mod.META;
         }
-        return m;
+        //return m;*/
+        return m |= (e.ctrlKey << EventUtil.Modifiers.CTRL) != (e.altKey << EventUtil.Modifiers.ALT) != (e.shiftKey << EventUtil.Modifiers.SHIFT) != (e.metaKey << EventUtil.Modifiers.META)
+    }
+}
+
+class EventUtil {
+    constructor() {
+
     }
 
-    matchModifiers(val, ...mod) {
+    static getModifiers(e) {
+        let m = 0;
+        return m |= (e.ctrlKey << EventUtil.Modifiers.CTRL) != (e.altKey << EventUtil.Modifiers.ALT) != (e.shiftKey << EventUtil.Modifiers.SHIFT) != (e.metaKey << EventUtil.Modifiers.META)
+    }
+
+    static matchMask(val, ...mod) {
         let v = 0;
         mod.forEach(n => {
             v |= n;
@@ -51,7 +68,7 @@ class Tool {
     }
 }
 
-Tool.Mod = Object.freeze({
+EventUtil.Modifiers = Object.freeze({
     'NONE': 0,
     'CTRL': 1,
     'ALT': 2,
@@ -59,7 +76,24 @@ Tool.Mod = Object.freeze({
     'META': 8
 })
 
-Tool.EvtType = Object.freeze({
+EventUtil.Buttons = Object.freeze({
+    'NONE': 0,
+    'LEFT': 1,
+    'RIGHT': 2,
+    'MIDDLE': 4,
+    'BACK': 8,
+    'FORWARD': 16
+})
+
+EventUtil.Button = Object.freeze({
+    'LEFT': 0,
+    'RIGHT': 1,
+    'MIDDLE': 2,
+    'BACK': 3,
+    'FORWARD': 4
+})
+
+EventUtil.EvtType = Object.freeze({
     'mousedown': 'mousedown',
     'mouseup': 'mouseup',
     'mousemove': 'mousemove',
@@ -69,7 +103,7 @@ Tool.EvtType = Object.freeze({
     'keyup': 'keyup',
 })
 
-Tool.EvtToMethod = Object.freeze({
+EventUtil.EvtToMethod = Object.freeze({
     'mousedown': 'onMouseDown',
     'mouseup': 'onMouseUp',
     'mousemove': 'onMouseMove',

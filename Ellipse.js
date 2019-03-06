@@ -12,8 +12,8 @@ class Ellipse extends Element {
         this.centerPoint = new Point2D(0, 0);
         this.radiusSize = new Size2D(0, 0);
         this.rotationNumber = 0;
-        this.value(...args)
-        this.buildPath()
+        if (args.length) this.value(...args)
+
     }
 
     value(...args) {
@@ -28,12 +28,13 @@ class Ellipse extends Element {
         } else {
             throw "Invalid arguments"
         }
+        this.buildPath()
     }
 
     center(...args) {
         if (args.length == 1 && args[0] instanceof Point2D) {
             this.centerPoint.value(args[0])
-        } else if(args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number'){
+        } else if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
             this.centerPoint.x(args[0])
             this.centerPoint.y(args[1])
         }
@@ -89,27 +90,29 @@ class Ellipse extends Element {
         return ret;
     }
 
-    draw(context,parentT) {
+    draw(context, parentT) {
+        if (this.enableDraw) {
 
-        context.save();
+            context.save();
 
-        let ts = math.multiply(parentT, this.transformation).valueOf();
+            let ts = TransformationMatrix.multiply(parentT, this.transformation).valueOf()
 
-        context.setTransform(
-            ts[0][0],
-            ts[1][0],
-            ts[0][1],
-            ts[1][1],
-            ts[0][2],
-            ts[1][2]
-        )
-        context.lineWidth = this.lineWidth
-        //context.fillStyle = this.fillStyle
-        context.strokeStyle = this.strokeStyle
-        context.setLineDash(this.lineDash);
-        //context.fill(this.path);
-        context.stroke(this.path)
+            context.setTransform(
+                ts[0][0],
+                ts[1][0],
+                ts[0][1],
+                ts[1][1],
+                ts[0][2],
+                ts[1][2]
+            )
+            context.lineWidth = this.lineWidth
+            //context.fillStyle = this.fillStyle
+            context.strokeStyle = this.strokeStyle
+            context.setLineDash(this.lineDash);
+            //context.fill(this.path);
+            context.stroke(this.path)
 
-        context.restore();
+            context.restore();
+        }
     }
 }

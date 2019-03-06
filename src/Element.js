@@ -9,10 +9,10 @@ class Element extends Common {
         this.id = _nel;
         this.pending = false;
         this.enableDraw = true
-        //this.pivot = new Point2D(0,0)
+        //TODO: introdurre il concetto di pivot
     }
 
-    get isPending() {
+    isPending() {
         return this.pending
     }
 
@@ -52,12 +52,12 @@ class Element extends Common {
         this.shearY(psiy);
     }
 /*
-    //TODO da rimuovere
+    //TODO: da rimuovere
     scaleOnElementPoint(...args) {
         this.scaleOnPoint(...args)
     }
 
-    //TODO da rimuovere
+    //TODO: da rimuovere
     scaleOnWorldPoint(...args) {
         let w, h, cx, cy;
         if (args.length == 2) {
@@ -91,7 +91,7 @@ class Element extends Common {
         this.scaleOnElementPoint(w, h, toimage[0], toimage[1])
     }
 
-    //TODO da rimuovere
+    //TODO: da rimuovere
     rotateOnElementPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -110,7 +110,7 @@ class Element extends Common {
         this.translate(t[0], t[1]);
     }
 
-    //TODO da rimuovere
+    //TODO: da rimuovere
     rotateOnWorldPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -130,7 +130,7 @@ class Element extends Common {
         this.rotateOnElementPoint(teta, t[0], t[1])
     }
 
-    //TODO da rimuovere
+    //TODO: da rimuovere
     shearXOnElementPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -149,7 +149,7 @@ class Element extends Common {
         this.translate(t[0], t[1]);
     }
 
-    //TODO da rimuovere
+    //TODO: da rimuovere
     shearYOnElementPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {
@@ -168,7 +168,7 @@ class Element extends Common {
         this.translate(t[0], t[1]);
     }
 
-    //TODO da rimuovere
+    //TODO: da rimuovere
     shearXYOnElementPoint(...args) {
         let teta, x, y;
         if (args.length == 2 && typeof args[0] == "number" && (args[1] instanceof Point2D || args[1] instanceof Size2D)) {

@@ -17,10 +17,10 @@ class Pan {
     }
 
     onMouseDown(editor, etype, e) {
+        e.preventDefault();
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
-        e.preventDefault();
         this.drag = true;
         this.drag_point = {
             x: x,

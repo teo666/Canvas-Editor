@@ -4,7 +4,7 @@ class LineHandle extends Element {
     constructor(...args) {
         super();
         if (args.length == 1 && args[0] instanceof LineHandle) {
-            throw "TODO"
+            throw "TODO:"
         } else if (args.length == 4 &&
             args[0] instanceof Point2D &&
             args[1] instanceof Size2D &&

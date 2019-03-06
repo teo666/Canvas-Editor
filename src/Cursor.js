@@ -12,7 +12,7 @@ class Cursor extends Element {
     }
 
     coordinates() {
-        //TODO setter
+        //TODO:setter
         return this.center;
     }
 
@@ -60,19 +60,19 @@ class Cursor extends Element {
         }
     }
 
-    snapToWorldCoordinates(e, wtr) {
+    snapToCoordinatesSystem(e, wtr) {
         if (this.snapSize && this.enable) {
-            let p = wtr.clone().inv().multiplyPoint(e.detail.x, e.detail.y).valueOf()
+            let p = wtr.clone().inv().multiplyPoint(e.x, e.y).valueOf()
 
             p[0] = Math.round(p[0] / this.snapSize) * this.snapSize
             p[1] = Math.round(p[1] / this.snapSize) * this.snapSize
             //console.log(p[0],p[1])
             let r = wtr.multiplyPoint(p[0], p[1]);
-            e.detail.snap_x = r[0]
-            e.detail.snap_y = r[1]
+            e.snap_x = r[0]
+            e.snap_y = r[1]
         } else {
-            e.detail.snap_x = e.detail.x
-            e.detail.snap_y = e.detail.y
+            e.snap_x = e.x
+            e.snap_y = e.y
         }
     }
 }

@@ -31,6 +31,13 @@ class Line extends Element {
         return new Line(this)
     }
 
+    capStyle(e) {
+        if (CanvasStyle.lineCap[e]) {
+            this.lineCap = CanvasStyle.lineCap[e];
+            this.buildHitTestPath()
+        }
+    }
+
     start(...args) {
         if (args.length) {
             this.startPoint.value(...args)
@@ -81,38 +88,53 @@ class Line extends Element {
         return this.lineWidth;
     }
 
+    buildHitTestPath() {
+        let r = this.lineWidth / 2;
+        let dy = this.endPoint.y() - this.startPoint.y()
+        let dx = this.endPoint.x() - this.startPoint.x()
+
+        let alfa = Math.atan2(dy, dx);
+        let diff
+        this.hitPath = new Path2D();
+
+        switch (this.lineCap) {
+            case CanvasStyle.lineCap.Round:
+                diff = new Point2D(r * Math.cos(alfa), r * Math.sin(alfa))
+                this.hitPath.arc(this.startPoint.x(), this.startPoint.y(), r, alfa + Math.PI / 2, alfa + Math.PI * 3 / 2);
+                this.hitPath.lineTo(this.endPoint.x() + diff.y(), this.endPoint.y() - diff.x())
+                this.hitPath.arc(this.endPoint.x(), this.endPoint.y(), r, alfa + Math.PI * 3 / 2, alfa + Math.PI / 2)
+                break;
+            case CanvasStyle.lineCap.Butt:
+                diff = new Point2D(r * Math.cos(alfa), r * Math.sin(alfa))
+                this.hitPath.moveTo(this.startPoint.x() - diff.y(), this.startPoint.y() + diff.x())
+                this.hitPath.lineTo(this.startPoint.x() + diff.y(), this.startPoint.y() - diff.x());
+                this.hitPath.lineTo(this.endPoint.x() + diff.y(), this.endPoint.y() - diff.x());
+                this.hitPath.lineTo(this.endPoint.x() - diff.y(), this.endPoint.y() + diff.x());
+                break;
+            case CanvasStyle.lineCap.Square:
+                alfa += Math.PI / 4
+                diff = new Point2D(r * Math.SQRT2 * Math.cos(alfa), r * Math.SQRT2 * Math.sin(alfa))
+                this.hitPath.moveTo(this.startPoint.x() - diff.y(), this.startPoint.y() + diff.x())
+                this.hitPath.lineTo(this.startPoint.x() - diff.x(), this.startPoint.y() - diff.y());
+                this.hitPath.lineTo(this.endPoint.x() + diff.y(), this.endPoint.y() - diff.x());
+                this.hitPath.lineTo(this.endPoint.x() + diff.x(), this.endPoint.y() + diff.y());
+                break;
+        }
+        this.hitPath.closePath();
+    }
+
     buildPath() {
 
         this.path = new Path2D();
 
         this.path.moveTo(this.startPoint.x(), this.startPoint.y());
         this.path.lineTo(this.endPoint.x(), this.endPoint.y())
-        //this.buildHitTestPath()
-    }
-
-    buildHitTestPath() {
-        let r = this.lineWidth / 2;
-        let dy = this.endPoint.y() - this.startPoint.y()
-        let dx = this.endPoint.x() - this.startPoint.x()
-
-        let alfa = -Math.atan(dx / dy);
-        if (dy < 0) {
-            alfa += Math.pi
-        }
-
-        let diff = new Point2D(r * Math.cos(alfa), r * Math.sin(alfa))
-        this.hitPath = new Path2D();
-
-        this.hitPath.moveTo(this.startPoint.x() - diff.x(), this.startPoint.y() - diff.y());
-        this.hitPath.lineTo(this.startPoint.x() + diff.x(), this.startPoint.y() + diff.y());
-        this.hitPath.lineTo(this.endPoint.x() + diff.x(), this.endPoint.y() + diff.y());
-        this.hitPath.lineTo(this.endPoint.x() - diff.x(), this.endPoint.y() - diff.y());
-        this.hitPath.closePath()
+        this.buildHitTestPath()
     }
 
     hitTest(x, y, tr, context) {
-        //console.log('hittest', arguments)
-        let t = tr.clone().multiply(this.getTransformation()).inv().multiplyPoint(x, y)
+
+        let t = TransformationMatrix.multiply(tr, this.getTransformation()).inv().multiplyPoint(x, y)
         context.save();
         context.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -137,13 +159,20 @@ class Line extends Element {
                 ts[5]
             )
 
-            context.strokeStyle = 'black'
             context.strokeStyle = this.strokeStyle;
             context.lineWidth = this.lineWidth
             context.lineCap = this.lineCap
             context.lineJoin = this.lineJoin
             context.setLineDash(this.lineDash)
             context.stroke(this.path)
+
+            //DEBUG: draw hitTestPath
+            /*
+            context.strokeStyle = 'black'
+            context.lineWidth = 1
+            context.stroke(this.hitPath)
+*/
+
             context.restore();
         }
     }

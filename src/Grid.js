@@ -57,7 +57,8 @@ class Grid {
         } else {
             //ctx.setTransform(1, 0, 0, 1, 0, 0);
             //ctx.clearRect(0, 0, w, h);
-            if (world.scale_factor.x * this.ratio > 1) {
+            
+            if (world.getScaleFactor().x * this.ratio > 1) {
                 //let tm = math.multiply(world.getTransformation, math.matrix([[this.scale_factor, 0, 0], [0, this.scale_factor, 0], [0, 0, 1]]));
                 let tm = world.getTransformation().clone().scale(this.scale_factor, this.scale_factor)
                 this.setTransformation(ctx, tm)

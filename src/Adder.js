@@ -113,12 +113,12 @@ class Adder {
         this.pendingType = shapeType.Arc;
     }
 
-    cancel() {
+    cancel(editor) {
         let els = this.parentElement.getElements();
         let index = els.indexOf(this.pending)
         els.splice(index, 1)
         this.continuosAdd = false
-        this.resetAdd();
+        this.resetAdd(editor);
     }
 
     clearAllowedEvents() {
@@ -137,7 +137,7 @@ class Adder {
         this.completeEventRegister = [];
     }
 
-    resetAdd() {
+    resetAdd(editor) {
         this.descriptor = null;
         this.pending.pending = false;
         this.pending = null;
@@ -145,8 +145,10 @@ class Adder {
         this.adding = false;
         if (this.continuosAdd) {
             this.add(this.pendingType, this.parentElement, this.continuosAdd)
+            editor.tool.activeTool = 'adder'
         } else {
             this.parentElement = null;
+            editor.tool.reset()
         }
     }
 
@@ -154,40 +156,22 @@ class Adder {
         if (!this.isAdding()) {
             return;
         }
-        //todo rimuovere tutta sta roba dello snap e portare dentro la funzione di aggiunta elementi
-        let rect = e.target.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
-        e.preventDefault();
-        let mmv = {
-            type: etype,
-            detail: {
-                x: x,
-                y: y,
-                dx: e.deltaX,
-                dy: e.deltaY
-            },
-            evt: e
-        }
-        editor.cursor.snapToWorldCoordinates(mmv, editor.world.getTransformation())
-        /////////
+
         let cancel
-        let index = this.allowedEvents.indexOf(mmv.type)
+        let index = this.allowedEvents.indexOf(etype)
         if (index != -1) {
             this.state = this.descriptor[this.allowedEventsNum[index]];
             if (this.state.saveEvent) {
                 this.completeEventRegister.push(e);
             }
             if (this.state.callback && typeof this.state.callback == 'function') {
-                cancel = this.state.callback(editor, this.pending, this.parentElement, this.completeEventRegister, mmv, this.mem);
+                cancel = this.state.callback(editor, this.pending, this.parentElement, this.completeEventRegister, e,this.mem);
             }
-            this.clearAllowedEvents();
-            this.readAllowedEvents();
-            if (cancel) {
-                this.cancel()
-                editor.draw()
+            if (!cancel) {
+                this.clearAllowedEvents();
+                this.readAllowedEvents();
             } else if (this.allowedEvents.length == 0) {
-                this.resetAdd()
+                this.resetAdd(editor)
             }
         }
     }
@@ -203,7 +187,7 @@ class Adder {
         switch (e.key) {
             case "Escape":
                 if (this.isAdding()) {
-                    this.cancel();
+                    this.cancel(editor);
                     editor.draw()
                 }
                 break;
