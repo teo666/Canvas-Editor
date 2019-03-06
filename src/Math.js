@@ -217,14 +217,24 @@ class TransformationMatrix extends Matrix {
         return this
     }
 
+    multiplyTM(a) {
+        let m = this.m
+        let e = a.m
+        this.scaleFactor.x *= a.scaleFactor.x
+        this.scaleFactor.y *= a.scaleFactor.y
+        this.rotationAngle += a.rotationAngle
+        this.multiply(e)
+        return this
+    }
+
     static multiply(a, b) {
-        return a.clone().multiply(b.m)
+        return a.clone().multiplyTM(b)
     }
 
     multiplyChain(...args) {
         let l = args.length
         for (let i = 0; i < l; i++) {
-            this.multiply(args[i].m)
+            this.multiply(args[i])
         }
         return this
     }

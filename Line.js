@@ -130,6 +130,7 @@ class Line extends Element {
         this.path.moveTo(this.startPoint.x(), this.startPoint.y());
         this.path.lineTo(this.endPoint.x(), this.endPoint.y())
         this.buildHitTestPath()
+        this.pivot.center.value((this.endPoint.x() + this.startPoint.x()) / 2, (this.endPoint.y() + this.startPoint.y()) / 2)
     }
 
     hitTest(x, y, tr, context) {
@@ -148,8 +149,8 @@ class Line extends Element {
 
             context.save();
 
-            let ts = TransformationMatrix.multiply(parentT, this.transformation).valueOf()
-
+            let t = parentT.clone().multiplyTM(this.transformation)
+            let ts = t.valueOf()
             context.setTransform(
                 ts[0],
                 ts[1],
@@ -171,8 +172,11 @@ class Line extends Element {
             context.strokeStyle = 'black'
             context.lineWidth = 1
             context.stroke(this.hitPath)
-*/
+            */
 
+            if (this.selected) {
+                this.pivot.draw(context, t)
+            }
             context.restore();
         }
     }
