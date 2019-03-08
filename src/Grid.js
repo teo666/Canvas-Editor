@@ -4,16 +4,16 @@ class Grid {
     constructor() {
         this.snapSize = 0;
         this.pointSizeRatio = 0.03
-        this.pointRadiusSize = 1
+        this.pointRadiusSize = 0.8
         this.backgroundColor = Colors.HTMLColor.black
-        this.pointColor = Colors.HTMLColor.grey
+        this.pointColor = Colors.HTMLColor.white
         //this.transformation = new TransformationMatrix()
         //this.img = new Image();
         this.zoomPrefetchGeneration = 1.1
         this.patterns = {};
         this.patternsImageSize = 0
         this.patternRatioInterval = 0.01
-        this.lowerRatio = 0.01
+        this.lowerRatio = 0.008
         this.higherRatio = 0.2
     }
 
@@ -92,14 +92,13 @@ class Grid {
         this.patternsImageSize = this.patternsImageSize ? this.patternsImageSize : Math.min(c.width, c.height)
         this.oc = new OffscreenCanvas(this.patternsImageSize, this.patternsImageSize)
         let ctx = this.oc.getContext('2d')
-        ctx.fillStyle = 'red'
+        ctx.fillStyle = this.backgroundColor
         ctx.fillRect(0, 0, this.patternsImageSize, this.patternsImageSize)
 
-        this.path = new Path2D()
 
         for (let n = this.lowerRatio, idx = 0; n <= this.higherRatio; n += this.patternRatioInterval, idx++) {
+            this.path = new Path2D()
             let r = n * this.patternsImageSize
-            console.log(r)
 
             for (let i = 0, ii = 0; ii < 2; i += this.patternsImageSize, ii++) {
                 for (let j = 0, jj = 0; jj < 2; j += this.patternsImageSize, jj++) {
@@ -111,8 +110,37 @@ class Grid {
             ctx.fillStyle = this.pointColor
             ctx.fill(this.path)
             this.patterns[idx] = ctx.createPattern(this.oc, "repeat")
+            this.patterns[idx].ratio = n
         }
+    }
 
+    searchPattern(ratio){
+        let betterIdx = 0
+        let last = Infinity
+        const length = Object.keys(this.patterns).length
+        while( betterIdx < length && ratio > this.patterns[betterIdx].ratio ){
+            betterIdx++;
+        }
+        return betterIdx
+    }
+
+    draw(ctx, w, h, world) {
+        this.scaleFactor = this.snapSize / this.patternsImageSize;
+        let tm = world.getTransformation().clone().scale(this.scaleFactor, this.scaleFactor)
+        // fattore di scalatura del canvas offscren let ratio = 1 / tm.scaleFactor.x 
+        let ratio = this.pointRadiusSize / (tm.scaleFactor.x  * this.patternsImageSize)
+        let index = this.searchPattern(ratio)
+        
+        console.log(index)
+        this.setTransformation(ctx, tm)
+        let bound = tm.inv().toMatrix().multiply(new Matrix(3, 4).value([[0, w, w, 0], [0, 0, h, h], [1, 1, 1, 1]])).valueOf()
+        let minx = Math.min(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
+        let miny = Math.min(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
+        let maxx = Math.max(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
+        let maxy = Math.max(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
+
+        ctx.fillStyle = this.patterns[index]
+        ctx.fillRect(minx, miny, maxx - minx, maxy - miny);
     }
 
     /*prefetch(ctx, w, h, c, world) {
