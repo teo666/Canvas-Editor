@@ -26,6 +26,7 @@ class Editor {
             this.gridCanvas = obj.gridCanvas
             this.gridContext = this.gridCanvas.getContext("2d");
             this.grid.snap(10)
+            this.grid.prefetch(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas, this.world)
         }
 
         this.zoom_in = 1.05;
@@ -44,6 +45,9 @@ class Editor {
         this.element = null;
 
         this.addEvents()
+
+
+        //TODO: TOGLIERE
         this.world.translate(200, 200)
         this.world.applyTransform(this.context)
 
@@ -54,6 +58,11 @@ class Editor {
         l.end(300,300)
         l.width(50)
         this.world.addElement(l)
+        ////////////
+
+
+
+
         this.draw()
     }
 
