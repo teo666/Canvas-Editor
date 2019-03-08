@@ -26,7 +26,8 @@ class Editor {
             this.gridCanvas = obj.gridCanvas
             this.gridContext = this.gridCanvas.getContext("2d");
             this.grid.snap(10)
-            this.grid.prefetch(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas, this.world)
+            //this.grid.generatePattern(this.gridCanvas)
+            //this.grid.prefetch(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas, this.world)
         }
 
         this.zoom_in = 1.05;
@@ -103,7 +104,7 @@ class Editor {
         this.draw_axis();
         this.draw_center()
         this.world.draw(this.context);
-        this.grid.draw(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas, this.world)
+        //this.grid.draw(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas, this.world)
     }
 
     addEvents() {

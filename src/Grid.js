@@ -11,6 +11,10 @@ class Grid {
         //this.img = new Image();
         this.zoomPrefetchGeneration = 1.1
         this.patterns = {};
+        this.patternsImageSize = 0
+        this.patternRatioInterval = 0.01
+        this.lowerRatio = 0.01
+        this.higherRatio = 0.2
     }
 
     snap(s) {
@@ -84,12 +88,50 @@ class Grid {
 
     }*/
 
-    prefetch(ctx, w, h, c, world) {
+    generatePattern(c) {
+        this.patternsImageSize = this.patternsImageSize ? this.patternsImageSize : Math.min(c.width, c.height)
+        this.oc = new OffscreenCanvas(this.patternsImageSize, this.patternsImageSize)
+        let ctx = this.oc.getContext('2d')
+        ctx.fillStyle = 'red'
+        ctx.fillRect(0, 0, this.patternsImageSize, this.patternsImageSize)
+
+        this.path = new Path2D()
+
+        for (let n = this.lowerRatio, idx = 0; n <= this.higherRatio; n += this.patternRatioInterval, idx++) {
+            let r = n * this.patternsImageSize
+            console.log(r)
+
+            for (let i = 0, ii = 0; ii < 2; i += this.patternsImageSize, ii++) {
+                for (let j = 0, jj = 0; jj < 2; j += this.patternsImageSize, jj++) {
+                    let a = new Path2D("M" + (i - r) + "," + j + "a" + r + "," + r + " 0 1,0 " + (2 * r) + ",0a" + r + "," + r + " 0 1,0 -" + (2 * r) + ",0")
+                    this.path.addPath(a)
+                }
+            }
+
+            ctx.fillStyle = this.pointColor
+            ctx.fill(this.path)
+            this.patterns[idx] = ctx.createPattern(this.oc, "repeat")
+        }
+
+    }
+
+    /*prefetch(ctx, w, h, c, world) {
         this.min_canvas_size = Math.min(w, h)
         this.scaleFactor = this.snapSize / this.min_canvas_size;
         let fake_world = world.getTransformation().clone()
         for (let i = 0; i < 50; i++) {
             fake_world.scale(this.zoomPrefetchGeneration, this.zoomPrefetchGeneration)
+
+            let tm = fake_world.clone().scale(this.scaleFactor, this.scaleFactor)
+
+            let index = Math.trunc(fake_world.scaleFactor.x * 10)
+            this.generateImage(ctx, w, h, c, fake_world, tm, index)
+        }
+
+        fake_world = world.getTransformation().clone()
+        const sf = 1 / this.zoomPrefetchGeneration
+        for (let i = 0; i < 50; i++) {
+            fake_world.scale(sf, sf)
 
             let tm = fake_world.clone().scale(this.scaleFactor, this.scaleFactor)
 
@@ -111,7 +153,7 @@ class Grid {
         if (this.patterns[index].pattern) delete this.patterns[index].img
     }
 
-    generateImage(ctx, w, h, c, world, tm, index) {
+    generatePatternsCompatibility(ctx, w, h, c, world, tm, index) {
         ctx.save()
         c.width = c.height = this.min_canvas_size
         let _1_scale_factor = this.min_canvas_size / this.snapSize;
@@ -134,10 +176,10 @@ class Grid {
         ctx.fillStyle = this.pointColor
         ctx.fill(this.path)
         this.patterns[index] = {}
-        
+
         this.patterns[index].img = new Image()
         this.patterns[index].img.index = index
-        this.patterns[index].img.onload = (e =>{
+        this.patterns[index].img.onload = (e => {
             this.patterns[e.target.index].pattern = ctx.createPattern(this.patterns[e.target.index].img, 'repeat');
         })
         this.patterns[index].img.src = c.toDataURL("image/png");
@@ -151,7 +193,7 @@ class Grid {
             throw "invalid arguments"
         }
 
-        this.min_canvas_size = Math.min(w, h)
+        this.min_canvas_size = Math.min(c.width, c.height)
         this.scaleFactor = this.snapSize / this.min_canvas_size;
         let tm = world.getTransformation().clone().scale(this.scaleFactor, this.scaleFactor)
 
@@ -160,10 +202,10 @@ class Grid {
         if (this.patterns[index]) {
             this.drawGrid(ctx, w, h, tm, index)
         } else {
-            this.generateImage(ctx, w, h, c, world, tm, index)
+            this.generatePatternsCompatibility(ctx, w, h, c, world, tm, index)
         }
 
-    }
+    }*/
 
     setTransformation(...args) {
         if (args.length == 2 && args[1] instanceof TransformationMatrix && args[0] instanceof CanvasRenderingContext2D) {
