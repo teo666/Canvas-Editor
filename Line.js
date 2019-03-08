@@ -130,7 +130,7 @@ class Line extends Element {
         this.path.moveTo(this.startPoint.x(), this.startPoint.y());
         this.path.lineTo(this.endPoint.x(), this.endPoint.y())
         this.buildHitTestPath()
-        //this.pivot.center.value((this.endPoint.x() + this.startPoint.x()) / 2, (this.endPoint.y() + this.startPoint.y()) / 2)
+        this.pivot.center.value((this.endPoint.x() + this.startPoint.x()) / 2, (this.endPoint.y() + this.startPoint.y()) / 2)
     }
 
     hitTest(x, y, tr, context) {

@@ -19,13 +19,13 @@ class Editor {
         this.tool = new Tool();
         this.world = new World();
         this.cursor = new Cursor();
-        this.cursor.snap(25)
+        this.cursor.snap(10)
 
         if (obj.gridCanvas && obj.gridCanvas.nodeName && obj.gridCanvas.nodeName == 'CANVAS') {
             this.grid = new Grid();
             this.gridCanvas = obj.gridCanvas
             this.gridContext = this.gridCanvas.getContext("2d");
-            this.grid.snap(25)
+            this.grid.snap(10)
         }
 
         this.zoom_in = 1.05;
@@ -50,7 +50,7 @@ class Editor {
         let l = new Line()
         l.translate(50,50)
         //l.rotate(Math.PI/2)
-        l.start(0,0)
+        l.start(50,50)
         l.end(300,300)
         l.width(50)
         this.world.addElement(l)

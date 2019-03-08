@@ -4,9 +4,12 @@ class Grid {
     constructor() {
         this.snapSize = 0;
         this.pointSizeRatio = 0.03
-        this.transformation = new TransformationMatrix()
-        this.img = new Image();
-        this.pattern = null;
+        this.pointRadiusSize = 1
+        this.backgroundColor = Colors.HTMLColor.black
+        this.pointColor = Colors.HTMLColor.grey
+        //this.transformation = new TransformationMatrix()
+        //this.img = new Image();
+        this.patterns = {};
     }
 
     snap(s) {
@@ -17,7 +20,7 @@ class Grid {
     }
 
 
-    draw(ctx, w, h, c, world) {
+    /*draw1(ctx, w, h, c, world) {
         if (!ctx instanceof CanvasRenderingContext2D) {
             throw "invalid arguments"
         }
@@ -30,7 +33,7 @@ class Grid {
             let scale_factor = min_canvas_size / this.snapSize;
             ctx.setTransform(scale_factor, 0, 0, scale_factor, 0, 0);
             //set white background
-            ctx.fillStyle = 'white'
+            ctx.fillStyle = this.backgroundColor
             ctx.fillRect(0,0,c.width,c.height)
 
             this.path = new Path2D()
@@ -76,6 +79,66 @@ class Grid {
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.clearRect(0, 0, w, h);
             }
+        }
+
+    }*/
+
+    draw(ctx, w, h, c, world) {
+        if (!ctx instanceof CanvasRenderingContext2D) {
+            throw "invalid arguments"
+        }
+        ctx.save()
+
+        let min_canvas_size = Math.min(w, h)
+        this.scaleFactor = this.snapSize / min_canvas_size;
+        let tm = world.getTransformation().clone().scale(this.scaleFactor, this.scaleFactor)
+
+        let index = Math.trunc(world.getTransformation().scaleFactor.x * 10)
+
+        if (this.patterns[index]) {
+            this.setTransformation(ctx, tm)
+            let bound = tm.inv().toMatrix().multiply(new Matrix(3, 4).value([[0, w, w, 0], [0, 0, h, h], [1, 1, 1, 1]])).valueOf()
+            let minx = Math.min(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
+            let miny = Math.min(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
+            let maxx = Math.max(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
+            let maxy = Math.max(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
+
+            ctx.fillStyle = this.patterns[index].pattern
+            ctx.fillRect(minx, miny, maxx - minx, maxy - miny);
+            if(this.patterns[index].pattern) delete this.patterns[index].img
+        } else {
+
+            c.width = c.height = min_canvas_size
+            let _1_scale_factor = min_canvas_size / this.snapSize;
+
+            ctx.setTransform(_1_scale_factor, 0, 0, _1_scale_factor, 0, 0);
+            //set background color
+            ctx.fillStyle = this.backgroundColor
+            ctx.fillRect(0, 0, c.width, c.height)
+
+            let r = this.pointRadiusSize / tm.scaleFactor.x/ _1_scale_factor
+            this.path = new Path2D()
+
+            for (let i = 0, ii = 0; ii < 2; i += this.snapSize, ii++) {
+                for (let j = 0, jj = 0; jj < 2; j += this.snapSize, jj++) {
+                    let a = new Path2D("M" + (i - r) + "," + j + "a" + r + "," + r + " 0 1,0 " + (2 * r) + ",0a" + r + "," + r + " 0 1,0 -" + (2 * r) + ",0")
+                    this.path.addPath(a)
+                }
+            }
+
+            ctx.fillStyle = this.pointColor
+            ctx.fill(this.path)
+            this.patterns[index] = {}
+            this.patterns[index].img = new Image()
+            this.patterns[index].img.index = index
+            this.patterns[index].img.onload = (e =>{2
+                this.patterns[e.target.index].pattern = ctx.createPattern(this.patterns[e.target.index].img, 'repeat');
+                this.draw(ctx, w, h, c, world)
+            })
+            this.patterns[index].img.src = c.toDataURL("image/png");
+            c.width = w
+            c.height = h
+            ctx.restore()
         }
 
     }
