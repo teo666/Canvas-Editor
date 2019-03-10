@@ -11,10 +11,13 @@ class Grid {
         //this.img = new Image();
         this.zoomPrefetchGeneration = 1.1
         this.patterns = {};
-        this.patternsImageSize = 0
-        this.patternRatioInterval = 0.01
-        this.lowerRatio = 0.008
-        this.higherRatio = 0.2
+        this.patternsCompatibility = {};
+        this.patternsImageSize = 700
+        this.patternRatioInterval = 0.001
+        this.lowerRatio = 0.005
+        this.higherRatio = 0.08
+        this.lastScaleFactor = NaN
+        this.pointshapeType = 0
     }
 
     snap(s) {
@@ -88,64 +91,9 @@ class Grid {
 
     }*/
 
-    generatePattern(c) {
-        this.patternsImageSize = this.patternsImageSize ? this.patternsImageSize : Math.min(c.width, c.height)
-        this.oc = new OffscreenCanvas(this.patternsImageSize, this.patternsImageSize)
-        let ctx = this.oc.getContext('2d')
-        ctx.fillStyle = this.backgroundColor
-        ctx.fillRect(0, 0, this.patternsImageSize, this.patternsImageSize)
-
-
-        for (let n = this.lowerRatio, idx = 0; n <= this.higherRatio; n += this.patternRatioInterval, idx++) {
-            this.path = new Path2D()
-            let r = n * this.patternsImageSize
-
-            for (let i = 0, ii = 0; ii < 2; i += this.patternsImageSize, ii++) {
-                for (let j = 0, jj = 0; jj < 2; j += this.patternsImageSize, jj++) {
-                    let a = new Path2D("M" + (i - r) + "," + j + "a" + r + "," + r + " 0 1,0 " + (2 * r) + ",0a" + r + "," + r + " 0 1,0 -" + (2 * r) + ",0")
-                    this.path.addPath(a)
-                }
-            }
-
-            ctx.fillStyle = this.pointColor
-            ctx.fill(this.path)
-            this.patterns[idx] = ctx.createPattern(this.oc, "repeat")
-            this.patterns[idx].ratio = n
-        }
-    }
-
-    searchPattern(ratio){
-        let betterIdx = 0
-        let last = Infinity
-        const length = Object.keys(this.patterns).length
-        while( betterIdx < length && ratio > this.patterns[betterIdx].ratio ){
-            betterIdx++;
-        }
-        return betterIdx
-    }
-
-    draw(ctx, w, h, world) {
-        this.scaleFactor = this.snapSize / this.patternsImageSize;
-        let tm = world.getTransformation().clone().scale(this.scaleFactor, this.scaleFactor)
-        // fattore di scalatura del canvas offscren let ratio = 1 / tm.scaleFactor.x 
-        let ratio = this.pointRadiusSize / (tm.scaleFactor.x  * this.patternsImageSize)
-        let index = this.searchPattern(ratio)
-        
-        console.log(index)
-        this.setTransformation(ctx, tm)
-        let bound = tm.inv().toMatrix().multiply(new Matrix(3, 4).value([[0, w, w, 0], [0, 0, h, h], [1, 1, 1, 1]])).valueOf()
-        let minx = Math.min(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
-        let miny = Math.min(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
-        let maxx = Math.max(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
-        let maxy = Math.max(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
-
-        ctx.fillStyle = this.patterns[index]
-        ctx.fillRect(minx, miny, maxx - minx, maxy - miny);
-    }
-
-    /*prefetch(ctx, w, h, c, world) {
-        this.min_canvas_size = Math.min(w, h)
-        this.scaleFactor = this.snapSize / this.min_canvas_size;
+    prefetchPatternsCompatibility(ctx, c, world) {
+        this.minCanvasSize = Math.min(c.width, c.height)
+        this.scaleFactor = this.snapSize / this.minCanvasSize;
         let fake_world = world.getTransformation().clone()
         for (let i = 0; i < 50; i++) {
             fake_world.scale(this.zoomPrefetchGeneration, this.zoomPrefetchGeneration)
@@ -153,7 +101,7 @@ class Grid {
             let tm = fake_world.clone().scale(this.scaleFactor, this.scaleFactor)
 
             let index = Math.trunc(fake_world.scaleFactor.x * 10)
-            this.generateImage(ctx, w, h, c, fake_world, tm, index)
+            this.generatePatternsCompatibility(ctx, c, c.width, c.height, tm, index)
         }
 
         fake_world = world.getTransformation().clone()
@@ -164,11 +112,64 @@ class Grid {
             let tm = fake_world.clone().scale(this.scaleFactor, this.scaleFactor)
 
             let index = Math.trunc(fake_world.scaleFactor.x * 10)
-            this.generateImage(ctx, w, h, c, fake_world, tm, index)
+            this.generatePatternsCompatibility(ctx, c, c.width, c.height, tm, index)
         }
     }
 
-    drawGrid(ctx, w, h, tm, index) {
+    prefetchPatterns() {
+        this.oc = new OffscreenCanvas(this.patternsImageSize, this.patternsImageSize)
+        let ctx = this.oc.getContext('2d')
+        ctx.fillStyle = this.backgroundColor
+        ctx.fillRect(0, 0, this.patternsImageSize, this.patternsImageSize)
+
+
+        for (let n = this.lowerRatio, idx = 0; n <= this.higherRatio; n += this.patternRatioInterval, idx++) {
+            this.path = new Path2D()
+            let r = n * this.patternsImageSize
+
+            if (this.pointshapeType) {
+                for (let i = 0, ii = 0; ii < 2; i += this.patternsImageSize, ii++) {
+                    for (let j = 0, jj = 0; jj < 2; j += this.patternsImageSize, jj++) {
+                        let a = new Path2D("M" + (i - r) + "," + j + "a" + r + "," + r + " 0 1,0 " + (2 * r) + ",0a" + r + "," + r + " 0 1,0 -" + (2 * r) + ",0")
+                        this.path.addPath(a)
+                    }
+                }
+            } else {
+                this.path.rect(0, 0, r, r)
+                this.path.rect(0, this.patternsImageSize - r, r, r)
+                this.path.rect(this.patternsImageSize - r, 0, r, r)
+                this.path.rect(this.patternsImageSize - r, this.patternsImageSize - r, r, r)
+            }
+
+            ctx.fillStyle = this.pointColor
+            ctx.fill(this.path)
+            this.patterns[idx] = ctx.createPattern(this.oc, "repeat")
+            this.patterns[idx].ratio = n
+        }
+    }
+
+    searchPattern(ratio) {
+        let betterIdx = 0
+        const length = Object.keys(this.patterns).length
+        while (betterIdx < length && ratio > this.patterns[betterIdx].ratio) {
+            betterIdx++;
+        }
+        if (betterIdx == length) return this.backgroundColor
+        return this.patterns[betterIdx]
+    }
+
+    prefetch(ctx, c, world) {
+        try {
+            this.prefetchPatterns()
+            //TODO: convertire con oggetto e proprieta
+            this.operationMode = 0
+            } catch (e) {
+            this.prefetchPatternsCompatibility(ctx, c, world)
+            this.operationMode = 1
+        }
+    }
+
+    drawGridCompatibility(ctx, w, h, tm, index) {
         this.setTransformation(ctx, tm)
         let bound = tm.inv().toMatrix().multiply(new Matrix(3, 4).value([[0, w, w, 0], [0, 0, h, h], [1, 1, 1, 1]])).valueOf()
         let minx = Math.min(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
@@ -176,15 +177,35 @@ class Grid {
         let maxx = Math.max(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
         let maxy = Math.max(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
 
-        ctx.fillStyle = this.patterns[index].pattern
+        ctx.fillStyle = this.patternsCompatibility[index].pattern
         ctx.fillRect(minx, miny, maxx - minx, maxy - miny);
-        if (this.patterns[index].pattern) delete this.patterns[index].img
+        if (this.patternsCompatibility[index].pattern) delete this.patternsCompatibility[index].img
     }
 
-    generatePatternsCompatibility(ctx, w, h, c, world, tm, index) {
+    drawGrid(ctx, w, h, world) {
+        this.scaleFactor = this.snapSize / this.patternsImageSize;
+        let tm = world.getTransformation().clone().scale(this.scaleFactor, this.scaleFactor)
+        // fattore di scalatura del canvas offscren let ratio = 1 / tm.scaleFactor.x 
+        if (this.lastScaleFactor != tm.scaleFactor.x) {
+            //let ratio = this.pointRadiusSize / (tm.scaleFactor.x  * this.patternsImageSize)
+            this.lastScaleFactor = tm.scaleFactor.x
+            ctx.fillStyle = this.searchPattern(this.pointRadiusSize / (tm.scaleFactor.x * this.patternsImageSize))
+        }
+
+        this.setTransformation(ctx, tm)
+        let bound = tm.inv().toMatrix().multiply(new Matrix(3, 4).value([[0, w, w, 0], [0, 0, h, h], [1, 1, 1, 1]])).valueOf()
+        let minx = Math.min(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
+        let miny = Math.min(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
+        let maxx = Math.max(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
+        let maxy = Math.max(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
+
+        ctx.fillRect(minx, miny, maxx - minx, maxy - miny);
+    }
+
+    generatePatternsCompatibility(ctx, c, w, h, tm, index) {
         ctx.save()
-        c.width = c.height = this.min_canvas_size
-        let _1_scale_factor = this.min_canvas_size / this.snapSize;
+        c.width = c.height = this.minCanvasSize
+        let _1_scale_factor = this.minCanvasSize / this.snapSize;
 
         ctx.setTransform(_1_scale_factor, 0, 0, _1_scale_factor, 0, 0);
         //set background colors
@@ -203,37 +224,43 @@ class Grid {
 
         ctx.fillStyle = this.pointColor
         ctx.fill(this.path)
-        this.patterns[index] = {}
+        this.patternsCompatibility[index] = {}
 
-        this.patterns[index].img = new Image()
-        this.patterns[index].img.index = index
-        this.patterns[index].img.onload = (e => {
-            this.patterns[e.target.index].pattern = ctx.createPattern(this.patterns[e.target.index].img, 'repeat');
+        this.patternsCompatibility[index].img = new Image()
+        this.patternsCompatibility[index].img.index = index
+        this.patternsCompatibility[index].img.onload = (e => {
+            this.patternsCompatibility[e.target.index].pattern = ctx.createPattern(this.patternsCompatibility[e.target.index].img, 'repeat');
         })
-        this.patterns[index].img.src = c.toDataURL("image/png");
+        this.patternsCompatibility[index].img.src = c.toDataURL("image/png");
         c.width = w
         c.height = h
         ctx.restore()
     }
 
-    draw(ctx, w, h, c, world) {
-        if (!ctx instanceof CanvasRenderingContext2D) {
-            throw "invalid arguments"
-        }
-
-        this.min_canvas_size = Math.min(c.width, c.height)
-        this.scaleFactor = this.snapSize / this.min_canvas_size;
+    drawCompatibility(ctx, c, world) {
+        const w = c.width
+        const h = c.height
+        this.minCanvasSize = this.minCanvasSize ? this.minCanvasSize : Math.min(w, h)
+        this.scaleFactor = this.snapSize / this.minCanvasSize;
         let tm = world.getTransformation().clone().scale(this.scaleFactor, this.scaleFactor)
 
         let index = Math.trunc(world.getTransformation().scaleFactor.x * 10)
 
-        if (this.patterns[index]) {
-            this.drawGrid(ctx, w, h, tm, index)
+        if (this.patternsCompatibility[index]) {
+            this.drawGridCompatibility(ctx, w, h, tm, index)
         } else {
-            this.generatePatternsCompatibility(ctx, w, h, c, world, tm, index)
+            this.generatePatternsCompatibility(ctx, c, w, h, tm, index)
         }
 
-    }*/
+    }
+
+    draw(ctx, c, world){
+        if(this.operationMode){
+            this.drawCompatibility(ctx, c, world)
+        } else {
+            this.drawGrid(ctx, c.width, c.height, world)
+        }
+    }
 
     setTransformation(...args) {
         if (args.length == 2 && args[1] instanceof TransformationMatrix && args[0] instanceof CanvasRenderingContext2D) {
