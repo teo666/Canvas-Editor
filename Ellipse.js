@@ -6,8 +6,8 @@ class Ellipse extends Element {
         this.path = null;
         this.lineWidth = 10;
         this.lineDash = [];
-        this.strokeStyle = 'black'
-        this.fillStyle = '#00000000'
+        this.strokeStyle = Colors.HTMLColor.black
+        this.fillStyle = Colors.HTMLColor.black
 
         this.centerPoint = new Point2D(0, 0);
         this.radiusSize = new Size2D(0, 0);
@@ -32,19 +32,17 @@ class Ellipse extends Element {
     }
 
     center(...args) {
-        if (args.length == 1 && args[0] instanceof Point2D) {
-            this.centerPoint.value(args[0])
-        } else if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
-            this.centerPoint.x(args[0])
-            this.centerPoint.y(args[1])
+        if (args.length){
+            this.centerPoint.value(...args)
+            this.buildPath()
         }
         return this.centerPoint;
     }
 
     radius(...args) {
-        if (args.length == 1 && args[0] instanceof Size2D) {
-            this.radiusSize.w(args[0].w())
-            this.radiusSize.h(args[0].h())
+        if (args.length) {
+            this.radiusSize.value(...args)
+            this.buildPath()
         }
         return this.radiusSize;
     }
@@ -52,18 +50,22 @@ class Ellipse extends Element {
     rotation(...args) {
         if (args.length == 1 && typeof args[0] == 'number') {
             this.rotationNumber = args[0]
+            this.buildPath()
         }
         return this.rotationNumber
     }
 
+    // TODO: ??? eliminare
     get getCenterSHALLOW() {
         return this.center;
     }
 
+    // TODO: ??? eliminare
     transformedCenter() {
         return new Point2D(math.multiply(this.transformation, this.center.point3).valueOf())
     }
 
+    // TODO: ??? eliminare
     setCenter(c) {
         this.center = c.clone();
     }
@@ -95,15 +97,15 @@ class Ellipse extends Element {
 
             context.save();
 
-            let ts = TransformationMatrix.multiply(parentT, this.transformation).valueOf()
-
+            let t = TransformationMatrix.multiply(parentT, this.transformation)
+            let ts = t.valueOf()
             context.setTransform(
-                ts[0][0],
-                ts[1][0],
-                ts[0][1],
-                ts[1][1],
-                ts[0][2],
-                ts[1][2]
+                ts[0],
+                ts[1],
+                ts[2],
+                ts[3],
+                ts[4],
+                ts[5]
             )
             context.lineWidth = this.lineWidth
             //context.fillStyle = this.fillStyle
@@ -111,7 +113,9 @@ class Ellipse extends Element {
             context.setLineDash(this.lineDash);
             //context.fill(this.path);
             context.stroke(this.path)
-
+            if (this.selected) {
+                this.pivot.draw(this,context, t,parentT)
+            }
             context.restore();
         }
     }

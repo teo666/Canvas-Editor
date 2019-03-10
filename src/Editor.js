@@ -58,7 +58,11 @@ class Editor {
         l.start(50,50)
         l.end(300,300)
         l.width(50)
+        let el = new Ellipse()
+        el.center(50,50)
+        el.radius(100,100)
         this.world.addElement(l)
+        this.world.addElement(el)
         ////////////
 
 

@@ -3,8 +3,10 @@ let raf
 
 function draw(){
     let l = editor.world.elements[0]
+    let el = editor.world.elements[1]
     //l.rotate(Math.PI/100)
     l.rotateOnPoint(Math.PI/100,l.pivot.x(), l.pivot.y())
+    el.rotateOnPoint(Math.PI/100,el.pivot.x(), el.pivot.y())
     editor.draw()
     raf = requestAnimationFrame(draw)
 }

@@ -5,8 +5,8 @@ class Grid {
         this.snapSize = 0;
         this.pointSizeRatio = 0.03
         this.pointRadiusSize = 0.8
-        this.backgroundColor = Colors.HTMLColor.black
-        this.pointColor = Colors.HTMLColor.white
+        this.backgroundColor = Colors.HTMLColor.white
+        this.pointColor = Colors.HTMLColor.black
         //this.transformation = new TransformationMatrix()
         //this.img = new Image();
         this.zoomPrefetchGeneration = 1.1
