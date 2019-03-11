@@ -56,19 +56,19 @@ class Ellipse extends Element {
     }
 
     // TODO: ??? eliminare
-    get getCenterSHALLOW() {
+    /*get getCenterSHALLOW() {
         return this.center;
-    }
+    }*/
 
     // TODO: ??? eliminare
-    transformedCenter() {
+    /*transformedCenter() {
         return new Point2D(math.multiply(this.transformation, this.center.point3).valueOf())
-    }
+    }*/
 
     // TODO: ??? eliminare
-    setCenter(c) {
+    /*setCenter(c) {
         this.center = c.clone();
-    }
+    }*/
 
     buildPath() {
         this.path = new Path2D();
