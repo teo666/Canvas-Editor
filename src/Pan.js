@@ -65,6 +65,18 @@ class Pan {
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
         e.preventDefault();
+
+        const mask = EventUtil.getModifiers(e)
+
+        if(EventUtil.matchMask(mask, EventUtil.Modifiers.ALT)){
+            let diff = editor.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
+
+            editor.world.rotate(- Math.sign(e.deltaY) * Math.PI/100);
+            editor.world.applyTransform(editor.context)
+            editor.draw();
+            return
+        }
+
         let z = 0;
         if (e.deltaY < 0) {
             z = this.zoom_in;

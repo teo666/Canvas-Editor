@@ -5,6 +5,7 @@ let _nel = 0;
 class Element extends Common {
     constructor() {
         super();
+        //TODO:trovare il sistema di rendere queta cosa non modificabile tramite assegnazione di proprieta all'oggetto
         this.name = ("element" + ++_nel);
         this.id = _nel;
         this.pending = false;

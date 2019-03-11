@@ -5,8 +5,8 @@ class Grid {
         this.snapSize = 0;
         this.pointSizeRatio = 0.03
         this.pointRadiusSize = 0.8
-        this.backgroundColor = Colors.HTMLColor.white
-        this.pointColor = Colors.HTMLColor.black
+        this.backgroundColor = Colors.HTMLColor.black
+        this.pointColor = Colors.HTMLColor.grey
         //this.transformation = new TransformationMatrix()
         //this.img = new Image();
         this.zoomPrefetchGeneration = 1.1
@@ -18,6 +18,7 @@ class Grid {
         this.higherRatio = 0.08
         this.lastScaleFactor = NaN
         this.pointshapeType = 0
+        this.lastFillStyle = this.backgroundColor
     }
 
     snap(s) {
@@ -189,7 +190,7 @@ class Grid {
         if (this.lastScaleFactor != tm.scaleFactor.x) {
             //let ratio = this.pointRadiusSize / (tm.scaleFactor.x  * this.patternsImageSize)
             this.lastScaleFactor = tm.scaleFactor.x
-            ctx.fillStyle = this.searchPattern(this.pointRadiusSize / (tm.scaleFactor.x * this.patternsImageSize))
+            this.lastFillStyle = this.searchPattern(this.pointRadiusSize / (tm.scaleFactor.x * this.patternsImageSize))
         }
 
         this.setTransformation(ctx, tm)
@@ -198,7 +199,7 @@ class Grid {
         let miny = Math.min(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
         let maxx = Math.max(bound[0][0], bound[0][1], bound[0][2], bound[0][3])
         let maxy = Math.max(bound[1][0], bound[1][1], bound[1][2], bound[1][3])
-
+        ctx.fillStyle = this.lastFillStyle
         ctx.fillRect(minx, miny, maxx - minx, maxy - miny);
     }
 
@@ -255,11 +256,13 @@ class Grid {
     }
 
     draw(ctx, c, world){
+        ctx.save()
         if(this.operationMode){
             this.drawCompatibility(ctx, c, world)
         } else {
             this.drawGrid(ctx, c.width, c.height, world)
         }
+        ctx.restore()
     }
 
     setTransformation(...args) {

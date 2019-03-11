@@ -19,7 +19,7 @@ class Tool {
     dispatch(editor, etype, e) {
         let t = this.tools[this.activeTool]
         let m = t[EventUtil.EvtToMethod[etype]]
-        let mod = this.getModifiers(e)
+        let mod = EventUtil.getModifiers(e)
 
         if (etype == EventUtil.EvtType.mousewheel && EventUtil.matchMask(mod, EventUtil.Modifiers.CTRL)) {
             this.tools.pan[EventUtil.EvtToMethod[etype]].call(this.tools.pan, editor, etype, e)
@@ -30,9 +30,9 @@ class Tool {
         }
     }
 
-    getModifiers(e) {
+    /*getModifiers(e) {
         let m = 0;
-        /*if (e.ctrlKey) {
+        if (e.ctrlKey) {
             m |= Tool.Mod.CTRL;
         }
         if (e.altKey) {
@@ -44,9 +44,8 @@ class Tool {
         if (e.metaKey) {
             m |= Tool.Mod.META;
         }
-        //return m;*/
-        return m |= (e.ctrlKey << EventUtil.Modifiers.CTRL) != (e.altKey << EventUtil.Modifiers.ALT) != (e.shiftKey << EventUtil.Modifiers.SHIFT) != (e.metaKey << EventUtil.Modifiers.META)
-    }
+        return m;
+    }*/
 }
 
 class EventUtil {
@@ -56,7 +55,19 @@ class EventUtil {
 
     static getModifiers(e) {
         let m = 0;
-        return m |= (e.ctrlKey << EventUtil.Modifiers.CTRL) != (e.altKey << EventUtil.Modifiers.ALT) != (e.shiftKey << EventUtil.Modifiers.SHIFT) != (e.metaKey << EventUtil.Modifiers.META)
+        if (e.ctrlKey) {
+            m |= EventUtil.Modifiers.CTRL;
+        }
+        if (e.altKey) {
+            m |= EventUtil.Modifiers.ALT;
+        }
+        if (e.shiftKey) {
+            m |= EventUtil.Modifiers.SHIFT;
+        }
+        if (e.metaKey) {
+            m |= EventUtil.Modifiers.META;
+        }
+        return m
     }
 
     static matchMask(val, ...mod) {

@@ -27,7 +27,6 @@ class Editor {
             this.gridContext = this.gridCanvas.getContext("2d");
             this.grid.snap(25)
             this.grid.prefetch(this.gridContext, this.gridCanvas, this.world)
-            //this.grid.prefetch(this.gridContext, this.gridCanvas.width, this.gridCanvas.height, this.gridCanvas, this.world)
         }
 
         this.zoom_in = 1.05;
@@ -54,15 +53,15 @@ class Editor {
 
         let l = new Line()
         l.translate(50,50)
-        //l.rotate(Math.PI/2)
-        l.start(50,50)
-        l.end(300,300)
+        l.rotate(-Math.PI/4)
+        l.start(100,0)
+        l.end(500,0)
         l.width(50)
-        let el = new Ellipse()
+        this.world.addElement(l)
+        /*let el = new Ellipse()
         el.center(50,50)
         el.radius(100,100)
-        this.world.addElement(l)
-        this.world.addElement(el)
+        this.world.addElement(el)*/
         ////////////
 
 
@@ -86,6 +85,7 @@ class Editor {
 
 
     draw_axis() {
+        this.context.save()
         this.context.lineWidth = 1 / this.world.getScaleFactor().x;
         this.context.beginPath();
         this.context.moveTo(-1000000, 0);
@@ -93,7 +93,9 @@ class Editor {
         this.context.lineWidth = 1 / this.world.getScaleFactor().y;
         this.context.moveTo(0, -1000000);
         this.context.lineTo(0, 1000000);
+        this.context.strokeStyle = 'grey'
         this.context.stroke();
+        this.context.restore()
     };
 
     clear() {
@@ -105,10 +107,10 @@ class Editor {
 
     draw() {
         this.clear();
+        this.grid.draw(this.gridContext, this.gridCanvas, this.world)
         this.draw_axis();
         this.draw_center()
         this.world.draw(this.context);
-        this.grid.draw(this.gridContext, this.gridCanvas, this.world)
     }
 
     addEvents() {
@@ -425,8 +427,6 @@ class Editor {
 
         }
         this.world.applyTransform(this.context)
-        //TODO: serve davvero?
-        this.grid.setTransformation(this.gridContext, this.world.getTransformation())
         this.draw();
     };*/
 }

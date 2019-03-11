@@ -1,9 +1,12 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.0.0/math.js"></script>
+    <link rel="stylesheet" href="./jquery-ui-1.12.1/jquery-ui.min.css">
+    <script src="./jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+    <script src="./jquery-ui-1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../src/Math.js"></script>
     <script type="text/javascript" src="../src/Grid.js"></script>
     <script type="text/javascript" src="../src/Adder.js"></script>
@@ -35,9 +38,18 @@
     <title>Document</title>
 </head>
 <body">
-    <div style="position:relative">
-        <canvas id="d" width="1000" height="700" style="border: 1px solid black; margin: 0px; position: absolute;"></canvas>
-        <canvas id="c" width="1000" height="700" style="border: 1px solid black; margin: 0px; position: absolute;"></canvas>
+    <div>
+        <div id="tool_bar" style="height: 500px; width: 100px; float: left;">
+                <button onclick="editor.tool.activeTool = 'pan'">Pan</button>
+                <button onclick="editor.tool.activeTool = 'pointer'">Pointer</button>
+                <button onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line</button>
+                <button onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse</button>
+                <button onclick="draw()">Animate</button>
+        </div>
+        <div >
+            <canvas id="c" width="1000" height="700" style="border: 0px solid black; margin: 0px;"></canvas>
+        </div>
     </div>
-</body>
+    </body>
+
 </html>

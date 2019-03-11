@@ -8,9 +8,11 @@ class Line extends Element {
         this.lineDash = [];
         this.lineCap = CanvasStyle.lineCap.Round
         this.lineJoin = CanvasStyle.lineJoin.Round
-        this.strokeStyle = '#faba11aa'
+        this.strokeStyle = '#faba11'
         this.startPoint = new Point2D(0, 0)
         this.endPoint = new Point2D(0, 0)
+        this.shadowColor = 'red';
+        this.shadowBlur = 100;
         if (args.length) this.value(...args)
     }
 
@@ -130,7 +132,6 @@ class Line extends Element {
         this.path.moveTo(this.startPoint.x(), this.startPoint.y());
         this.path.lineTo(this.endPoint.x(), this.endPoint.y())
         this.buildHitTestPath()
-        this.pivot.center.value((this.endPoint.x() + this.startPoint.x()) / 2, (this.endPoint.y() + this.startPoint.y()) / 2)
     }
 
     hitTest(x, y, tr, context) {
@@ -165,6 +166,8 @@ class Line extends Element {
             context.lineCap = this.lineCap
             context.lineJoin = this.lineJoin
             context.setLineDash(this.lineDash)
+            context.shadowBlur = this.shadowBlur
+            context.shadowColor = this.shadowColor
             context.stroke(this.path)
 
             //DEBUG: draw hitTestPath
@@ -175,7 +178,7 @@ class Line extends Element {
             */
 
             if (this.selected) {
-                this.pivot.draw(this,context, t,parentT)
+                this.pivot.draw(context, t, this)
             }
             context.restore();
         }

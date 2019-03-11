@@ -6,8 +6,8 @@ class Ellipse extends Element {
         this.path = null;
         this.lineWidth = 10;
         this.lineDash = [];
-        this.strokeStyle = Colors.HTMLColor.black
-        this.fillStyle = Colors.HTMLColor.black
+        this.strokeStyle = Colors.HTMLColor.rebeccapurple
+        this.fillStyle = Colors.HTMLColor.rebeccapurple
 
         this.centerPoint = new Point2D(0, 0);
         this.radiusSize = new Size2D(0, 0);
@@ -73,6 +73,7 @@ class Ellipse extends Element {
     buildPath() {
         this.path = new Path2D();
         this.path.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radiusSize.w(), this.radiusSize.h(), this.rotationNumber, 0, 2 * Math.PI);
+        this.pivot.center(this.center())
     }
 
     hitTest(x, y, tr, context) {
@@ -108,13 +109,13 @@ class Ellipse extends Element {
                 ts[5]
             )
             context.lineWidth = this.lineWidth
-            //context.fillStyle = this.fillStyle
+            context.fillStyle = this.fillStyle
             context.strokeStyle = this.strokeStyle
             context.setLineDash(this.lineDash);
-            //context.fill(this.path);
+            context.fill(this.path);
             context.stroke(this.path)
             if (this.selected) {
-                this.pivot.draw(this,context, t,parentT)
+                this.pivot.draw(context, t)
             }
             context.restore();
         }

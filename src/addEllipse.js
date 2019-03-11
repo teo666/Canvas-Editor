@@ -18,6 +18,7 @@ __addEllipse = {
             elem.pending = false;
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.center(p[0], p[1]);
+            elem.pivot.center(elem.center())
         },
         next: [2, 3],
         saveEvent: false

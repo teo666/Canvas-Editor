@@ -15,6 +15,8 @@ class Point2D {
     }
 
     value(...args) {
+        if(!args.length) return this
+        
         if (args.length == 1 && args[0] instanceof Point2D) {
             this.x(args[0].x())
             this.y(args[0].y())

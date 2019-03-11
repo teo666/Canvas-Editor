@@ -34,31 +34,35 @@ class Adder {
     }
 
     add(type, parent, continuosAdd = false) {
-        this.continuosAdd = continuosAdd
-        this.adding = true;
-        switch (type) {
-            case shapeType.Point2D:
+        // il controllo che non stia gia aggiungendo mi reviene eventuali inserimenti multipli dovuti a cambio di tool
+        // TODO: sarebbe meglio far si' che il tool chami un medoto reset che permette di uscire dallo stato sospeso in modo pulito(???)
+        if(!this.adding){
+            this.continuosAdd = continuosAdd
+            this.adding = true;
+            switch (type) {
+                case shapeType.Point2D:
                 break;
-            case shapeType.Ellipse:
+                case shapeType.Ellipse:
                 this.addEllipse(parent)
                 break;
-            case shapeType.Line:
+                case shapeType.Line:
                 this.addLine(parent)
                 break;
-            case shapeType.Net:
+                case shapeType.Net:
                 this.addNet(parent);
                 break;
-            case shapeType.Rectangle:
+                case shapeType.Rectangle:
                 this.addRectangle(parent);
                 break;
-            case shapeType.Square:
+                case shapeType.Square:
                 this.addSquare(parent);
                 break;
-            case shapeType.Arc:
+                case shapeType.Arc:
                 this.addArc(parent);
                 break;
+            }
+            this.prepare(parent)
         }
-        this.prepare(parent)
     }
 
     prepare(p) {

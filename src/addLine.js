@@ -18,6 +18,7 @@ __addLine = {
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.start(p[0], p[1]);
             elem.end(p[0], p[1]);
+            elem.pivot.center((elem.end().x() + elem.start().x()) / 2, (elem.end().y() + elem.start().y()) / 2)
             editor.draw();
         },
         next: [2, 3, 4],
@@ -38,6 +39,7 @@ __addLine = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.end(p[0], p[1]);
+            elem.pivot.center((elem.end().x() + elem.start().x()) / 2, (elem.end().y() + elem.start().y()) / 2)
             elem.enableDraw = !(elem.end().equal(elem.start()))
             editor.draw();
         },
@@ -85,6 +87,7 @@ __addLine = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.end(p[0], p[1]);
+            elem.pivot.center((elem.end().x() + elem.start().x()) / 2, (elem.end().y() + elem.start().y()) / 2)
             if (elem.end().equal(elem.start())) {
                 //wait next event
                 return true;

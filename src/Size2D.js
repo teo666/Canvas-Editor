@@ -3,10 +3,12 @@
 class Size2D {
     constructor(...args) {
         this.c = [0,0]
-        this.value(...args)
+        if(args.length)this.value(...args)
     }
 
     value(...args){
+        if(!args.length) return this
+        
         if (args.length == 1 && args[0] instanceof Size2D) {
             this.w(args[0].w())
             this.h(args[0].h())
