@@ -40,6 +40,7 @@ class Pivot {
 
     draw(context, e_tm, el) {
         if (this.enableDraw) {
+            //TODO: eliminare la generazione del path e fare un unico pivot per tutti gli elementi
             this.size(this.crossSize / e_tm.scaleFactor.x, this.crossSize / e_tm.scaleFactor.y)
             this.buildPath()
 

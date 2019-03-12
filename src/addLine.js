@@ -1,4 +1,4 @@
-__addLine = {
+const __addLine = {
     0: {
         next: [1]
     },

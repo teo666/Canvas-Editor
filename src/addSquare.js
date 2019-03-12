@@ -1,4 +1,4 @@
-__addSquare = {
+const __addSquare = {
     0: {
         next: [1]
     },

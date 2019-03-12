@@ -174,7 +174,8 @@ class Adder {
             if (!cancel) {
                 this.clearAllowedEvents();
                 this.readAllowedEvents();
-            } else if (this.allowedEvents.length == 0) {
+            }
+            if(this.allowedEvents.length == 0) {
                 this.resetAdd(editor)
             }
         }

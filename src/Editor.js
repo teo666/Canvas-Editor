@@ -19,6 +19,7 @@ class Editor {
         this.tool = new Tool();
         this.world = new World();
         this.cursor = new Cursor();
+
         this.cursor.snap(25)
 
         if (obj.gridCanvas && obj.gridCanvas.nodeName && obj.gridCanvas.nodeName == 'CANVAS') {
@@ -45,6 +46,8 @@ class Editor {
         this.element = null;
 
         this.addEvents()
+
+        this.toolrenderer = new ToolsRenderer()
 
 
         //TODO: TOGLIERE

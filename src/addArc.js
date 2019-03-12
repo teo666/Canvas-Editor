@@ -1,4 +1,4 @@
-__addArc = {
+const __addArc = {
     0: {
         next: [1]
     },

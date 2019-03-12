@@ -34,22 +34,34 @@
     <script type="text/javascript" src="../src/Point2D.js"></script>
     <script type="text/javascript" src="../src/Size2D.js"></script>
     <script type="text/javascript" src="../src/Pivot.js"></script>
+
+    <script type="text/javascript" src="./tool/tools/ToolBuilder.js"></script>
+    <script type="text/javascript" src="./tool/tools/toolPoint2D.js"></script>
+    <script type="text/javascript" src="./tool/tools/toolStyle.js"></script>
+    <script type="text/javascript" src="./tool/tools/toolLine.js"></script>
+
+    <script type="text/javascript" src="./tool/ToolsRenderer.js"></script>
+
     <script type="text/javascript" src="./editor.js"></script>
+
     <title>Document</title>
 </head>
-<body">
+
+<body>
     <div>
         <div id="tool_bar" style="height: 500px; width: 100px; float: left;">
-                <button onclick="editor.tool.activeTool = 'pan'">Pan</button>
-                <button onclick="editor.tool.activeTool = 'pointer'">Pointer</button>
-                <button onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line</button>
-                <button onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse</button>
-                <button onclick="draw()">Animate</button>
+            <button onclick="editor.tool.activeTool = 'pan'">Pan</button>
+            <button onclick="editor.tool.activeTool = 'pointer'">Pointer</button>
+            <button
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line</button>
+            <button
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse</button>
+            <button onclick="draw()">Animate</button>
         </div>
-        <div >
+        <div>
             <canvas id="c" width="1000" height="700" style="border: 0px solid black; margin: 0px;"></canvas>
         </div>
     </div>
-    </body>
+</body>
 
 </html>

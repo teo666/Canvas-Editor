@@ -1,4 +1,4 @@
-__addEllipse = {
+const __addEllipse = {
     0: {
         next: [1]
     },

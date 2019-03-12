@@ -11,8 +11,8 @@ class Line extends Element {
         this.strokeStyle = '#faba11'
         this.startPoint = new Point2D(0, 0)
         this.endPoint = new Point2D(0, 0)
-        this.shadowColor = 'red';
-        this.shadowBlur = 100;
+        this.shadowColor = Colors.HTMLColor.red;
+        this.shadowBlur = 0;
         if (args.length) this.value(...args)
     }
 

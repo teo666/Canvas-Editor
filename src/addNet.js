@@ -1,4 +1,4 @@
-__addNet = {
+const __addNet = {
     0: {
         next : [1]
     },

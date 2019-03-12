@@ -1,17 +1,13 @@
 'use strict'
 
-let _nel = 0;
-
 class Element extends Common {
     constructor() {
         super();
-        //TODO:trovare il sistema di rendere queta cosa non modificabile tramite assegnazione di proprieta all'oggetto
-        this.name = ("element" + ++_nel);
-        this.id = _nel;
+        Object.defineProperty(this, 'id', {value : Element.retriveId()})
+        this.name = ("element" + this.id);
         this.pending = false;
         this.enableDraw = true
         this.selected = true
-        //TODO: introdurre il concetto di pivot
         this.pivot = new Pivot()
     }
 
@@ -68,7 +64,7 @@ class Element extends Common {
         } else {
             throw "Invalid arguments"
         }
-        this.transformation.shearXOnPoint(teta,x,y)
+        this.transformation.shearXOnPoint(teta, x, y)
     }
 
     shearYOnPoint(...args) {
@@ -84,7 +80,7 @@ class Element extends Common {
         } else {
             throw "Invalid arguments"
         }
-        this.transformation.shearYOnPoint(teta,x,y)
+        this.transformation.shearYOnPoint(teta, x, y)
     }
 
     shearXYOnPoint(...args) {
@@ -100,7 +96,7 @@ class Element extends Common {
         } else {
             throw "Invalid arguments"
         }
-        this.transformation.shearXYOnPoint(teta,x,y)
+        this.transformation.shearXYOnPoint(teta, x, y)
     }
 
     hitTest(x, y, tr, context) {
@@ -121,7 +117,7 @@ class Element extends Common {
     draw(context, parentT) {
         let ts = parentT.clone().multiply(this.getTransformation())
         this.elements.forEach(element => {
-            if(!element.pending){
+            if (!element.pending) {
                 element.draw(context, ts);
             }
         });
@@ -130,7 +126,7 @@ class Element extends Common {
     getParentsTransformations() {
         let pp = this.parent.getParentsTransformations()
         let p = this.parent.getTransformation()
-        return TransformationMatrix.multiply(pp,p);
+        return TransformationMatrix.multiply(pp, p);
     }
 
     //////////////////////////////////// event handling //////////////////////////////////
@@ -174,3 +170,16 @@ class Element extends Common {
         return ret;
     }
 }
+
+Object.defineProperty(Element, 'retriveId',
+    {
+        value: (function () {
+            let i = 0;
+            return function () {
+                return i++;
+            }
+        })(),
+        configurable: false,
+        writable: false
+    }
+)

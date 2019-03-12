@@ -1,4 +1,4 @@
-__addRectangle = {
+const __addRectangle = {
     0: {
         next: [1]
     },
