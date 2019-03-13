@@ -1,5 +1,12 @@
 const __toolLine = Object.assign({
-    start: __toolPoint2D,
-    end: __toolPoint2D
+    start: {
+        type: 'Point2D',
+        label: 'start'
+    },
+
+    end: {
+        type: 'Point2D',
+        label: 'end'
+    }
 
 }, __toolStyle)

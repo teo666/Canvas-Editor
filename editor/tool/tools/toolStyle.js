@@ -11,10 +11,10 @@ const __toolStyle = {
         label: 'width',
         type: ToolBuilder.toolType.numeric,
         min: 0
-    }/*,
-    lineDash: {
-        type: ToolBuilder.toolType.array
-    }*/,
+    },
+    //lineDash: {
+    //    type: ToolBuilder.toolType.array
+    //},
     lineCap: {
         label: 'line cap',
         type: ToolBuilder.toolType.dropdown,
@@ -36,6 +36,6 @@ const __toolStyle = {
         type: ToolBuilder.toolType.numeric,
         min: 0,
         precision: -1
-    },
+    }
 
 }

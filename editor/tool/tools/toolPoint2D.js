@@ -2,7 +2,7 @@ const __toolPoint2D = {
     x: {
         type: ToolBuilder.toolType.numeric,
         label: 'x',
-        precision: 0
+        precision: 1
     },
 
     y: {

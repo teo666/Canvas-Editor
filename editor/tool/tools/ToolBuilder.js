@@ -16,7 +16,7 @@ class ToolBuilder {
             step: def.precision ? 1 / Math.pow(10, def.precision) : ''
         })
 
-        inp.on('change', function (e) {
+        inp.on('input', function (e) {
             let v = parseFloat(e.target.value);
             if (v > def.max) {
                 v = def.max
@@ -28,13 +28,15 @@ class ToolBuilder {
                 v = Math.trunc(v * Math.pow(10, def.precision)) / Math.pow(10, def.precision)
             }
             inp.val(v)
-            //TODO: togliere i try cat
+            //TODO: togliere i try catch
             try {
-                this.bind[prop](v)
+                this[prop](v)
             } catch (err) {
-                this.bind[prop] = v
+                this[prop] = v
             }
-        }.bind(b))
+            b.bind[0].buildPath()
+            editor.draw()
+        }.bind(b.bind[b.bind_index]))
 
         div.append(label, inp)
         return div
@@ -55,13 +57,15 @@ class ToolBuilder {
         const label = $('<label for="' + id + '">' + (def.label ? def.label : "") + '</label>')
         const inp = $('<input id="' + id + '" prop="' + prop + '" type="text"></input>')
 
-        inp.on('change', function (e) {
+        inp.on('input', function (e) {
             try {
-                this.bind[prop](e.target.value)
+                this[prop](e.target.value)
             } catch (err) {
-                this.bind[prop] = e.target.value
+                this[prop] = e.target.value
             }
-        }.bind(b))
+            b.bind[0].buildPath()
+            editor.draw()
+        }.bind(b.bind[b.bind_index]))
 
         div.append(label, inp)
         return div
@@ -82,13 +86,15 @@ class ToolBuilder {
         const label = $('<label for="' + id + '">' + (def.label ? def.label : "") + '</label>')
         const inp = $('<input id="' + id + '" prop="' + prop + '" type="color"></input>')
 
-        inp.on('change', function (e) {
+        inp.on('input', function (e) {
             try {
-                this.bind[prop](e.target.value)
+                this[prop](e.target.value)
             } catch (err) {
-                this.bind[prop] = e.target.value;
+                this[prop] = e.target.value;
             }
-        }.bind(b))
+            b.bind[0].buildPath()
+            editor.draw()
+        }.bind(b.bind[b.bind_index]))
 
         div.append(label, inp)
         return div
@@ -119,13 +125,15 @@ class ToolBuilder {
             inp.append(opt)
         }
 
-        inp.on('change', function (e) {
+        inp.on('input', function (e) {
             try {
-                this.bind[prop](e.target.value)
+                this[prop](e.target.value)
             } catch (err) {
-                this.bind[prop] = e.target.value;
+                this[prop] = e.target.value;
             }
-        }.bind(b))
+            b.bind[0].buildPath()
+            editor.draw()
+        }.bind(b.bind[b.bind_index]))
 
         div.append(label, inp)
         return div
