@@ -35,7 +35,6 @@ class Element extends Common {
             return;
         }
         this.transformation.shearX(psi)
-        return tm;
     }
 
     shearY(psi) {
@@ -43,7 +42,6 @@ class Element extends Common {
             return;
         }
         this.transformation.shearY(psi)
-        return tm;
     }
 
     shearXY(psix, psiy) {

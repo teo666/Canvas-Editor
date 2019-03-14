@@ -8,7 +8,8 @@ class Ellipse extends Element {
         this.lineDash = [];
         this.strokeStyle = Colors.HTMLColor.rebeccapurple
         this.fillStyle = Colors.HTMLColor.rebeccapurple
-
+        this.shadowColor = Colors.HTMLColor.red;
+        this.shadowBlur = 0;
         this.centerPoint = new Point2D(0, 0);
         this.radiusSize = new Size2D(0, 0);
         this.rotationNumber = 0;
@@ -55,40 +56,22 @@ class Ellipse extends Element {
         return this.rotationNumber
     }
 
-    // TODO: ??? eliminare
-    /*get getCenterSHALLOW() {
-        return this.center;
-    }*/
-
-    // TODO: ??? eliminare
-    /*transformedCenter() {
-        return new Point2D(math.multiply(this.transformation, this.center.point3).valueOf())
-    }*/
-
-    // TODO: ??? eliminare
-    /*setCenter(c) {
-        this.center = c.clone();
-    }*/
-
     buildPath() {
         this.path = new Path2D();
         this.path.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radiusSize.w(), this.radiusSize.h(), this.rotationNumber, 0, 2 * Math.PI);
-        this.pivot.center(this.center())
     }
 
     hitTest(x, y, tr, context) {
         /** 
+         * TODO: spostare questo metodo nella classe element (da valutare)
          * questa cosa mi permette di evitare id moltiplicare tutti i punti del path per la matrice di trasformazione
          * dell'elemento e moltiplicare invece solo il punto di cui voglio fare il test
         */
-        let t = math.multiply(math.inv(math.multiply(tr, this.getTransformation)), [x, y, 1]);
+        let t = TransformationMatrix.multiply(tr, this.getTransformation()).inv().multiplyPoint(x, y).valueOf()
         context.save();
         context.setTransform(1, 0, 0, 1, 0, 0);
 
-        //ctx.stroke(this.path)
-        let tx = math.subset(t, math.index(0))
-        let ty = math.subset(t, math.index(1))
-        let ret = context.isPointInPath(this.path, tx, ty)
+        let ret = context.isPointInPath(this.path, t[0], t[1])
         context.restore();
         return ret;
     }
@@ -111,9 +94,11 @@ class Ellipse extends Element {
             context.lineWidth = this.lineWidth
             context.fillStyle = this.fillStyle
             context.strokeStyle = this.strokeStyle
+            context.shadowBlur = this.shadowBlur
+            context.shadowColor = this.shadowColor
             context.setLineDash(this.lineDash);
-            context.fill(this.path);
             context.stroke(this.path)
+            context.fill(this.path);
             if (this.selected) {
                 this.pivot.draw(context, t)
             }

@@ -150,7 +150,8 @@ class Line extends Element {
 
             context.save();
 
-            let t = parentT.clone().multiplyTM(this.transformation)
+            //let t = parentT.clone().multiplyTM(this.transformation)
+            let t = TransformationMatrix.multiply(parentT, this.transformation)
             let ts = t.valueOf()
             context.setTransform(
                 ts[0],
@@ -178,7 +179,7 @@ class Line extends Element {
             */
 
             if (this.selected) {
-                this.pivot.draw(context, t, this)
+                this.pivot.draw(context, t)
             }
             context.restore();
         }

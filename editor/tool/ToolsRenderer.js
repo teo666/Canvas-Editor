@@ -6,9 +6,14 @@ class ToolsRenderer {
         this.toolbuider = new ToolBuilder()
     }
 
+
+    changeTool(){
+        
+    }
+
     render(obj) {
         const definition = ToolsRenderer.association[obj.constructor.name]
-        const cont = $('<div id="tool_container"></div>')
+        const cont = $('<div id="tool_container" style="overflow:scroll"></div>')
         this.cache[obj.constructor.name] = {}
         this.cache[obj.constructor.name].tool = cont
         //TODO: sostiturire con un oggetto durante la creazione dei bind si possono invertire le chiavi se utilizzo l'indice
@@ -46,7 +51,11 @@ class ToolsRenderer {
                 default:
                     const new_cont = $('<div></div>').attr({ prop: key })
                     new_cont.append($('<label>' + definition[key].label + '</label>'))
-                    bind.push(bind[b_idx][key]())
+                    if(typeof bind[b_idx][key] == 'function'){
+                        bind.push(bind[b_idx][key]())
+                    } else {
+                        bind.push(bind[b_idx][key])
+                    }
                     //caso in cui e' un oggetto ricorsivo
                     new_cont.append(this.renderProperties(definition, bind, bind.length-1, new_cont, definition[key]))
                     cont.append(new_cont)
@@ -89,7 +98,13 @@ class ToolsRenderer {
                     break;
                 default:
                     //debugger
-                    this.valueProperties(definition, $('div[prop=' + i + ']', html), obj[i](), definition[i])
+                    let o
+                    if(typeof obj[i] == 'function'){
+                        o = obj[i]()
+                    } else {
+                        o = obj[i]
+                    }
+                    this.valueProperties(definition, $('div[prop=' + i + ']', html), o, definition[i])
                     break;
             }
         }
@@ -100,6 +115,7 @@ Object.defineProperty(ToolsRenderer, 'association', {
     value: Object.freeze({
         Point2D: __toolPoint2D,
         Line: __toolLine,
-
+        Pivot: __toolPivot,
+        Ellipse: __toolEllipse
     })
 })

@@ -20,13 +20,13 @@ class Editor {
         this.world = new World();
         this.cursor = new Cursor();
 
-        this.cursor.snap(25)
+        this.cursor.snap(50)
 
         if (obj.gridCanvas && obj.gridCanvas.nodeName && obj.gridCanvas.nodeName == 'CANVAS') {
             this.grid = new Grid();
             this.gridCanvas = obj.gridCanvas
             this.gridContext = this.gridCanvas.getContext("2d");
-            this.grid.snap(25)
+            this.grid.snap(50)
             this.grid.prefetch(this.gridContext, this.gridCanvas, this.world)
         }
 
@@ -55,16 +55,17 @@ class Editor {
         this.world.applyTransform(this.context)
 
         let l = new Line()
-        l.translate(50,50)
-        l.rotate(-Math.PI/4)
-        l.start(100,0)
+        l.translate(150,50)
+        //l.rotate(-Math.PI/4)
+        l.start(0,0)
         l.end(500,0)
         l.width(50)
         this.world.addElement(l)
-        /*let el = new Ellipse()
-        el.center(50,50)
-        el.radius(100,100)
-        this.world.addElement(el)*/
+        let el = new Ellipse()
+        el.center(100,0)
+        el.radius(50,50)
+        el.translate(200,200)
+        this.world.addElement(el)
         ////////////
 
 

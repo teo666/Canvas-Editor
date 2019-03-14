@@ -4,11 +4,11 @@ class Pivot {
     constructor() {
         this.centerPoint = new Point2D(0,0)
         this.crossSize = 10
-        this.lineWidth = 1
+        this.lineWidth = 2
         this.dimension = new Size2D(10, 10)
         this.strokeStyle = Colors.HTMLColor.red
         this.enableDraw = true
-        this.buildPath()
+        //this.buildPath()
     }
 
     center(...args){
@@ -38,33 +38,38 @@ class Pivot {
         this.pathH.lineTo(this.centerPoint.x() + this.dimension.x() / 2, this.centerPoint.y())
     }
 
-    draw(context, e_tm, el) {
+    draw(context, e_tm) {
         if (this.enableDraw) {
-            //TODO: eliminare la generazione del path e fare un unico pivot per tutti gli elementi
-            this.size(this.crossSize / e_tm.scaleFactor.x, this.crossSize / e_tm.scaleFactor.y)
-            this.buildPath()
 
             context.save()
-            //console.log(el.getTransformation().multiplyPoint(this.x(), this.y()))
-            let inv = e_tm.clone().rotateOnPoint(-e_tm.rotationAngle, this.x(), this.y()).valueOf()
+            //ritorna la posizione del punto relativamente al mondo
+            let p = e_tm.clone().multiplyPoint(this.x(),this.y()).valueOf()
     
             context.setTransform(
-                inv[0],
-                inv[1],
-                inv[2],
-                inv[3],
-                inv[4],
-                inv[5]
+                1,0,0,1,p[0],p[1]
             )
-
             context.strokeStyle = this.strokeStyle;
             context.lineCap = 'butt'
             context.setLineDash([])
-            context.lineWidth = this.lineWidth / e_tm.scaleFactor.x;
-            context.stroke(this.pathV)
-            context.lineWidth = this.lineWidth / e_tm.scaleFactor.y;
-            context.stroke(this.pathH)
+            context.lineWidth = this.lineWidth;
+            context.stroke(Pivot.staticPath.pathV)
+            context.lineWidth = this.lineWidth;
+            context.stroke(Pivot.staticPath.pathH)
             context.restore()
         }
     }
 }
+
+Object.defineProperty(Pivot, 'staticPath',{
+    value:(function() {
+        //vertical segment
+        const pathV = new Path2D()
+        pathV.moveTo(0, -5)
+        pathV.lineTo(0, 5)
+        //horizontal segment
+        const pathH = new Path2D()
+        pathH.moveTo(-5, 0)
+        pathH.lineTo(5, 0)        
+        return {pathH: pathH, pathV: pathV}
+    })()
+})
