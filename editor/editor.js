@@ -14,13 +14,14 @@ function draw() {
 
 window.onload = function () {
     let c = document.querySelector("#c");
-    let d = document.querySelector('#d')
+    let p = document.querySelector('#properties_container')
     document.body.style.margin = 0
     c.width = window.innerWidth-120
     c.height = window.innerHeight*2/3
     editor = new Editor({
         canvas: c,
-        gridCanvas: c
+        gridCanvas: c,
+        properties: p
     });
 
     //draw()

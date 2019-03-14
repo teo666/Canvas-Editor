@@ -1,29 +1,32 @@
 'use strict'
 
 class ToolsRenderer {
-    constructor() {
+    constructor(...args) {
         this.cache = {}
         this.toolbuider = new ToolBuilder()
+        if (args.length) {
+            this.container = args[0]
+        }
     }
 
+    changeTool(obj) {
 
-    changeTool(){
-        
     }
 
-    render(obj) {
-        const definition = ToolsRenderer.association[obj.constructor.name]
-        const cont = $('<div id="tool_container" style="overflow:scroll"></div>')
-        this.cache[obj.constructor.name] = {}
-        this.cache[obj.constructor.name].tool = cont
+    render(type) {
+        const definition = ToolsRenderer.association[type]
+        const cont = $('<div id="tool_' + type + '" style="overflow:scroll"></div>')
+        this.cache[type] = {}
+        this.cache[type].tool = cont
         //TODO: sostiturire con un oggetto durante la creazione dei bind si possono invertire le chiavi se utilizzo l'indice
-        this.cache[obj.constructor.name].bind = [obj]
+        this.cache[type].bind = []
+        this.cache[type].propOrder = []
 
-        this.renderProperties(definition, this.cache[obj.constructor.name].bind, 0, cont)
+        this.renderProperties(definition, this.cache[type].propOrder, this.cache[type], 0, cont)
     }
 
 
-    renderProperties(def, bind, b_idx, cont, rec = null) {
+    renderProperties(def, propOrder, bind, b_idx, cont, rec = null) {
         let definition
         if (rec) {
             definition = ToolsRenderer.association[rec.type]
@@ -51,13 +54,14 @@ class ToolsRenderer {
                 default:
                     const new_cont = $('<div></div>').attr({ prop: key })
                     new_cont.append($('<label>' + definition[key].label + '</label>'))
-                    if(typeof bind[b_idx][key] == 'function'){
-                        bind.push(bind[b_idx][key]())
-                    } else {
-                        bind.push(bind[b_idx][key])
-                    }
+                    propOrder.push(key)
+                    //if(typeof bind[b_idx][key] == 'function'){
+                    //    bind.push(bind[b_idx][key]())
+                    //} else {
+                    //    bind.push(bind[b_idx][key])
+                    //}
                     //caso in cui e' un oggetto ricorsivo
-                    new_cont.append(this.renderProperties(definition, bind, bind.length-1, new_cont, definition[key]))
+                    new_cont.append(this.renderProperties(definition, propOrder, bind, propOrder.length, new_cont, definition[key]))
                     cont.append(new_cont)
                     break;
             }
@@ -65,13 +69,24 @@ class ToolsRenderer {
         return cont
     }
 
-
+    createBind(obj) {
+        const order = this.cache[obj.constructor.name]
+        order.bind = [obj]
+        order.propOrder.forEach((e) => {
+            if (typeof obj[e] == 'function') {
+                order.bind.push(obj[e]())
+            } else {
+                order.bind.push(obj[e])
+            }
+        })
+    }
 
     //TODO: da finire
     value(obj) {
         const typ = obj.constructor.name
         const definition = ToolsRenderer.association[typ]
-        this.cache[obj.constructor.name].bind = obj
+        this.createBind(obj)
+        //this.cache[obj.constructor.name].bind = obj
         this.valueProperties(definition, this.cache[obj.constructor.name].tool, obj)
     }
 
@@ -99,7 +114,7 @@ class ToolsRenderer {
                 default:
                     //debugger
                     let o
-                    if(typeof obj[i] == 'function'){
+                    if (typeof obj[i] == 'function') {
                         o = obj[i]()
                     } else {
                         o = obj[i]

@@ -30,13 +30,13 @@ class ToolBuilder {
             inp.val(v)
             //TODO: togliere i try catch
             try {
-                this[prop](v)
+                this.bind[b.bind_index][prop](v)
             } catch (err) {
-                this[prop] = v
+                this.bind[b.bind_index][prop] = v
             }
-            b.bind[0].buildPath()
+            b.bind.bind[0].buildPath()
             editor.draw()
-        }.bind(b.bind[b.bind_index]))
+        }.bind(b.bind))
 
         div.append(label, inp)
         return div
@@ -59,13 +59,13 @@ class ToolBuilder {
 
         inp.on('input', function (e) {
             try {
-                this[prop](e.target.value)
+                this.bind[b.bind_index][prop](e.target.value)
             } catch (err) {
-                this[prop] = e.target.value
+                this.bind[b.bind_index][prop] = e.target.value
             }
-            b.bind[0].buildPath()
+            b.bind.bind[0].buildPath()
             editor.draw()
-        }.bind(b.bind[b.bind_index]))
+        }.bind(b.bind))
 
         div.append(label, inp)
         return div
@@ -88,13 +88,13 @@ class ToolBuilder {
 
         inp.on('input', function (e) {
             try {
-                this[prop](e.target.value)
+                this.bind[b.bind_index][prop](e.target.value)
             } catch (err) {
-                this[prop] = e.target.value;
+                this.bind[b.bind_index][prop] = e.target.value;
             }
-            b.bind[0].buildPath()
+            b.bind.bind[0].buildPath()
             editor.draw()
-        }.bind(b.bind[b.bind_index]))
+        }.bind(b.bind))
 
         div.append(label, inp)
         return div
@@ -127,13 +127,13 @@ class ToolBuilder {
 
         inp.on('input', function (e) {
             try {
-                this[prop](e.target.value)
+                this.bind[b.bind_index][prop](e.target.value)
             } catch (err) {
-                this[prop] = e.target.value;
+                this.bind[b.bind_index][prop] = e.target.value;
             }
-            b.bind[0].buildPath()
+            b.bind.bind[0].buildPath()
             editor.draw()
-        }.bind(b.bind[b.bind_index]))
+        }.bind(b.bind))
 
         div.append(label, inp)
         return div

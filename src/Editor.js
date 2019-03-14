@@ -47,7 +47,9 @@ class Editor {
 
         this.addEvents()
 
-        this.toolrenderer = new ToolsRenderer()
+        if (obj && obj.properties) {
+            this.toolrenderer = new ToolsRenderer(obj.properties)
+        }
 
 
         //TODO: TOGLIERE
@@ -55,16 +57,16 @@ class Editor {
         this.world.applyTransform(this.context)
 
         let l = new Line()
-        l.translate(150,50)
+        l.translate(150, 50)
         //l.rotate(-Math.PI/4)
-        l.start(0,0)
-        l.end(500,0)
+        l.start(0, 0)
+        l.end(500, 0)
         l.width(50)
         this.world.addElement(l)
         let el = new Ellipse()
-        el.center(100,0)
-        el.radius(50,50)
-        el.translate(200,200)
+        el.center(100, 0)
+        el.radius(50, 50)
+        el.translate(200, 200)
         this.world.addElement(el)
         ////////////
 

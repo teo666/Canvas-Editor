@@ -147,14 +147,14 @@ class Point2D {
     }
 
     x(...args) {
-        if (args.length == 1 && typeof args[0] == "number") {
+        if (args.length == 1 && typeof args[0] == "number" && args[0]) {
             this.c[0] = args[0]
         }
         return this.c[0]
     }
 
     y(...args) {
-        if (args.length == 1 && typeof args[0] == "number") {
+        if (args.length == 1 && typeof args[0] == "number" && args[0]) {
             this.c[1] = args[0]
         }
         return this.c[1]
