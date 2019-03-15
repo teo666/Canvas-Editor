@@ -19,4 +19,5 @@ const __toolEllipse = Object.assign({
 }, __toolStyle)
 
 //per le linee non ha senso il fillstyle
-delete __toolLine['fillStyle']
+delete __toolEllipse['lineCap']
+delete __toolEllipse['lineJoin']

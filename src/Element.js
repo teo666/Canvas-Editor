@@ -112,8 +112,17 @@ class Element extends Common {
         return htl;
     }
 
-    draw(context, parentT) {
-        let ts = parentT.clone().multiply(this.getTransformation())
+    /**
+     * overrideTM permette di evitare di fare il prodotto delle matrici di trasformazione laddove esso sia gia' stato effettuato
+     * per esempio nei casi di riscrittura della funzione draw
+     */
+    draw(context, parentT, overrideTM = null) {
+        let ts
+        if(overrideTM){
+            ts = overrideTM
+        } else {
+            ts = TransformationMatrix.multiply(parentT, this.getTransformation())
+        }
         this.elements.forEach(element => {
             if (!element.pending) {
                 element.draw(context, ts);

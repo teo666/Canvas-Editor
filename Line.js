@@ -12,6 +12,7 @@ class Line extends Element {
         this.startPoint = new Point2D(0, 0)
         this.endPoint = new Point2D(0, 0)
         this.shadowColor = Colors.HTMLColor.red;
+        this.globalCompositeOperation = CanvasStyle.globalCompositeOperation.source_over
         this.shadowBlur = 0;
         if (args.length) this.value(...args)
     }
@@ -90,6 +91,7 @@ class Line extends Element {
         return this.lineWidth;
     }
 
+    //TODO: replace with addHitRegion???
     buildHitTestPath() {
         let r = this.lineWidth / 2;
         let dy = this.endPoint.y() - this.startPoint.y()
@@ -134,6 +136,7 @@ class Line extends Element {
         this.buildHitTestPath()
     }
 
+    //TODO: replace with addHitRegion???
     hitTest(x, y, tr, context) {
 
         let t = TransformationMatrix.multiply(tr, this.getTransformation()).inv().multiplyPoint(x, y)
@@ -162,7 +165,8 @@ class Line extends Element {
                 ts[5]
             )
 
-            context.strokeStyle = this.strokeStyle;
+            context.globalCompositeOperation = this.globalCompositeOperation
+            context.strokeStyle = this.strokeStyle
             context.lineWidth = this.lineWidth
             context.lineCap = this.lineCap
             context.lineJoin = this.lineJoin
@@ -182,6 +186,7 @@ class Line extends Element {
                 this.pivot.draw(context, t)
             }
             context.restore();
+            super.draw(context, null, t)
         }
     }
 

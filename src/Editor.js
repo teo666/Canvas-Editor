@@ -49,6 +49,8 @@ class Editor {
 
         if (obj && obj.properties) {
             this.toolrenderer = new ToolsRenderer(obj.properties)
+            this.toolrenderer.prefetch()
+            this.tool.tools.pointer.eventTarget(obj.properties)
         }
 
 
@@ -64,9 +66,9 @@ class Editor {
         l.width(50)
         this.world.addElement(l)
         let el = new Ellipse()
-        el.center(100, 0)
-        el.radius(50, 50)
-        el.translate(200, 200)
+        el.center(50, 50)
+        el.radius(50, 90)
+        el.translate(100, 300)
         this.world.addElement(el)
         ////////////
 

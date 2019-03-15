@@ -6,11 +6,29 @@ class ToolsRenderer {
         this.toolbuider = new ToolBuilder()
         if (args.length) {
             this.container = args[0]
+            const self = this
+            this.container.addEventListener("propchange", function(e) { self.changeTool(e.detail.obj) });
+        }
+        
+    }
+
+    prefetch() {
+        for (const i in ToolsRenderer.association) {
+            this.render(i)
         }
     }
 
     changeTool(obj) {
-
+        if (ToolsRenderer.association[obj.constructor.name]) {
+            if (!this.cache[obj.constructor.name]) {
+                this.render(obj.constructor.name)
+            }
+            this.value(obj)
+            $(this.container).children().detach()
+            $(this.container).append(this.cache[obj.constructor.name].tool)
+            return
+        }
+        console.warn(this.constructor.name + ': Not a valid type')
     }
 
     render(type) {
@@ -55,11 +73,7 @@ class ToolsRenderer {
                     const new_cont = $('<div></div>').attr({ prop: key })
                     new_cont.append($('<label>' + definition[key].label + '</label>'))
                     propOrder.push(key)
-                    //if(typeof bind[b_idx][key] == 'function'){
-                    //    bind.push(bind[b_idx][key]())
-                    //} else {
-                    //    bind.push(bind[b_idx][key])
-                    //}
+
                     //caso in cui e' un oggetto ricorsivo
                     new_cont.append(this.renderProperties(definition, propOrder, bind, propOrder.length, new_cont, definition[key]))
                     cont.append(new_cont)
@@ -71,7 +85,9 @@ class ToolsRenderer {
 
     createBind(obj) {
         const order = this.cache[obj.constructor.name]
-        order.bind = [obj]
+        //L'ARRAY NON DEVE ESSERE DISTRUTTO ALTRIMENTI I BIND VENGONO PERSI!!!
+        order.bind.splice(0, order.bind.length)
+        order.bind.push(obj)
         order.propOrder.forEach((e) => {
             if (typeof obj[e] == 'function') {
                 order.bind.push(obj[e]())
@@ -81,12 +97,10 @@ class ToolsRenderer {
         })
     }
 
-    //TODO: da finire
     value(obj) {
         const typ = obj.constructor.name
         const definition = ToolsRenderer.association[typ]
         this.createBind(obj)
-        //this.cache[obj.constructor.name].bind = obj
         this.valueProperties(definition, this.cache[obj.constructor.name].tool, obj)
     }
 

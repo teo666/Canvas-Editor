@@ -9,6 +9,7 @@ class Ellipse extends Element {
         this.strokeStyle = Colors.HTMLColor.rebeccapurple
         this.fillStyle = Colors.HTMLColor.rebeccapurple
         this.shadowColor = Colors.HTMLColor.red;
+        this.globalCompositeOperation = CanvasStyle.globalCompositeOperation.source_over
         this.shadowBlur = 0;
         this.centerPoint = new Point2D(0, 0);
         this.radiusSize = new Size2D(0, 0);
@@ -91,6 +92,7 @@ class Ellipse extends Element {
                 ts[4],
                 ts[5]
             )
+            context.globalCompositeOperation = this.globalCompositeOperation
             context.lineWidth = this.lineWidth
             context.fillStyle = this.fillStyle
             context.strokeStyle = this.strokeStyle

@@ -2,6 +2,7 @@
 
 class Grid {
     constructor() {
+        //TODO: replace all grid with a div and transform with css
         this.snapSize = 0;
         this.pointSizeRatio = 0.03
         this.pointRadiusSize = 0.8

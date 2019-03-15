@@ -27,6 +27,12 @@ const __toolStyle = {
         options: CanvasStyle.lineJoin,
         value: CanvasStyle.lineJoin
     },
+    globalCompositeOperation: {
+        label: 'global Composite Operation',
+        type: ToolBuilder.toolType.dropdown,
+        options: CanvasStyle.globalCompositeOperation,
+        value: CanvasStyle.globalCompositeOperation
+    },
     shadowColor: {
         label: 'shadow color',
         type: ToolBuilder.toolType.colorpicker
