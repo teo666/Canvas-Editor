@@ -7,9 +7,9 @@ class ToolsRenderer {
         if (args.length) {
             this.container = args[0]
             const self = this
-            this.container.addEventListener("propchange", function(e) { self.changeTool(e.detail.obj) });
+            this.container.addEventListener("propchange", function (e) { self.changeTool(e.detail.obj) });
         }
-        
+
     }
 
     prefetch() {
@@ -45,6 +45,7 @@ class ToolsRenderer {
 
 
     renderProperties(def, propOrder, bind, b_idx, cont, rec = null) {
+        let new_cont
         let definition
         if (rec) {
             definition = ToolsRenderer.association[rec.type]
@@ -69,9 +70,13 @@ class ToolsRenderer {
                 case ToolBuilder.toolType.dropdown:
                     cont.append(this.toolbuider.renderDropDown(definition[key], key, { bind: bind, bind_index: b_idx }))
                     break;
+
+                case ToolBuilder.toolType.arrayList:
+                    break;
+
                 default:
-                    const new_cont = $('<div></div>').attr({ prop: key })
-                    new_cont.append($('<label>' + definition[key].label + '</label>'))
+                    new_cont = $('<div></div>').attr({ prop: key })
+                    new_cont.append($('<label><b>' + definition[key].label + '</b></label>'))
                     propOrder.push(key)
 
                     //caso in cui e' un oggetto ricorsivo
@@ -146,6 +151,6 @@ Object.defineProperty(ToolsRenderer, 'association', {
         Line: __toolLine,
         Pivot: __toolPivot,
         Ellipse: __toolEllipse,
-        Quadrangle: __toolQuadrangle
+        Rectangle: __toolRectangle
     })
 })

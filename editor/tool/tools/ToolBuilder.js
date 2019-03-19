@@ -8,7 +8,7 @@ class ToolBuilder {
     renderNumeric(def, prop, b) {
         const div = $('<div></div>')
         const id = 'tbn_' + ToolBuilder.getId()
-        const label = $('<label for="' + id + '">' + (def.label ? def.label : "") + '</label>')
+        const label = $('<label for="' + id + '"><b>' + (def.label ? def.label : "") + '</b></label>')
         const inp = $('<input id="' + id + '" prop="' + prop + '" type="number" min="" max="" step=""></input>')
         inp.attr({
             min: def.min ? def.min : '',
@@ -54,7 +54,7 @@ class ToolBuilder {
     renderText(def, prop, b) {
         const div = $('<div></div>')
         const id = 'tbt_' + ToolBuilder.getId()
-        const label = $('<label for="' + id + '">' + (def.label ? def.label : "") + '</label>')
+        const label = $('<label for="' + id + '"><b>' + (def.label ? def.label : "") + '</b></label>')
         const inp = $('<input id="' + id + '" prop="' + prop + '" type="text"></input>')
 
         inp.on('input', function (e) {
@@ -83,7 +83,7 @@ class ToolBuilder {
     renderColorPicker(def, prop, b) {
         const div = $('<div></div>')
         const id = 'tbcp_' + ToolBuilder.getId()
-        const label = $('<label for="' + id + '">' + (def.label ? def.label : "") + '</label>')
+        const label = $('<label for="' + id + '"><b>' + (def.label ? def.label : "") + '</b></label>')
         const inp = $('<input id="' + id + '" prop="' + prop + '" type="color"></input>')
 
         inp.on('input', function (e) {
@@ -112,7 +112,7 @@ class ToolBuilder {
     renderDropDown(def, prop, b) {
         const div = $('<div></div>')
         const id = 'tbdd_' + ToolBuilder.getId()
-        const label = $('<label for="' + id + '">' + (def.label ? def.label : "") + '</label>')
+        const label = $('<label for="' + id + '"><b>' + (def.label ? def.label : "") + '</b></label>')
         const inp = $('<select></select>').attr({
             id: id,
             prop: prop,

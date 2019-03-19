@@ -13,7 +13,7 @@ class Pointer {
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
-        let list = editor.world.hitTest(x, y, editor.context)
+        let list = editor.world.hitTest(x, y, editor.context,editor.canvas)
         if(list.length){
 
             const evt = new CustomEvent("propchange", {

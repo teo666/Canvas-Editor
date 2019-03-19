@@ -101,7 +101,7 @@ class Adder {
 
     addRectangle() {
         this.descriptor = __addRectangle;
-        this.pending = new Quadrangle();
+        this.pending = new Rectangle();
         this.pendingType = shapeType.Rectangle;
     }
 

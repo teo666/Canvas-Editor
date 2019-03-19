@@ -28,7 +28,7 @@
     <script type="text/javascript" src="../Net.js"></script>
     <script type="text/javascript" src="../Line.js"></script>
     <script type="text/javascript" src="../Arc.js"></script>
-    <script type="text/javascript" src="../Quadrangle.js"></script>
+    <script type="text/javascript" src="../Rectangle.js"></script>
     <script type="text/javascript" src="../Ellipse.js"></script>
     <script type="text/javascript" src="../src/World.js"></script>
     <script type="text/javascript" src="../src/Cursor.js"></script>
@@ -42,7 +42,7 @@
     <script type="text/javascript" src="./tool/tools/toolStyle.js"></script>
     <script type="text/javascript" src="./tool/tools/toolLine.js"></script>
     <script type="text/javascript" src="./tool/tools/toolEllipse.js"></script>
-    <script type="text/javascript" src="./tool/tools/toolQuadrangle.js"></script>
+    <script type="text/javascript" src="./tool/tools/toolRectangle.js"></script>
 
     <script type="text/javascript" src="./tool/ToolsRenderer.js"></script>
 
@@ -57,10 +57,16 @@
             <button onclick="editor.tool.activeTool = 'pan'">Pan</button>
             <button onclick="editor.tool.activeTool = 'pointer'">Pointer</button>
             <button
-                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line</button>
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line
+            </button>
             <button
-                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse</button>
-            <button onclick="draw()">Animate</button>
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse
+            </button>
+            <button
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Rectangle, editor.world)">Rectangle
+            </button>
+            <button onclick="draw()">Animate
+            </button>
         </div>
         <div id="canvas_container">
             <canvas id="c" width="1000" height="700" style="border: 0px solid black; margin: 0px;"></canvas>

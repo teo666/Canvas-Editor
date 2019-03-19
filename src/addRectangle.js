@@ -16,10 +16,8 @@ const __addRectangle = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             elem.pending = false;
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.corner(1, p[0], p[1]);
-            elem.corner(2, p[0], p[1]);
-            elem.corner(3, p[0], p[1]);
-            elem.corner(4, p[0], p[1]);
+            elem.corner(p[0], p[1]);
+            elem.size(0, 0)
             elem.pivot.center(p[0], p[1])
             editor.draw();
         },
@@ -41,9 +39,8 @@ const __addRectangle = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             //console.log(mmv)
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.end(p[0], p[1]);
-            elem.pivot.center((elem.end().x() + elem.start().x()) / 2, (elem.end().y() + elem.start().y()) / 2)
-            elem.enableDraw = !(elem.end().equal(elem.start()))
+            elem.size(p[0] - elem.corner().x(), p[1] - elem.corner().y());
+            elem.pivot.center((elem.corner().x() + p[0]) / 2, (elem.corner().y() + p[1]) / 2)
             editor.draw();
         },
         next: [2, 3, 4],
@@ -60,7 +57,7 @@ const __addRectangle = {
                 x: x,
                 y: y
             }
-            editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
+            //editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let inc
             if (e.deltaY > 0) {
                 inc = -1
@@ -80,7 +77,7 @@ const __addRectangle = {
             let x = e.clientX - rect.left;
             let y = e.clientY - rect.top;
             e.preventDefault();
-            if(EventUtil.Button.LEFT != e.button){
+            if (EventUtil.Button.LEFT != e.button) {
                 return true
             }
             let mmv = {
@@ -89,9 +86,10 @@ const __addRectangle = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.end(p[0], p[1]);
-            elem.pivot.center((elem.end().x() + elem.start().x()) / 2, (elem.end().y() + elem.start().y()) / 2)
-            if (elem.end().equal(elem.start())) {
+            elem.size(p[0] - elem.corner().x(), p[1] - elem.corner().y());
+            elem.pivot.center((elem.corner().x() + p[0]) / 2, (elem.corner().y() + p[1]) / 2)
+
+            if (elem.size().x() == elem.size().x() == 0) {
                 //wait next event
                 return true;
             }

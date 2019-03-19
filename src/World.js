@@ -1,6 +1,6 @@
 'use strict'
 
-class World extends Common{
+class World extends Common {
     constructor() {
         super();
     }
@@ -10,7 +10,7 @@ class World extends Common{
     }
 
     applyTransform(ctx) {
-        if(! ctx instanceof CanvasRenderingContext2D){
+        if (!ctx instanceof CanvasRenderingContext2D) {
             throw "invalid arguments"
         }
         let v = this.transformation.valueOf();
@@ -26,17 +26,17 @@ class World extends Common{
 
     draw(context) {
         this.elements.forEach(element => {
-            if(!element.pending){
+            if (!element.pending) {
                 element.draw(context, this.getTransformation());
             }
         });
     }
 
-    hitTest(x, y, context) {
+    hitTest(x, y, context, canvas) {
         let htl = [];
         let tr = this.getTransformation();
         this.elements.forEach(element => {
-            let ret = element.hitTest(x, y, tr, context);
+            let ret = element.hitTest(x, y, tr, context, canvas);
             if (ret instanceof Array) {
                 htl = htl.concat(ret);
             } else if (ret) {
