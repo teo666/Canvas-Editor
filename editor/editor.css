@@ -1,0 +1,15 @@
+#canvas_container{
+    position: relative;
+    display: inline-block;
+}
+
+#c{
+    border: 0px solid black;
+    margin: 0px;
+    position: absolute
+}
+
+#d  {
+    border: 0px solid black;
+    margin: 0px;
+}

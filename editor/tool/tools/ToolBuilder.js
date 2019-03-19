@@ -156,7 +156,7 @@ Object.defineProperty(ToolBuilder, 'toolType', {
         'numeric': 1,
         'colorpicker': 2,
         'slide': 3,
-        'array': 4,
+        'arrayList': 4,
         'dropdown': 5,
         'button': 6,
     }),

@@ -70,6 +70,13 @@ class Editor {
         el.radius(50, 90)
         el.translate(100, 300)
         this.world.addElement(el)
+
+        let qd = new Quadrangle()
+        qd.corner(1,10,10)
+        qd.corner(2,100,10)
+        qd.corner(3,100,100)
+        qd.corner(4,10,100)
+        this.world.addElement(qd)
         ////////////
 
 

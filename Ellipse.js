@@ -99,8 +99,10 @@ class Ellipse extends Element {
             context.shadowBlur = this.shadowBlur
             context.shadowColor = this.shadowColor
             context.setLineDash(this.lineDash);
-            context.stroke(this.path)
             context.fill(this.path);
+            if(this.lineWidth){
+                context.stroke(this.path)
+            }
             if (this.selected) {
                 this.pivot.draw(context, t)
             }

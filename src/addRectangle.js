@@ -3,64 +3,104 @@ const __addRectangle = {
         next: [1]
     },
     1: {
-        event: 'mouseup',
-        callback: function (elem, parent, events, current_ev) {
+        event: 'mousedown',
+        callback: function (editor, elem, parent, events, e, mem) {
+            let rect = e.target.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            e.preventDefault();
+            let mmv = {
+                x: x,
+                y: y
+            }
+            editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             elem.pending = false;
-            //console.log('esecuzione callback mouseup', args.length)
-            let p = math.multiply(math.inv(math.multiply(parent.getParentsTransformations, parent.getTransformation)), [current_ev.detail.snap_x, current_ev.detail.snap_y, 1]).valueOf()
+            let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.corner(1, p[0], p[1]);
             elem.corner(2, p[0], p[1]);
             elem.corner(3, p[0], p[1]);
             elem.corner(4, p[0], p[1]);
+            elem.pivot.center(p[0], p[1])
             editor.draw();
         },
-        next: [2, 3],
-        saveEvent: true
+        next: [2, 3, 4],
+        saveEvent: false
     },
 
     2: {
-        event: 'mouseup',
-        callback: function (elem, parent, events, current_ev) {
-            let p = math.multiply(math.inv(math.multiply(parent.getParentsTransformations, parent.getTransformation)), [current_ev.detail.snap_x, current_ev.detail.snap_y, 1]).valueOf()
-            elem.corner(2, p[0], p[1]);
-            elem.corner(3, p[0], p[1]);
+        event: 'mousemove',
+        callback: function (editor, elem, parent, events, e, mem) {
+            let rect = e.target.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            e.preventDefault();
+            let mmv = {
+                x: x,
+                y: y
+            }
+            editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
+            //console.log(mmv)
+            let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
+            elem.end(p[0], p[1]);
+            elem.pivot.center((elem.end().x() + elem.start().x()) / 2, (elem.end().y() + elem.start().y()) / 2)
+            elem.enableDraw = !(elem.end().equal(elem.start()))
             editor.draw();
         },
-        next: [4, 5],
-        saveEvent: true
+        next: [2, 3, 4],
+        saveEvent: false
     },
     3: {
-        event: 'mousemove',
-        callback: function (elem, parent, events, current_ev) {
-            //console.log('esecuzione callback mousemove', args)
-            let p = math.multiply(math.inv(math.multiply(parent.getParentsTransformations, parent.getTransformation)), [current_ev.detail.snap_x, current_ev.detail.snap_y, 1]).valueOf()
-            elem.corner(2, p[0], p[1]);
-            elem.corner(3, p[0], p[1]);
+        event: 'mousewheel',
+        callback: function (editor, elem, parent, events, e, mem) {
+            let rect = e.target.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            e.preventDefault();
+            let mmv = {
+                x: x,
+                y: y
+            }
+            editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
+            let inc
+            if (e.deltaY > 0) {
+                inc = -1
+            } else {
+                inc = 1
+            }
+            elem.width(Math.max(1, elem.width() + inc));
             editor.draw();
         },
-        next: [2, 3],
+        next: [2, 3, 4],
         saveEvent: false
     },
     4: {
-        event: 'mousemove',
-        callback: function (elem, parent, events, current_ev) {
-            //console.log('esecuzione callback mousemove', args)
-            let p = math.multiply(math.inv(math.multiply(parent.getParentsTransformations, parent.getTransformation)), [current_ev.detail.snap_x, current_ev.detail.snap_y, 1]).valueOf()
-            let r = Point2D.isUp(elem.corner(1), elem.corner(2), new Point2D(p[0], p[1]))
-            elem.corner(3, elem.corner(2).x() + r.distance * r.dx , elem.corner(2).y() + r.distance * r.dy );
-            elem.corner(4, elem.corner(1).x() + r.distance * r.dx , elem.corner(1).y() + r.distance * r.dy );
-            editor.draw();
-        },
-        next: [4, 5],
-        saveEvent: false
-    },
-    5: {
         event: 'mouseup',
-        callback: function (elem, parent, events, current_ev) {
-            editor.draw();
+        callback: function (editor, elem, parent, events, e, mem) {
+            let rect = e.target.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            e.preventDefault();
+            if(EventUtil.Button.LEFT != e.button){
+                return true
+            }
+            let mmv = {
+                x: x,
+                y: y
+            }
+            editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
+            let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
+            elem.end(p[0], p[1]);
+            elem.pivot.center((elem.end().x() + elem.start().x()) / 2, (elem.end().y() + elem.start().y()) / 2)
+            if (elem.end().equal(elem.start())) {
+                //wait next event
+                return true;
+            }
+            elem.buildHitTestPath()
+            editor.draw()
+            //editor.adder.add(shapeType.Net, parent)
+            //editor.adder.eventProcess(current_ev)
         },
         next: [],
         saveEvent: true
-    },
-
+    }
 }

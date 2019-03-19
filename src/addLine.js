@@ -37,6 +37,7 @@ const __addLine = {
                 y: y
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
+            //console.log(mmv)
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.end(p[0], p[1]);
             elem.pivot.center((elem.end().x() + elem.start().x()) / 2, (elem.end().y() + elem.start().y()) / 2)

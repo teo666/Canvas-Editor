@@ -145,6 +145,7 @@ Object.defineProperty(ToolsRenderer, 'association', {
         Point2D: __toolPoint2D,
         Line: __toolLine,
         Pivot: __toolPivot,
-        Ellipse: __toolEllipse
+        Ellipse: __toolEllipse,
+        Quadrangle: __toolQuadrangle
     })
 })

@@ -2,7 +2,7 @@ const __toolPivot = {
     x: {
         type: ToolBuilder.toolType.numeric,
         label: 'x',
-        precision: 1
+        precision: 0
     },
 
     y: {
