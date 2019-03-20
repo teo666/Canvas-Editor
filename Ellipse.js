@@ -34,7 +34,7 @@ class Ellipse extends Element {
     }
 
     center(...args) {
-        if (args.length){
+        if (args.length) {
             this.centerPoint.value(...args)
             this.buildPath()
         }
@@ -60,6 +60,13 @@ class Ellipse extends Element {
     buildPath() {
         this.path = new Path2D();
         this.path.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radiusSize.w(), this.radiusSize.h(), this.rotationNumber, 0, 2 * Math.PI);
+        this.buildHitTestPath()
+    }
+
+    buildHitTestPath() {
+        const w = this.lineWidth / 2
+        this.hitPath = new Path2D();
+        this.hitPath.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radiusSize.w() + w, this.radiusSize.h() + w, this.rotationNumber, 0, 2 * Math.PI);
     }
 
     hitTest(x, y, tr, context) {
@@ -100,9 +107,14 @@ class Ellipse extends Element {
             context.shadowColor = this.shadowColor
             context.setLineDash(this.lineDash);
             context.fill(this.path);
-            if(this.lineWidth){
+            if (this.lineWidth) {
                 context.stroke(this.path)
             }
+
+            /*context.strokeStyle = 'red'
+            context.lineWidth = 1
+            context.stroke(this.hitPath)*/
+
             if (this.selected) {
                 this.pivot.draw(context, t)
             }

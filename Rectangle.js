@@ -1,7 +1,7 @@
 'use strict'
 
 class Rectangle extends Element {
-    constructor() {
+    constructor(...args) {
         super();
         this.path = null;
         this.lineWidth = 10;
@@ -16,6 +16,28 @@ class Rectangle extends Element {
 
         this.cornerPoint = new Point2D(0, 0)
         this.sizes = new Size2D(0, 0)
+        if (args.length) this.value(...args)
+    }
+
+    value(...args) {
+        if (args.length == 1 && args[0] instanceof Rectangle) {
+            this.cornerPoint.value(args[0].cornerPoint)
+            this.sizes.value(args[0].sizes)
+        } else if (args.length == 4 &&
+            typeof args[0] == 'number' &&
+            typeof args[1] == 'number' &&
+            typeof args[2] == 'number' &&
+            typeof args[3] == 'number') {
+            this.cornerPoint.value(args[0], args[1])
+            this.sizes.value(args[2], args[2])
+        } else if (args.length == 2 &&
+            args[0] instanceof Point2D &&
+            args[1] instanceof Size2D) {
+            this.cornerPoint.value(args[0])
+            this.sizes.value(args[1])
+        } else {
+            throw "Invalid arguments"
+        }
         this.buildPath()
     }
 
@@ -49,12 +71,7 @@ class Rectangle extends Element {
 
     buildPath() {
         this.path = new Path2D()
-        this.path.moveTo(this.cornerPoint.x(), this.cornerPoint.y())
-        this.path.lineTo(this.cornerPoint.x() + this.sizes.w(), this.cornerPoint.y())
-        this.path.lineTo(this.cornerPoint.x() + this.sizes.w(), this.cornerPoint.y() + this.sizes.h())
-        this.path.lineTo(this.cornerPoint.x(), this.cornerPoint.y() + this.sizes.h())
-        this.path.closePath()
-
+        this.path.rect(this.cornerPoint.x(), this.cornerPoint.y(), this.sizes.w(), this.sizes.h())
         this.buildHitTestPath()
     }
 
@@ -64,16 +81,36 @@ class Rectangle extends Element {
         const hs = Math.sign(this.size().h()) * r
 
         this.hitPath = new Path2D()
-        this.hitPath.moveTo(this.corner().x(), this.corner().y() - hs)
-        this.hitPath.lineTo(this.corner().x() + this.size().w(), this.corner().y() - hs)
-        this.hitPath.arcTo(this.corner().x() + this.size().w() + ws, this.corner().y() - hs, this.corner().x() + this.size().w() + ws, this.corner().y(), r)
-        this.hitPath.lineTo(this.corner().x() + this.size().w() + ws, this.corner().y() + this.size().h())
-        this.hitPath.arcTo(this.corner().x() + this.size().w() + ws, this.corner().y() + this.size().h() + hs,this.corner().x() + this.size().w(),this.corner().y() + this.size().h() + hs,r)
-        this.hitPath.lineTo(this.corner().x(),this.corner().y() + this.size().h() + hs)
-        this.hitPath.arcTo(this.corner().x() - ws, this.corner().y() + this.size().h() + hs,this.corner().x() - ws,this.corner().y() + this.size().h(),r)
-        this.hitPath.lineTo(this.corner().x() - ws,this.corner().y())
-        this.hitPath.arcTo(this.corner().x() - ws,this.corner().y() - hs, this.corner().x(),this.corner().y() - hs,r)
-        this.hitPath.closePath()
+
+        switch (this.lineJoin) {
+            case CanvasStyle.lineJoin.Round:
+                this.hitPath.moveTo(this.corner().x(), this.corner().y() - hs)
+                this.hitPath.lineTo(this.corner().x() + this.size().w(), this.corner().y() - hs)
+                this.hitPath.arcTo(this.corner().x() + this.size().w() + ws, this.corner().y() - hs, this.corner().x() + this.size().w() + ws, this.corner().y(), r)
+                this.hitPath.lineTo(this.corner().x() + this.size().w() + ws, this.corner().y() + this.size().h())
+                this.hitPath.arcTo(this.corner().x() + this.size().w() + ws, this.corner().y() + this.size().h() + hs, this.corner().x() + this.size().w(), this.corner().y() + this.size().h() + hs, r)
+                this.hitPath.lineTo(this.corner().x(), this.corner().y() + this.size().h() + hs)
+                this.hitPath.arcTo(this.corner().x() - ws, this.corner().y() + this.size().h() + hs, this.corner().x() - ws, this.corner().y() + this.size().h(), r)
+                this.hitPath.lineTo(this.corner().x() - ws, this.corner().y())
+                this.hitPath.arcTo(this.corner().x() - ws, this.corner().y() - hs, this.corner().x(), this.corner().y() - hs, r)
+                this.hitPath.closePath()
+                break;
+            case CanvasStyle.lineJoin.Miter:
+                this.hitPath.rect(this.cornerPoint.x() - ws, this.cornerPoint.y() - hs, this.sizes.w() + 2 * ws, this.sizes.h() + 2 * hs)
+                break;
+            case CanvasStyle.lineJoin.Bavel:
+                this.hitPath.moveTo(this.corner().x(), this.corner().y() - hs)
+                this.hitPath.lineTo(this.corner().x() + this.size().w(), this.corner().y() - hs)
+                this.hitPath.lineTo(this.corner().x() + this.size().w() + ws, this.corner().y())
+                this.hitPath.lineTo(this.corner().x() + this.size().w() + ws, this.corner().y() + this.size().h())
+                this.hitPath.lineTo(this.corner().x() + this.size().w(), this.corner().y() + this.size().h() + hs)
+                this.hitPath.lineTo(this.corner().x(), this.corner().y() + this.size().h() + hs)
+                this.hitPath.lineTo(this.corner().x() - ws, this.corner().y() + this.size().h())
+                this.hitPath.lineTo(this.corner().x() - ws, this.corner().y())
+                this.hitPath.lineTo(this.corner().x(), this.corner().y() - hs)
+                this.hitPath.closePath()
+                break;
+        }
     }
 
     hitTest(x, y, tr, context, canvas) {
