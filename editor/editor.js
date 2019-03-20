@@ -13,15 +13,17 @@ function draw() {
 }
 
 window.onload = function () {
-    let c = document.querySelector("#c");
-    let d = document.querySelector("#d");
+    let bg = document.querySelector("#bg");
+    let data = document.querySelector("#data");
+    let fg = document.querySelector("#fg");
     let p = document.querySelector('#properties_container')
     document.body.style.margin = 0
-    d.width = c.width = window.innerWidth-120
-    d.height = c.height = window.innerHeight*2/3
+    fg.width = data.width = bg.width = window.innerWidth-120
+    fg.height = data.height = bg.height = window.innerHeight*2/3
     editor = new Editor({
-        canvas: c,
-        gridCanvas: d,
+        dataCanvas: data,
+        backgroundCanvas: bg,
+        foregroundCanvas: fg,
         properties: p
     });
 

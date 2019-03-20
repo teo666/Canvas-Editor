@@ -20,6 +20,7 @@ class Grid {
         this.lastScaleFactor = NaN
         this.pointshapeType = 0
         this.lastFillStyle = this.backgroundColor
+        this.enable = true
     }
 
     snap(s) {
@@ -188,7 +189,11 @@ class Grid {
         this.scaleFactor = this.snapSize / this.patternsImageSize;
         let tm = world.getTransformation().clone().scale(this.scaleFactor, this.scaleFactor)
         // fattore di scalatura del canvas offscren let ratio = 1 / tm.scaleFactor.x 
-        if (this.lastScaleFactor != tm.scaleFactor.x) {
+        if(!this.enable){
+            this.lastFillStyle = this.backgroundColor
+            this.modified = true
+            this.lastScaleFactor = null
+        } else if (this.lastScaleFactor != tm.scaleFactor.x) {
             //let ratio = this.pointRadiusSize / (tm.scaleFactor.x  * this.patternsImageSize)
             this.lastScaleFactor = tm.scaleFactor.x
             this.lastFillStyle = this.searchPattern(this.pointRadiusSize / (tm.scaleFactor.x * this.patternsImageSize))

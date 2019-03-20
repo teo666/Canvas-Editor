@@ -3,13 +3,23 @@
     display: inline-block;
 }
 
-#c{
+#tool_bar > button {
+    display: table;
+}
+
+#bg{
     border: 0px solid black;
     margin: 0px;
     position: absolute
 }
 
-#d  {
+#data  {
+    border: 0px solid black;
+    margin: 0px;
+    position: absolute
+}
+
+#fg  {
     border: 0px solid black;
     margin: 0px;
 }

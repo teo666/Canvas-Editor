@@ -55,7 +55,7 @@ class Pan {
                 y: y
             }
             editor.world.applyTransform(editor.context);
-            editor.grid.setTransformation(editor.gridContext, editor.world.getTransformation());
+            editor.grid.setTransformation(editor.backgroundContext, editor.world.getTransformation());
             editor.draw();
         }
     }

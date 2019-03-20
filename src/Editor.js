@@ -6,14 +6,14 @@ class Editor {
         if (!obj) {
             throw "Invalid arguments"
         }
-        if (!obj.canvas) {
+        if (!obj.dataCanvas) {
             throw "Canvas has not been specify"
         }
 
-        if (obj.canvas.nodeName != 'CANVAS') {
+        if (obj.dataCanvas.nodeName != 'CANVAS') {
             throw "Not a valid canvas"
         }
-        this.canvas = obj.canvas;
+        this.canvas = obj.dataCanvas;
         this.context = this.canvas.getContext("2d");
 
         this.tool = new Tool();
@@ -22,12 +22,12 @@ class Editor {
 
         this.cursor.snap(50)
 
-        if (obj.gridCanvas && obj.gridCanvas.nodeName && obj.gridCanvas.nodeName == 'CANVAS') {
+        if (obj.backgroundCanvas && obj.backgroundCanvas.nodeName && obj.backgroundCanvas.nodeName == 'CANVAS') {
             this.grid = new Grid();
-            this.gridCanvas = obj.gridCanvas
-            this.gridContext = this.gridCanvas.getContext("2d");
+            this.backgroundCanvas = obj.backgroundCanvas
+            this.backgroundContext = this.backgroundCanvas.getContext("2d");
             this.grid.snap(50)
-            this.grid.prefetch(this.gridContext, this.gridCanvas, this.world)
+            this.grid.prefetch(this.backgroundContext, this.backgroundCanvas, this.world)
         }
 
         this.zoom_in = 1.05;
@@ -120,7 +120,7 @@ class Editor {
 
     draw() {
         this.clear();
-        this.grid.draw(this.gridContext, this.gridCanvas, this.world)
+        this.grid.draw(this.backgroundContext, this.backgroundCanvas, this.world)
         this.draw_axis();
         this.draw_center()
         this.world.draw(this.context);
@@ -215,7 +215,7 @@ class Editor {
                 y: y
             }
             this.world.applyTransform(this.context);
-            this.grid.setTransformation(this.gridContext, this.world.getTransformation());
+            this.grid.setTransformation(this.backgroundContext, this.world.getTransformation());
             this.draw();
         } else if (this.adder.isAdding()) {
             let mmv = {

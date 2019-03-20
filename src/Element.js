@@ -142,19 +142,16 @@ class Element extends Common {
 
         let m
         let a = new Path2D()
-        try{
+        try {
             m = new DOMMatrix(this.transformation.valueOf())
             a.addPath(this.path, m)
-            try{
+            context.addHitRegion({
+                path: a,
+                id: this.id,
+                cursor: 'grab'
+            })
 
-                context.addHitRegion({
-                    path: a,
-                    id: this.id,
-                    cursor: 'grab'
-                })
-            }catch(e){
-            }
-        } catch(e){
+        } catch (e) {
             const t = this.transformation.valueOf()
             m = document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGMatrix();
             m.a = t[0]
@@ -164,18 +161,18 @@ class Element extends Common {
             m.e = t[4]
             m.f = t[5]
             a.addPath(this.path, m)
-            try{
+            try {
 
                 context.addHitRegion({
                     path: a,
                     id: this.id,
                     cursor: 'grab'
                 })
-            }catch(e){
+            } catch (e) {
             }
         }
         /********************************************************* */
-        
+
         this.elements.forEach(element => {
             if (!element.pending) {
                 element.draw(context, ts);
