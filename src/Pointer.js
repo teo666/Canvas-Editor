@@ -9,7 +9,12 @@ class Pointer {
         this.eventToolTarget = obj
     }
 
+    onMouseMove(editor, etype, e){
+        console.log(e.region)
+    }
+
     onMouseDown(editor, etype, e) {
+        
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;

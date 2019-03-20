@@ -17,6 +17,7 @@ class Tool {
     }
 
     dispatch(editor, etype, e) {
+
         let t = this.tools[this.activeTool]
         let m = t[EventUtil.EvtToMethod[etype]]
         let mod = EventUtil.getModifiers(e)

@@ -3,7 +3,7 @@
 class Element extends Common {
     constructor() {
         super();
-        Object.defineProperty(this, 'id', {value : Element.retriveId()})
+        Object.defineProperty(this, 'id', { value: Element.retriveId() })
         this.name = ("element" + this.id);
         this.pending = false;
         this.enableDraw = true
@@ -118,11 +118,64 @@ class Element extends Common {
      */
     draw(context, parentT, overrideTM = null) {
         let ts
-        if(overrideTM){
+        if (overrideTM) {
             ts = overrideTM
         } else {
-            ts = TransformationMatrix.multiply(parentT, this.getTransformation())
+            ts = TransformationMatrix.multiply(parentT, this.transformation)
         }
+        /**
+         * FIXME:
+         * questo metodo permette di creare una regione di hitTest intorno agli oggetti disegnati nel canvas,
+         * il vantaggio di questa cosa e che si utilizzano delle primitive del motore e non necessita di creare 
+         * una regione di hittest manualmente nella definizione degli oggetti
+         * i contro pero' sono molti:
+         *  - funzionalita' sperimentale per tutti i browser se non disponibile (03/2019)
+         *  - >> non funziona per le linee <<
+         *  - gli oggetti dommatrix sono sperimentali
+         *  - la regione di hittest non e' accurata a causa del fatto che non viene tenuto conto delle linee
+         *      per cui un rettangolo con un bordo di 100 per esempio viene individuato solamente sul suo riempimento
+         * 
+         * Tuttavia l'utilizzo di tale primitiva permette in un certo qual senso di rendere piu' efficiente l'hittesting
+         * prima di scandire tutti gli elementi nell'albero e' possibile ricorrere prima a questo metodo, se nessun risultato 
+         * viene dato si procede con il metodo manuale
+         * */
+
+        let m
+        let a = new Path2D()
+        try{
+            m = new DOMMatrix(this.transformation.valueOf())
+            a.addPath(this.path, m)
+            try{
+
+                context.addHitRegion({
+                    path: a,
+                    id: this.id,
+                    cursor: 'grab'
+                })
+            }catch(e){
+            }
+        } catch(e){
+            const t = this.transformation.valueOf()
+            m = document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGMatrix();
+            m.a = t[0]
+            m.b = t[1]
+            m.c = t[2]
+            m.d = t[3]
+            m.e = t[4]
+            m.f = t[5]
+            a.addPath(this.path, m)
+            try{
+
+                context.addHitRegion({
+                    path: a,
+                    id: this.id,
+                    cursor: 'grab'
+                })
+            }catch(e){
+            }
+        }
+        /********************************************************* */
+        
         this.elements.forEach(element => {
             if (!element.pending) {
                 element.draw(context, ts);

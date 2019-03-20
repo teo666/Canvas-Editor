@@ -111,6 +111,8 @@ class Ellipse extends Element {
                 context.stroke(this.path)
             }
 
+            
+
             /*context.strokeStyle = 'red'
             context.lineWidth = 1
             context.stroke(this.hitPath)*/
@@ -119,6 +121,7 @@ class Ellipse extends Element {
                 this.pivot.draw(context, t)
             }
             context.restore();
+            super.draw(context, null, t)
         }
     }
 }

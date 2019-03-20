@@ -154,6 +154,7 @@ class Rectangle extends Element {
             if (this.lineWidth) {
                 context.stroke(this.path)
             }
+
             /*context.strokeStyle = 'red'
             context.lineWidth = 1
             context.stroke(this.hitPath)*/
@@ -162,6 +163,7 @@ class Rectangle extends Element {
                 this.pivot.draw(context, t)
             }
             context.restore();
+
             super.draw(context, null, t)
         }
     }
