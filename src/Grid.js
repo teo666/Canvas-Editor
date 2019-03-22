@@ -2,7 +2,6 @@
 
 class Grid {
     constructor() {
-        //TODO: replace all grid with a div and transform with css
         this.snapSize = 0;
         this.pointSizeRatio = 0.03
         this.pointRadiusSize = 0.8
@@ -166,7 +165,7 @@ class Grid {
             this.prefetchPatterns()
             //TODO: convertire con oggetto e proprieta
             this.operationMode = 0
-            } catch (e) {
+        } catch (e) {
             this.prefetchPatternsCompatibility(ctx, c, world)
             this.operationMode = 1
         }
@@ -189,7 +188,7 @@ class Grid {
         this.scaleFactor = this.snapSize / this.patternsImageSize;
         let tm = world.getTransformation().clone().scale(this.scaleFactor, this.scaleFactor)
         // fattore di scalatura del canvas offscren let ratio = 1 / tm.scaleFactor.x 
-        if(!this.enable){
+        if (!this.enable) {
             this.lastFillStyle = this.backgroundColor
             this.modified = true
             this.lastScaleFactor = null
@@ -261,17 +260,31 @@ class Grid {
 
     }
 
-    draw(ctx, c, world){
-        ctx.save()
-        if(this.operationMode){
-            this.drawCompatibility(ctx, c, world)
+    draw(ctxs, c, world) {
+        ctxs.bg.save()
+        if (this.operationMode) {
+            this.drawCompatibility(ctxs.bg, c, world)
         } else {
-            this.drawGrid(ctx, c.width, c.height, world)
+            this.drawGrid(ctxs.bg, c.width, c.height, world)
         }
-        ctx.restore()
+
+
+        this.setTransformation(ctxs.bg, world.getTransformation())
+        ctxs.bg.lineWidth = 1 / world.getScaleFactor().x;
+        ctxs.bg.beginPath();
+        ctxs.bg.moveTo(-1000000, 0);
+        ctxs.bg.lineTo(1000000, 0);
+        ctxs.bg.lineWidth = 1 / world.getScaleFactor().y;
+        ctxs.bg.moveTo(0, -1000000);
+        ctxs.bg.lineTo(0, 1000000);
+        ctxs.bg.strokeStyle = 'grey'
+        ctxs.bg.stroke();
+
+        ctxs.bg.restore()
     }
 
     setTransformation(...args) {
+
         if (args.length == 2 && args[1] instanceof TransformationMatrix && args[0] instanceof CanvasRenderingContext2D) {
             this.transformation = args[1].clone()
             let ts = args[1].valueOf()

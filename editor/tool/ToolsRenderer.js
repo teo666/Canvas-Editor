@@ -36,7 +36,6 @@ class ToolsRenderer {
         const cont = $('<div id="tool_' + type + '" style="overflow:scroll"></div>')
         this.cache[type] = {}
         this.cache[type].tool = cont
-        //TODO: sostiturire con un oggetto durante la creazione dei bind si possono invertire le chiavi se utilizzo l'indice
         this.cache[type].bind = []
         this.cache[type].propOrder = []
 

@@ -11,9 +11,8 @@ class Cursor extends Element {
         this.enableDraw = false;
     }
 
-    coordinates() {
-        //TODO:setter
-        return this.center;
+    coordinates(...args) {
+        return this.center(...args);
     }
 
     enable() {

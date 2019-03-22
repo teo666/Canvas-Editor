@@ -9,6 +9,15 @@ class Element extends Common {
         this.enableDraw = true
         this.selected = true
         this.pivot = new Pivot()
+        Element._elements[this.id] = this
+    }
+
+    toggleSelected(contextes, t) {
+        this.selected = !this.selected
+    }
+
+    select(sel) {
+        return this.selected = sel && true
     }
 
     isPending() {
@@ -113,46 +122,41 @@ class Element extends Common {
     }
 
     /**
-     * overrideTM permette di evitare di fare il prodotto delle matrici di trasformazione laddove esso sia gia' stato effettuato
-     * per esempio nei casi di riscrittura della funzione draw
-     */
-    draw(context, parentT, overrideTM = null) {
-        let ts
-        if (overrideTM) {
-            ts = overrideTM
-        } else {
-            ts = TransformationMatrix.multiply(parentT, this.transformation)
-        }
-        /**
-         * FIXME:
-         * questo metodo permette di creare una regione di hitTest intorno agli oggetti disegnati nel canvas,
-         * il vantaggio di questa cosa e che si utilizzano delle primitive del motore e non necessita di creare 
-         * una regione di hittest manualmente nella definizione degli oggetti
-         * i contro pero' sono molti:
-         *  - funzionalita' sperimentale per tutti i browser se non disponibile (03/2019)
-         *  - >> non funziona per le linee <<
-         *  - gli oggetti dommatrix sono sperimentali
-         *  - la regione di hittest non e' accurata a causa del fatto che non viene tenuto conto delle linee
-         *      per cui un rettangolo con un bordo di 100 per esempio viene individuato solamente sul suo riempimento
-         * 
-         * Tuttavia l'utilizzo di tale primitiva permette in un certo qual senso di rendere piu' efficiente l'hittesting
-         * prima di scandire tutti gli elementi nell'albero e' possibile ricorrere prima a questo metodo, se nessun risultato 
-         * viene dato si procede con il metodo manuale
-         * */
+    * FIXME:
+    * questo metodo permette di creare una regione di hitTest intorno agli oggetti disegnati nel canvas,
+    * il vantaggio di questa cosa e che si utilizzano delle primitive del motore e non necessita di creare 
+    * una regione di hittest manualmente nella definizione degli oggetti
+    * i contro pero' sono molti:
+    *  - funzionalita' sperimentale per tutti i browser se non disponibile (03/2019)
+    *  - >> non funziona per le linee <<
+    *  - gli oggetti dommatrix sono sperimentali
+    *  - la regione di hittest non e' accurata a causa del fatto che non viene tenuto conto delle linee
+    *      per cui un rettangolo con un bordo di 100 per esempio viene individuato solamente sul suo riempimento
+    *  - in caso di animazione e' necessario cancellare la hitregion e ricrearla così come quando una proprietà 
+    * dell'oggetto viene modificata
+    * 
+    * Tuttavia l'utilizzo di tale primitiva permette in un certo qual senso di rendere piu' efficiente l'hittesting
+    * prima di scandire tutti gli elementi nell'albero e' possibile ricorrere prima a questo metodo, se nessun risultato 
+    * viene dato si procede con il metodo manuale
+    *
+    * */
 
+    addHitRegion(ctx) {
+        const t = TransformationMatrix.multiply(this.getParentsTransformations(), this.transformation).valueOf()
         let m
         let a = new Path2D()
+        const p = this.hitPath ? this.hitPath: this.path 
         try {
-            m = new DOMMatrix(this.transformation.valueOf())
-            a.addPath(this.path, m)
-            context.addHitRegion({
+            //console.log(1)
+            m = new DOMMatrix(t)
+            a.addPath(p, m)
+            ctx.addHitRegion({
                 path: a,
                 id: this.id,
                 cursor: 'grab'
             })
 
         } catch (e) {
-            const t = this.transformation.valueOf()
             m = document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGMatrix();
             m.a = t[0]
             m.b = t[1]
@@ -160,10 +164,9 @@ class Element extends Common {
             m.d = t[3]
             m.e = t[4]
             m.f = t[5]
-            a.addPath(this.path, m)
+            a.addPath(p, m)
             try {
-
-                context.addHitRegion({
+                ctx.addHitRegion({
                     path: a,
                     id: this.id,
                     cursor: 'grab'
@@ -171,13 +174,31 @@ class Element extends Common {
             } catch (e) {
             }
         }
-        /********************************************************* */
+    }
 
+    /**
+     * overrideTM permette di evitare di fare il prodotto delle matrici di trasformazione laddove esso sia gia' stato effettuato
+     * per esempio nei casi di riscrittura della funzione draw
+     */
+    draw(contextes, parentT, overrideTM = null) {
+        let ts
+        if (overrideTM) {
+            ts = overrideTM
+        } else {
+            ts = TransformationMatrix.multiply(parentT, this.transformation)
+        }
+        //this.addHitRegion(contextes.fg)
         this.elements.forEach(element => {
             if (!element.pending) {
-                element.draw(context, ts);
+                element.draw(contextes, ts);
             }
         });
+    }
+
+    drawPivot(contextes) {
+        const a = this.getParentsTransformations()
+        const ts = TransformationMatrix.multiply(a, this.transformation)
+        this.pivot.draw(contextes, ts)
     }
 
     getParentsTransformations() {
@@ -240,3 +261,6 @@ Object.defineProperty(Element, 'retriveId',
         writable: false
     }
 )
+
+
+Object.defineProperty(Element, '_elements', { value: {} })

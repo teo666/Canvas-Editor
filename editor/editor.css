@@ -10,16 +10,18 @@
 #bg{
     border: 0px solid black;
     margin: 0px;
-    position: absolute
 }
 
 #data  {
     border: 0px solid black;
     margin: 0px;
-    position: absolute
+    position: absolute;
+    z-index:1000
 }
 
 #fg  {
     border: 0px solid black;
     margin: 0px;
+    position: absolute;
+    z-index:1001
 }

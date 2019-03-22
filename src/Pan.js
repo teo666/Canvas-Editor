@@ -54,8 +54,8 @@ class Pan {
                 x: x,
                 y: y
             }
-            editor.world.applyTransform(editor.context);
-            editor.grid.setTransformation(editor.backgroundContext, editor.world.getTransformation());
+            editor.world.applyTransform(editor.contextes);
+            //editor.grid.setTransformation(editor.contextes.bg, editor.world.getTransformation());
             editor.draw();
         }
     }
@@ -72,7 +72,7 @@ class Pan {
             let diff = editor.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
 
             editor.world.rotate(- Math.sign(e.deltaY) * Math.PI/100);
-            editor.world.applyTransform(editor.context)
+            editor.world.applyTransform(editor.contextes)
             editor.draw();
             return
         }
@@ -85,7 +85,8 @@ class Pan {
         }
         let diff = editor.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
         editor.world.scaleOnPoint(z, z, diff[0], diff[1]);
-        editor.world.applyTransform(editor.context)
+        editor.world.applyTransform(editor.contextes)
+        //editor.grid.setTransformation(editor.contextes.bg, editor.world.getTransformation());
         editor.draw();
     }
 

@@ -68,21 +68,20 @@
             <button onclick="draw()">Animate
             </button>
             <button
-                onclick="editor.grid.enable = !editor.grid.enable; editor.grid.draw(editor.backgroundContext, editor.backgroundCanvas,editor.world)">Toggle
+                onclick="editor.grid.enable = !editor.grid.enable; editor.grid.draw(editor.contextes, editor.backgroundCanvas,editor.world)">Toggle
                 Grid
             </button>
-            <input type="number" min=0.1 oninput="(function pippo(){
-                
+            <input type="number" min=0 value="50" oninput="
                 editor.grid.snap(Number(event.target.value)),
                 editor.cursor.snap(Number(event.target.value)),
-                editor.grid.draw(editor.backgroundContext, editor.backgroundCanvas,editor.world)
-                })()">
+                editor.grid.draw(editor.contextes, editor.backgroundCanvas,editor.world)
+                ">
 
         </div>
         <div id="canvas_container">
-            <canvas id="bg" width="1000" height="700" style="border: 0px solid black; margin: 0px;"></canvas>
-            <canvas id="data" width="1000" height="700" style="border: 0px solid rgb(0, 0, 0); margin: 0px;"></canvas>
             <canvas id="fg" width="1000" height="700" style="border: 0px solid rgb(0, 0, 0); margin: 0px;"></canvas>
+            <canvas id="data" width="1000" height="700" style="border: 0px solid rgb(0, 0, 0); margin: 0px;"></canvas>
+            <canvas id="bg" width="1000" height="700" style="border: 0px solid black; margin: 0px;"></canvas>
         </div>
         <div id="properties_container">
         </div>

@@ -17,6 +17,7 @@ window.onload = function () {
     let data = document.querySelector("#data");
     let fg = document.querySelector("#fg");
     let p = document.querySelector('#properties_container')
+    let cc = document.querySelector('#canvas_container')
     document.body.style.margin = 0
     fg.width = data.width = bg.width = window.innerWidth-120
     fg.height = data.height = bg.height = window.innerHeight*2/3
@@ -24,7 +25,8 @@ window.onload = function () {
         dataCanvas: data,
         backgroundCanvas: bg,
         foregroundCanvas: fg,
-        properties: p
+        properties: p,
+        canvasContainer: cc
     });
 
     //draw()

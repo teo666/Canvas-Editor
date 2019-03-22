@@ -136,27 +136,25 @@ class Line extends Element {
         this.buildHitTestPath()
     }
 
-    //TODO: replace with addHitRegion???
-    hitTest(x, y, tr, context) {
+    hitTest(x, y, tr, contextes) {
 
         let t = TransformationMatrix.multiply(tr, this.getTransformation()).inv().multiplyPoint(x, y)
-        context.save();
-        context.setTransform(1, 0, 0, 1, 0, 0);
+        contextes.data.save();
+        contextes.data.setTransform(1, 0, 0, 1, 0, 0);
 
-        let ret = context.isPointInPath(this.hitPath, t[0], t[1])
-        context.restore();
+        let ret = contextes.data.isPointInPath(this.hitPath, t[0], t[1])
+        contextes.data.restore();
         return ret;
     }
 
-    draw(context, parentT) {
+    draw(contextes, parentT) {
         if (this.enableDraw) {
 
-            context.save();
+            contextes.data.save();
 
-            //let t = parentT.clone().multiplyTM(this.transformation)
             let t = TransformationMatrix.multiply(parentT, this.transformation)
             let ts = t.valueOf()
-            context.setTransform(
+            contextes.data.setTransform(
                 ts[0],
                 ts[1],
                 ts[2],
@@ -165,15 +163,15 @@ class Line extends Element {
                 ts[5]
             )
 
-            context.globalCompositeOperation = this.globalCompositeOperation
-            context.strokeStyle = this.strokeStyle
-            context.lineWidth = this.lineWidth
-            context.lineCap = this.lineCap
-            context.lineJoin = this.lineJoin
-            context.setLineDash(this.lineDash)
-            context.shadowBlur = this.shadowBlur
-            context.shadowColor = this.shadowColor
-            context.stroke(this.path)
+            contextes.data.globalCompositeOperation = this.globalCompositeOperation
+            contextes.data.strokeStyle = this.strokeStyle
+            contextes.data.lineWidth = this.lineWidth
+            contextes.data.lineCap = this.lineCap
+            contextes.data.lineJoin = this.lineJoin
+            contextes.data.setLineDash(this.lineDash)
+            contextes.data.shadowBlur = this.shadowBlur
+            contextes.data.shadowColor = this.shadowColor
+            contextes.data.stroke(this.path)
 
             //DEBUG: draw hitTestPath
             /*
@@ -182,11 +180,8 @@ class Line extends Element {
             context.stroke(this.hitPath)
             */
 
-            if (this.selected) {
-                this.pivot.draw(context, t)
-            }
-            context.restore();
-            super.draw(context, null, t)
+            contextes.data.restore();
+            super.draw(contextes, null, t)
         }
     }
 

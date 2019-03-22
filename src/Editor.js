@@ -13,8 +13,13 @@ class Editor {
         if (obj.dataCanvas.nodeName != 'CANVAS') {
             throw "Not a valid canvas"
         }
-        this.canvas = obj.dataCanvas;
-        this.context = this.canvas.getContext("2d");
+        this.canvasContainer = obj.canvasContainer
+        this.dataCanvas = obj.dataCanvas;
+        this.contextes = {
+            bg: null,
+            data: this.dataCanvas.getContext('2d'),
+            fg: null
+        }
 
         this.tool = new Tool();
         this.world = new World();
@@ -25,9 +30,14 @@ class Editor {
         if (obj.backgroundCanvas && obj.backgroundCanvas.nodeName && obj.backgroundCanvas.nodeName == 'CANVAS') {
             this.grid = new Grid();
             this.backgroundCanvas = obj.backgroundCanvas
-            this.backgroundContext = this.backgroundCanvas.getContext("2d");
+            this.contextes.bg = this.backgroundCanvas.getContext("2d");
             this.grid.snap(50)
             this.grid.prefetch(this.backgroundContext, this.backgroundCanvas, this.world)
+        }
+
+        if (obj.foregroundCanvas && obj.foregroundCanvas.nodeName && obj.foregroundCanvas.nodeName == 'CANVAS') {
+            this.foregroundCanvas = obj.foregroundCanvas
+            this.contextes.fg = this.foregroundCanvas.getContext("2d");
         }
 
         this.zoom_in = 1.05;
@@ -56,7 +66,8 @@ class Editor {
 
         //TODO: TOGLIERE
         this.world.translate(200, 200)
-        this.world.applyTransform(this.context)
+        this.world.applyTransform(this.contextes)
+        this.generateforegroundClearPattern()
 
         let l = new Line()
         l.translate(150, 50)
@@ -65,65 +76,106 @@ class Editor {
         l.end(500, 0)
         l.width(50)
         this.world.addElement(l)
+        l.addHitRegion(this.contextes.fg)
         let el = new Ellipse()
         el.center(50, 50)
         el.radius(50, 90)
         el.translate(100, 300)
         this.world.addElement(el)
+        el.addHitRegion(this.contextes.fg)
 
         let qd = new Rectangle()
-        qd.corner(10,10)
-        qd.size(100,200)
+        qd.corner(10, 10)
+        qd.size(100, 200)
         this.world.addElement(qd)
+        qd.addHitRegion(this.contextes.fg)
         ////////////
-
-
 
 
         this.draw()
     }
 
     draw_point(x, y, r) {
-        this.context.beginPath();
-        this.context.arc(x, y, r, 0, 2 * Math.PI, false);
-        this.context.fillStyle = 'blue';
-        this.context.fill();
-        this.context.strokeStyle = '#003300';
-        this.context.stroke();
+        this.contextes.bg.beginPath();
+        this.contextes.bg.arc(x, y, r, 0, 2 * Math.PI, false);
+        this.contextes.bg.fillStyle = 'blue';
+        this.contextes.bg.fill();
+        this.contextes.bg.strokeStyle = '#003300';
+        this.contextes.bg.stroke();
     };
 
     draw_center() {
-        this.draw_point(0, 0, 1);
+        this.draw_point(0, 0, 30);
     };
 
 
     draw_axis() {
-        this.context.save()
-        this.context.lineWidth = 1 / this.world.getScaleFactor().x;
-        this.context.beginPath();
-        this.context.moveTo(-1000000, 0);
-        this.context.lineTo(1000000, 0);
-        this.context.lineWidth = 1 / this.world.getScaleFactor().y;
-        this.context.moveTo(0, -1000000);
-        this.context.lineTo(0, 1000000);
-        this.context.strokeStyle = 'grey'
-        this.context.stroke();
-        this.context.restore()
+        this.contextes.bg.save()
+        this.grid.setTransformation(this.contextes.bg, this.world.getTransformation())
+        this.contextes.bg.lineWidth = 1 / this.world.getScaleFactor().x;
+        this.contextes.bg.beginPath();
+        this.contextes.bg.moveTo(-1000000, 0);
+        this.contextes.bg.lineTo(1000000, 0);
+        this.contextes.bg.lineWidth = 1 / this.world.getScaleFactor().y;
+        this.contextes.bg.moveTo(0, -1000000);
+        this.contextes.bg.lineTo(0, 1000000);
+        this.contextes.bg.strokeStyle = 'grey'
+        this.contextes.bg.stroke();
+        this.contextes.bg.restore()
     };
 
-    clear() {
-        this.context.save();
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.restore();
-    };
+    clearData() {
+        this.contextes.data.save();
+        this.contextes.data.setTransform(1, 0, 0, 1, 0, 0);
+        this.contextes.data.clearRect(0, 0, this.dataCanvas.width, this.dataCanvas.height);
+        this.contextes.data.restore();
+    }
+
+    /**
+     * 
+     * Foreground canvas keep information about hit test, but it is used to  draw some elements too like
+     * pivot cross. When we have to draw that element we need to clear context before, however this operation 
+     * clear also informations necessary to handle hit test. To avoid that we repaint the context with transparent 
+     * image whit pixels intersection
+     */
+    generateforegroundClearPattern() {
+        this.contextes.fg.save();
+        this.contextes.fg.setTransform(1, 0, 0, 1, 0, 0);
+        this.contextes.fg.clearRect(0, 0, this.dataCanvas.width, this.dataCanvas.height);
+        this.foregroundClearPattern = this.contextes.fg.createPattern(this.foregroundCanvas, "repeat")
+        this.contextes.fg.restore();
+    }
+
+    clearForground() {
+        this.contextes.fg.save();
+        this.contextes.fg.globalCompositeOperation = 'source-in'
+        this.contextes.fg.fillStyle = this.foregroundClearPattern
+        this.contextes.fg.fillRect(0, 0, this.dataCanvas.width, this.dataCanvas.height);
+        this.contextes.fg.restore();
+    }
+
+    /** la chiamata a questo puo' essere tranquillamente sempre evitata salvo casi particolari
+    * per esempio quando il colore di sfondo del grid e' trasparente 
+    */
+    clearBackground() {
+        this.contextes.bg.save();
+        this.contextes.bg.setTransform(1, 0, 0, 1, 0, 0);
+        this.contextes.bg.clearRect(0, 0, this.dataCanvas.width, this.dataCanvas.height);
+        this.contextes.bg.restore();
+    }
+
+    clearAll() {
+        this.clearBackground()
+        this.clearData()
+        this.clearForground()
+    }
 
     draw() {
-        this.clear();
-        this.grid.draw(this.backgroundContext, this.backgroundCanvas, this.world)
-        this.draw_axis();
-        this.draw_center()
-        this.world.draw(this.context);
+        this.clearData();
+        this.grid.draw(this.contextes, this.backgroundCanvas, this.world)
+        //this.draw_axis();
+        //this.draw_center()
+        this.world.draw(this.contextes);
     }
 
     addEvents() {
@@ -138,42 +190,42 @@ class Editor {
 
     addMouseMove() {
         let self = this;
-        this.canvas.addEventListener("mousemove", function () {
+        this.foregroundCanvas.addEventListener("mousemove", function () {
             self.tool.dispatch(self, EventUtil.EvtType.mousemove, ...arguments)
         });
     }
 
     addMouseDown() {
         let self = this;
-        this.canvas.addEventListener("mousedown", function () {
+        this.foregroundCanvas.addEventListener("mousedown", function () {
             self.tool.dispatch(self, EventUtil.EvtType.mousedown, ...arguments)
         });
     }
 
     addMouseUp() {
         let self = this;
-        this.canvas.addEventListener("mouseup", function () {
+        this.foregroundCanvas.addEventListener("mouseup", function () {
             self.tool.dispatch(self, EventUtil.EvtType.mouseup, ...arguments)
         });
     }
 
     addMouseLeave() {
         let self = this;
-        this.canvas.addEventListener("mouseleave", function () {
+        this.foregroundCanvas.addEventListener("mouseleave", function () {
             self.tool.dispatch(self, EventUtil.EvtType.mouseleave, ...arguments)
         });
     }
 
     addMouseWheel() {
         let self = this;
-        this.canvas.addEventListener("wheel", function () {
+        this.foregroundCanvas.addEventListener("wheel", function () {
             self.tool.dispatch(self, EventUtil.EvtType.mousewheel, ...arguments)
         });
     }
 
     addMouseDoubleClick() {
         let self = this;
-        this.canvas.addEventListener("dblclick", function () {
+        this.foregroundCanvas.addEventListener("dblclick", function () {
             self.tool.dispatch(self, EventUtil.EvtType.mousedblclick, ...arguments)
         });
     }

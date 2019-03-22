@@ -2,20 +2,20 @@
 
 class Pivot {
     constructor() {
-        this.centerPoint = new Point2D(0,0)
+        this.centerPoint = new Point2D(0, 0)
         this.crossSize = 10
         this.lineWidth = 2
         this.dimension = new Size2D(10, 10)
         this.strokeStyle = Colors.HTMLColor.red
-        this.enableDraw = true
+        this.enableDraw = false
         //this.buildPath()
     }
 
-    center(...args){
+    center(...args) {
         return this.centerPoint.value(...args)
     }
 
-    size(...args){
+    size(...args) {
         return this.dimension.value(...args)
     }
 
@@ -38,30 +38,30 @@ class Pivot {
         this.pathH.lineTo(this.centerPoint.x() + this.dimension.x() / 2, this.centerPoint.y())
     }
 
-    draw(context, e_tm) {
+    draw(contextes, e_tm) {
         if (this.enableDraw) {
-
-            context.save()
+            contextes.fg.save()
             //ritorna la posizione del punto relativamente al mondo
-            let p = e_tm.clone().multiplyPoint(this.x(),this.y()).valueOf()
-    
-            context.setTransform(
-                1,0,0,1,p[0],p[1]
+            let p = e_tm.multiplyPoint(this.x(), this.y()).valueOf()
+            contextes.fg.setTransform(
+                1,0,0,1,
+                p[0],
+                p[1]
             )
-            context.strokeStyle = this.strokeStyle;
-            context.lineCap = 'butt'
-            context.setLineDash([])
-            context.lineWidth = this.lineWidth;
-            context.stroke(Pivot.staticPath.pathV)
-            context.lineWidth = this.lineWidth;
-            context.stroke(Pivot.staticPath.pathH)
-            context.restore()
+            contextes.fg.strokeStyle = this.strokeStyle;
+            contextes.fg.lineCap = 'butt'
+            contextes.fg.setLineDash([])
+            contextes.fg.lineWidth = this.lineWidth;
+            contextes.fg.stroke(Pivot.staticPath.pathV)
+            contextes.fg.lineWidth = this.lineWidth;
+            contextes.fg.stroke(Pivot.staticPath.pathH)
+            contextes.fg.restore()
         }
     }
 }
 
-Object.defineProperty(Pivot, 'staticPath',{
-    value:(function() {
+Object.defineProperty(Pivot, 'staticPath', {
+    value: (function () {
         //vertical segment
         const pathV = new Path2D()
         pathV.moveTo(0, -5)
@@ -69,7 +69,7 @@ Object.defineProperty(Pivot, 'staticPath',{
         //horizontal segment
         const pathH = new Path2D()
         pathH.moveTo(-5, 0)
-        pathH.lineTo(5, 0)        
-        return {pathH: pathH, pathV: pathV}
+        pathH.lineTo(5, 0)
+        return { pathH: pathH, pathV: pathV }
     })()
 })

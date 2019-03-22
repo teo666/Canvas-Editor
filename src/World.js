@@ -10,11 +10,11 @@ class World extends Common {
     }
 
     applyTransform(ctx) {
-        if (!ctx instanceof CanvasRenderingContext2D) {
+        if (!ctx.data instanceof CanvasRenderingContext2D) {
             throw "invalid arguments"
         }
         let v = this.transformation.valueOf();
-        ctx.setTransform(
+        ctx.data.setTransform(
             v[0],
             v[1],
             v[2],
@@ -24,10 +24,18 @@ class World extends Common {
         )
     }
 
-    draw(context) {
+    draw(contextes) {
         this.elements.forEach(element => {
             if (!element.pending) {
-                element.draw(context, this.getTransformation());
+                element.draw(contextes, this.getTransformation());
+            }
+        });
+    }
+
+    drawPivot(contextes) {
+        this.elements.forEach(element => {
+            if (!element.pending) {
+                element.drawPivot(contextes, this.getTransformation());
             }
         });
     }
