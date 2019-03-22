@@ -15,7 +15,7 @@ class Pointer {
 
     onMouseDown(editor, etype, e) {
         let list;
-
+        debugger
         if (e.region && Element._elements[e.region]) {
             list = [Element._elements[e.region]]
             console.log('hitRegion primitive')
@@ -30,7 +30,7 @@ class Pointer {
             list[list.length - 1].selected = true
             this.disableAllPivot()
             list[list.length - 1].pivot.enableDraw = true
-            editor.world.drawPivot(editor.contextes, list[list.length - 1].getTransformation())
+            editor.drawForeground()
             const evt = new CustomEvent("propchange", {
                 detail: {
                     obj: list[list.length - 1]
@@ -42,7 +42,6 @@ class Pointer {
     }
 
     disableAllPivot() {
-        editor.clearForground()
         for (const i in Element._elements) {
             Element._elements[i].pivot.enableDraw = false
         }

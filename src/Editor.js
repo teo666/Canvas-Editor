@@ -67,7 +67,6 @@ class Editor {
         //TODO: TOGLIERE
         this.world.translate(200, 200)
         this.world.applyTransform(this.contextes)
-        this.generateforegroundClearPattern()
 
         let l = new Line()
         l.translate(150, 50)
@@ -76,23 +75,21 @@ class Editor {
         l.end(500, 0)
         l.width(50)
         this.world.addElement(l)
-        l.addHitRegion(this.contextes.fg)
         let el = new Ellipse()
         el.center(50, 50)
         el.radius(50, 90)
         el.translate(100, 300)
         this.world.addElement(el)
-        el.addHitRegion(this.contextes.fg)
 
         let qd = new Rectangle()
         qd.corner(10, 10)
         qd.size(100, 200)
         this.world.addElement(qd)
-        qd.addHitRegion(this.contextes.fg)
         ////////////
 
 
         this.draw()
+        this.drawForeground()
     }
 
     draw_point(x, y, r) {
@@ -131,26 +128,11 @@ class Editor {
         this.contextes.data.restore();
     }
 
-    /**
-     * 
-     * Foreground canvas keep information about hit test, but it is used to  draw some elements too like
-     * pivot cross. When we have to draw that element we need to clear context before, however this operation 
-     * clear also informations necessary to handle hit test. To avoid that we repaint the context with transparent 
-     * image whit pixels intersection
-     */
-    generateforegroundClearPattern() {
+    clearForground() {
+        debugger
         this.contextes.fg.save();
         this.contextes.fg.setTransform(1, 0, 0, 1, 0, 0);
         this.contextes.fg.clearRect(0, 0, this.dataCanvas.width, this.dataCanvas.height);
-        this.foregroundClearPattern = this.contextes.fg.createPattern(this.foregroundCanvas, "repeat")
-        this.contextes.fg.restore();
-    }
-
-    clearForground() {
-        this.contextes.fg.save();
-        this.contextes.fg.globalCompositeOperation = 'source-in'
-        this.contextes.fg.fillStyle = this.foregroundClearPattern
-        this.contextes.fg.fillRect(0, 0, this.dataCanvas.width, this.dataCanvas.height);
         this.contextes.fg.restore();
     }
 
@@ -170,11 +152,15 @@ class Editor {
         this.clearForground()
     }
 
+    drawForeground(){
+        this.clearForground()
+        this.world.drawPivot(this.contextes)
+        this.world.addHitRegions(this.contextes)
+    }
+
     draw() {
         this.clearData();
         this.grid.draw(this.contextes, this.backgroundCanvas, this.world)
-        //this.draw_axis();
-        //this.draw_center()
         this.world.draw(this.contextes);
     }
 

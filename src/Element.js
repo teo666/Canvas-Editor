@@ -141,8 +141,14 @@ class Element extends Common {
     *
     * */
 
-    addHitRegion(ctx) {
-        const t = TransformationMatrix.multiply(this.getParentsTransformations(), this.transformation).valueOf()
+    addHitRegion(contextes, parentT, overrideTM = null) {
+        let t
+        if (overrideTM) {
+            t = overrideTM
+        } else {
+            t = TransformationMatrix.multiply(parentT, this.transformation)
+        }
+        t = t.valueOf()
         let m
         let a = new Path2D()
         const p = this.hitPath ? this.hitPath: this.path 
@@ -150,7 +156,7 @@ class Element extends Common {
             //console.log(1)
             m = new DOMMatrix(t)
             a.addPath(p, m)
-            ctx.addHitRegion({
+            contextes.fg.addHitRegion({
                 path: a,
                 id: this.id,
                 cursor: 'grab'
@@ -166,7 +172,7 @@ class Element extends Common {
             m.f = t[5]
             a.addPath(p, m)
             try {
-                ctx.addHitRegion({
+                contextes.fg.addHitRegion({
                     path: a,
                     id: this.id,
                     cursor: 'grab'
@@ -195,10 +201,20 @@ class Element extends Common {
         });
     }
 
-    drawPivot(contextes) {
-        const a = this.getParentsTransformations()
-        const ts = TransformationMatrix.multiply(a, this.transformation)
-        this.pivot.draw(contextes, ts)
+    drawPivot(contextes, parentT, overrideTM = null) {
+        let ts
+        if (overrideTM) {
+            ts = overrideTM
+        } else {
+            ts = TransformationMatrix.multiply(parentT, this.transformation)
+        }
+        this.pivot.draw(contextes,ts)
+
+        this.elements.forEach(element => {
+            if (!element.pending) {
+                element.drawPivot(contextes, ts);
+            }
+        });
     }
 
     getParentsTransformations() {

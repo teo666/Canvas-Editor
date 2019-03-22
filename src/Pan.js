@@ -55,8 +55,8 @@ class Pan {
                 y: y
             }
             editor.world.applyTransform(editor.contextes);
-            //editor.grid.setTransformation(editor.contextes.bg, editor.world.getTransformation());
             editor.draw();
+            editor.drawForeground()
         }
     }
 
@@ -69,11 +69,11 @@ class Pan {
         const mask = EventUtil.getModifiers(e)
 
         if(EventUtil.matchMask(mask, EventUtil.Modifiers.ALT)){
-            let diff = editor.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
 
             editor.world.rotate(- Math.sign(e.deltaY) * Math.PI/100);
             editor.world.applyTransform(editor.contextes)
             editor.draw();
+            editor.drawForeground()
             return
         }
 
@@ -86,8 +86,8 @@ class Pan {
         let diff = editor.world.getTransformation().clone().inv().multiplyPoint(x, y).valueOf()
         editor.world.scaleOnPoint(z, z, diff[0], diff[1]);
         editor.world.applyTransform(editor.contextes)
-        //editor.grid.setTransformation(editor.contextes.bg, editor.world.getTransformation());
         editor.draw();
+        editor.drawForeground()
     }
 
 }

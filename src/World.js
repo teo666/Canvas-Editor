@@ -40,6 +40,14 @@ class World extends Common {
         });
     }
 
+    addHitRegions(contextes) {
+        this.elements.forEach(element => {
+            if (!element.pending) {
+                element.addHitRegion(contextes, this.getTransformation());
+            }
+        });
+    }
+
     hitTest(x, y, context, canvas) {
         let htl = [];
         let tr = this.getTransformation();
