@@ -33,6 +33,18 @@ class Ellipse extends Element {
         this.buildPath()
     }
 
+    width(...args) {
+        if (args.length == 1) {
+            if (typeof args[0] == 'number') {
+                this.lineWidth = args[0]
+                this.buildPath()
+            } else {
+                throw 'Invalid arguments'
+            }
+        }
+        return this.lineWidth;
+    }
+
     center(...args) {
         if (args.length) {
             this.centerPoint.value(...args)

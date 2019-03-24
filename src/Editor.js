@@ -85,7 +85,15 @@ class Editor {
         qd.corner(10, 10)
         qd.size(100, 200)
         this.world.addElement(qd)
+
+        let a = new Arc()
+        a.center(-100,-100)
+        a.radius(50)
+        a.startAngle(0)
+        a.endAngle(Math.PI)
+        this.world.addElement(a)
         ////////////
+
 
 
         this.draw()
@@ -109,11 +117,11 @@ class Editor {
     draw_axis() {
         this.contextes.bg.save()
         this.grid.setTransformation(this.contextes.bg, this.world.getTransformation())
-        this.contextes.bg.lineWidth = 1 / this.world.getScaleFactor().x;
+        this.contextes.bg.lineWidth = 2 / this.world.getScaleFactor().x;
         this.contextes.bg.beginPath();
         this.contextes.bg.moveTo(-1000000, 0);
         this.contextes.bg.lineTo(1000000, 0);
-        this.contextes.bg.lineWidth = 1 / this.world.getScaleFactor().y;
+        this.contextes.bg.lineWidth = 2 / this.world.getScaleFactor().y;
         this.contextes.bg.moveTo(0, -1000000);
         this.contextes.bg.lineTo(0, 1000000);
         this.contextes.bg.strokeStyle = 'grey'
@@ -129,7 +137,6 @@ class Editor {
     }
 
     clearForground() {
-        debugger
         this.contextes.fg.save();
         this.contextes.fg.setTransform(1, 0, 0, 1, 0, 0);
         this.contextes.fg.clearRect(0, 0, this.dataCanvas.width, this.dataCanvas.height);

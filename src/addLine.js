@@ -50,15 +50,6 @@ const __addLine = {
     3: {
         event: 'mousewheel',
         callback: function (editor, elem, parent, events, e, mem) {
-            let rect = e.target.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let y = e.clientY - rect.top;
-            e.preventDefault();
-            let mmv = {
-                x: x,
-                y: y
-            }
-            editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let inc
             if (e.deltaY > 0) {
                 inc = -1

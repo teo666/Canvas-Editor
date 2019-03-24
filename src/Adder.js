@@ -33,7 +33,7 @@ class Adder {
         return this.adding;
     }
 
-    add(type, parent, continuosAdd = false) {
+    add(type, parent, descriptor = null, continuosAdd = false) {
         // il controllo che non stia gia aggiungendo mi reviene eventuali inserimenti multipli dovuti a cambio di tool
         // TODO: sarebbe meglio far si' che il tool chami un medoto reset che permette di uscire dallo stato sospeso in modo pulito(???)
         if(!this.adding){
@@ -43,22 +43,22 @@ class Adder {
                 case shapeType.Point2D:
                 break;
                 case shapeType.Ellipse:
-                this.addEllipse(parent)
+                this.addEllipse(descriptor)
                 break;
                 case shapeType.Line:
-                this.addLine(parent)
+                this.addLine(descriptor)
                 break;
                 case shapeType.Net:
-                this.addNet(parent);
+                this.addNet(descriptor);
                 break;
                 case shapeType.Rectangle:
-                this.addRectangle(parent);
+                this.addRectangle(descriptor);
                 break;
                 case shapeType.Square:
-                this.addSquare(parent);
+                this.addSquare(descriptor);
                 break;
                 case shapeType.Arc:
-                this.addArc(parent);
+                this.addArc(descriptor);
                 break;
             }
             this.prepare(parent)
@@ -80,39 +80,39 @@ class Adder {
         this.readAllowedEvents();
     }
 
-    addEllipse() {
-        this.descriptor = __addEllipse;
+    addEllipse(descriptor) {
+        this.descriptor = descriptor? descriptor : __addEllipse;
         this.pending = new Ellipse();
         this.pendingType = shapeType.Ellipse;
     }
 
-    addLine() {
-        this.descriptor = __addLine;
+    addLine(descriptor) {
+        this.descriptor = descriptor? descriptor : __addLine;
         this.pending = new Line();
         this.pendingType = shapeType.Line;
     }
 
     //necessita di ottenere due eventi di mouseup
-    addNet() {
-        this.descriptor = __addNet;
+    addNet(descriptor) {
+        this.descriptor = descriptor? descriptor : __addNet;
         this.pending = new Net();
         this.pendingType = shapeType.Net;
     }
 
-    addRectangle() {
-        this.descriptor = __addRectangle;
+    addRectangle(descriptor) {
+        this.descriptor = descriptor? descriptor :__addRectangle;
         this.pending = new Rectangle();
         this.pendingType = shapeType.Rectangle;
     }
 
-    addSquare() {
-        this.descriptor = __addSquare;
+    addSquare(descriptor) {
+        this.descriptor = descriptor? descriptor :__addSquare;
         this.pending = new Quadrangle();
         this.pendingType = shapeType.Square;
     }
 
-    addArc() {
-        this.descriptor = __addArc;
+    addArc(descriptors) {
+        this.descriptor = descriptor? descriptor :__addArc;
         this.pending = new Arc();
         this.pendingType = shapeType.Arc;
     }

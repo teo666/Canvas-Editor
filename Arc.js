@@ -6,7 +6,13 @@ class Arc extends Element {
         this.path = null;
         this.lineWidth = 7;
         this.lineDash = [];
-        this.strokeStyle = '#000000';
+        this.strokeStyle = Colors.HTMLColor.red
+        this.fillStyle = Colors.HTMLColor.red
+        this.globalCompositeOperation = this.globalCompositeOperation
+        this.lineCap = CanvasStyle.lineCap.Round
+        this.lineJoin = CanvasStyle.lineJoin.Round
+        this.shadowBlur = this.shadowBlur
+        this.shadowColor = this.shadowColor
         this.radiusSize = 50;
         this.arcLength = 0;
         this.centerPoint = new Point2D(0, 0)
@@ -19,12 +25,15 @@ class Arc extends Element {
     radius(...args) {
         if (args.length == 1 && typeof args[0] == 'number') {
             this.radiusSize = Math.abs(args[0])
+            this.buildPath()
         }
+        return this.radiusSize
     }
 
     center(...args) {
         if (args.length > 0) {
             this.centerPoint.value(...args)
+            this.buildPath()
         }
         return this.centerPoint
     }
@@ -34,36 +43,56 @@ class Arc extends Element {
         this.path.arc(this.centerPoint.x(), this.centerPoint.y(), this.radiusSize, this.angles.x(), this.angles.y(), this.anticlockwise);
     }
 
-    startAngle(...args){
-        this.angles.x(...args)
+    startAngle(...args) {
+        if (args.length > 0) {
+            this.angles.x(...args)
+            this.buildPath()
+        }
         return this.angles.x();
     }
 
-    endAngle(...args){
-        this.angles.y(...args)
+    endAngle(...args) {
+        if (args.length > 0) {
+            this.angles.y(...args)
+            this.buildPath()
+        }
         return this.angles.y();
     }
 
-    draw(context, parentT) {
+    draw(contextes, parentT) {
+        if (this.enableDraw) {
+            contextes.data.save();
 
-        context.save();
+            let t = TransformationMatrix.multiply(parentT, this.transformation)
+            let ts = t.valueOf()
+            contextes.data.setTransform(
+                ts[0],
+                ts[1],
+                ts[2],
+                ts[3],
+                ts[4],
+                ts[5]
+            )
 
-        let ts = TransformationMatrix.multiply(parentT, this.transformation).valueOf()
+            contextes.data.globalCompositeOperation = this.globalCompositeOperation
+            contextes.data.strokeStyle = this.strokeStyle
+            contextes.data.lineWidth = this.lineWidth
+            contextes.data.lineCap = this.lineCap
+            contextes.data.lineJoin = this.lineJoin
+            contextes.data.setLineDash(this.lineDash)
+            contextes.data.shadowBlur = this.shadowBlur
+            contextes.data.shadowColor = this.shadowColor
+            contextes.data.stroke(this.path)
 
-        context.setTransform(
-            ts[0],
-            ts[1],
-            ts[2],
-            ts[3],
-            ts[4],
-            ts[5]
-        )
+            //DEBUG: draw hitTestPath
+            /*
+            context.strokeStyle = 'black'
+            context.lineWidth = 1
+            context.stroke(this.hitPath)
+            */
 
-        context.lineWidth = this.lineWidth
-        context.strokeStyle = this.strokeStyle
-        context.setLineDash(this.lineDash);
-        context.stroke(this.path)
-        context.restore();
-
+            contextes.data.restore();
+            super.draw(contextes, null, t)
+        }
     }
 }

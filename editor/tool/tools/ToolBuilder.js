@@ -36,6 +36,7 @@ class ToolBuilder {
             }
             b.bind.bind[0].buildPath()
             editor.draw()
+            editor.drawForeground()
         }.bind(b.bind))
 
         div.append(label, inp)
@@ -65,6 +66,7 @@ class ToolBuilder {
             }
             b.bind.bind[0].buildPath()
             editor.draw()
+            editor.drawForeground()
         }.bind(b.bind))
 
         div.append(label, inp)
@@ -94,6 +96,7 @@ class ToolBuilder {
             }
             b.bind.bind[0].buildPath()
             editor.draw()
+            editor.drawForeground()
         }.bind(b.bind))
 
         div.append(label, inp)
@@ -133,6 +136,7 @@ class ToolBuilder {
             }
             b.bind.bind[0].buildPath()
             editor.draw()
+            editor.drawForeground()
         }.bind(b.bind))
 
         div.append(label, inp)

@@ -23,6 +23,10 @@ class Cursor extends Element {
         this.enable = false
     }
 
+    toggleEnable(){
+        this.enable = !this.enable
+    }
+
     snap(s) {
         if (s && typeof s == 'number') {
             this.snapSize = Math.abs(s);

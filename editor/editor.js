@@ -19,7 +19,7 @@ window.onload = function () {
     let p = document.querySelector('#properties_container')
     let cc = document.querySelector('#canvas_container')
     document.body.style.margin = 0
-    fg.width = data.width = bg.width = window.innerWidth-120
+    fg.width = data.width = bg.width = window.innerWidth-100
     fg.height = data.height = bg.height = window.innerHeight*2/3
     editor = new Editor({
         dataCanvas: data,

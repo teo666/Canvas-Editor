@@ -15,7 +15,6 @@ class Pointer {
 
     onMouseDown(editor, etype, e) {
         let list;
-        debugger
         if (e.region && Element._elements[e.region]) {
             list = [Element._elements[e.region]]
             console.log('hitRegion primitive')

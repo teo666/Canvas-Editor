@@ -60,15 +60,20 @@
                 onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line
             </button>
             <button
-                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse center/radiuses
+            </button>
+            <button
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world, __addEllipseBoundingCorner)">Ellipse radiuses
             </button>
             <button
                 onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Rectangle, editor.world)">Rectangle
             </button>
             <button onclick="draw()">Animate
             </button>
-            <button
-                onclick="editor.grid.enable = !editor.grid.enable; editor.grid.draw(editor.contextes, editor.backgroundCanvas,editor.world)">Toggle
+            <button onclick="
+                editor.grid.enable = !editor.grid.enable;
+                editor.cursor.toggleEnable();
+                editor.grid.draw(editor.contextes, editor.backgroundCanvas,editor.world)">Toggle
                 Grid
             </button>
             <input type="number" min=0 value="50" oninput="
