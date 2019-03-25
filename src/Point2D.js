@@ -100,7 +100,7 @@ class Point2D {
         if (args.length == 2 && args[0] instanceof Point2D && args[1] instanceof Point2D) {
             let alfa = Size2D.atan(Point2D.subtract(args[1], args[0]))
             if (alfa < 0) {
-                alfa += Math.pi * 2
+                alfa += Math.PI * 2
             }
             return alfa
         }

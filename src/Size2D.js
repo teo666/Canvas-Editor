@@ -2,13 +2,13 @@
 
 class Size2D {
     constructor(...args) {
-        this.c = [0,0]
-        if(args.length)this.value(...args)
+        this.c = [0, 0]
+        if (args.length) this.value(...args)
     }
 
-    value(...args){
-        if(!args.length) return this
-        
+    value(...args) {
+        if (!args.length) return this
+
         if (args.length == 1 && args[0] instanceof Size2D) {
             this.w(args[0].w())
             this.h(args[0].h())
@@ -26,17 +26,21 @@ class Size2D {
 
     static atan(...args) {
         if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
-            let a = Math.atan2(args[0], args[1])
+
+            return Math.atan2(args[0], args[1])
+            /*let a = Math.atan2(args[0], args[1])
             if (a < 0) {
                 a += Math.pi * 2
             }
-            return a
+            return a*/
         } else if (args.length == 1 && (args[0] instanceof Size2D || args[0] instanceof Point2D)) {
-            let a = Math.atan2(args[0].y(), args[0].x())
+
+            return Math.atan2(args[0].y(), args[0].x())
+            /*let a = Math.atan2(args[0].y(), args[0].x())
             if (a < 0) {
                 a += Math.pi * 2
             }
-            return a
+            return a */
         }
         throw "Invalid arguments"
 
@@ -50,6 +54,12 @@ class Size2D {
         }
         throw "Invalid arguments"
 
+    }
+
+    abs() {
+        this.x(Math.abs(this.x()))
+        this.y(Math.abs(this.y()))
+        return this
     }
 
     x(...args) {
@@ -74,11 +84,11 @@ class Size2D {
         return this.c[1];
     }
 
-    w(...args){
+    w(...args) {
         return this.x(...args)
     }
 
-    h(...args){
+    h(...args) {
         return this.y(...args)
     }
 }

@@ -80,7 +80,7 @@ const __addEllipseBoundingCorner = {
         next: [1]
     },
     1: {
-        //setta il centro
+        //setta l'angolo in alto a sinistra
         event: 'mousedown',
         callback: function (editor, elem, parent, events, e, mem) {
             let rect = e.target.getBoundingClientRect();
@@ -116,11 +116,11 @@ const __addEllipseBoundingCorner = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            let radius2 = Point2D.subtract(mem.corner, new Point2D(p[0], p[1])).abs().toSize2D()
+            let radius2 = Point2D.subtract(mem.corner, new Point2D(p[0], p[1])).toSize2D()
             radius2.w(radius2.w() / 2)
             radius2.h(radius2.h() / 2)
-            elem.center(mem.corner.x() + radius2.w(), mem.corner.y() + radius2.h())
-            elem.radius(radius2)
+            elem.center(mem.corner.x() - radius2.w(), mem.corner.y() - radius2.h())
+            elem.radius(radius2.abs())
             elem.pivot.center(elem.center())
 
 
@@ -147,12 +147,12 @@ const __addEllipseBoundingCorner = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             //console.log(elem.center().x(),elem.center().y(), p[0],p[1])
-            let radius2 = Point2D.subtract(mem.corner, new Point2D(p[0], p[1])).abs().toSize2D()
+            let radius2 = Point2D.subtract(mem.corner, new Point2D(p[0], p[1])).toSize2D()
             radius2.w(radius2.w() / 2)
             radius2.h(radius2.h() / 2)
-            elem.center(mem.corner.x() + radius2.w(), mem.corner.y() + radius2.h())
+            elem.center(mem.corner.x() - radius2.w(), mem.corner.y() - radius2.h())
             elem.pivot.center(elem.center())
-            elem.radius(radius2)
+            elem.radius(radius2.abs())
             //elem.buildPath()
             editor.draw()
         },

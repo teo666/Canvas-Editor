@@ -8,7 +8,7 @@ const __toolPoint2D = {
     y: {
         type: ToolBuilder.toolType.numeric,
         label: 'y',
-        precision: 0
+        precision: 1
     }
 }
 

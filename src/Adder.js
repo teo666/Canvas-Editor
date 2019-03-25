@@ -111,7 +111,7 @@ class Adder {
         this.pendingType = shapeType.Square;
     }
 
-    addArc(descriptors) {
+    addArc(descriptor) {
         this.descriptor = descriptor? descriptor :__addArc;
         this.pending = new Arc();
         this.pendingType = shapeType.Arc;

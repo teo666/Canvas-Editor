@@ -43,6 +43,7 @@
     <script type="text/javascript" src="./tool/tools/toolLine.js"></script>
     <script type="text/javascript" src="./tool/tools/toolEllipse.js"></script>
     <script type="text/javascript" src="./tool/tools/toolRectangle.js"></script>
+    <script type="text/javascript" src="./tool/tools/toolArc.js"></script>
 
     <script type="text/javascript" src="./tool/ToolsRenderer.js"></script>
 
@@ -60,10 +61,15 @@
                 onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line
             </button>
             <button
-                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse center/radiuses
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse
+                center/radiuses
             </button>
             <button
-                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world, __addEllipseBoundingCorner)">Ellipse radiuses
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Ellipse, editor.world, __addEllipseBoundingCorner)">Ellipse
+                radiuses
+            </button>
+            <button
+                onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Arc, editor.world)">Arc
             </button>
             <button
                 onclick="editor.tool.activeTool = 'adder'; editor.tool.tools.adder.add(shapeType.Rectangle, editor.world)">Rectangle

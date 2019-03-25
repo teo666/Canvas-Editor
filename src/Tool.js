@@ -99,8 +99,8 @@ EventUtil.Buttons = Object.freeze({
 
 EventUtil.Button = Object.freeze({
     'LEFT': 0,
-    'RIGHT': 1,
-    'MIDDLE': 2,
+    'MIDDLE': 1,
+    'RIGHT': 2,
     'BACK': 3,
     'FORWARD': 4
 })

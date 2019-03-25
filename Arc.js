@@ -1,7 +1,7 @@
 'use strict'
 
 class Arc extends Element {
-    constructor() {
+    constructor(...args) {
         super()
         this.path = null;
         this.lineWidth = 7;
@@ -18,8 +18,20 @@ class Arc extends Element {
         this.centerPoint = new Point2D(0, 0)
         this.angles = new Size2D(0, Math.PI / 2)
         this.anticlockwise = false
-        this.buildPath()
+        if(args.length) this.buildPath()
 
+    }
+
+    width(...args) {
+        if (args.length == 1) {
+            if (typeof args[0] == 'number') {
+                this.lineWidth = args[0]
+                this.buildPath()
+            } else {
+                throw 'Invalid arguments'
+            }
+        }
+        return this.lineWidth;
     }
 
     radius(...args) {
@@ -36,6 +48,14 @@ class Arc extends Element {
             this.buildPath()
         }
         return this.centerPoint
+    }
+
+    rotation(...args){
+        if (args.length > 0) {
+            this.anticlockwise = args[0] && true
+            this.buildPath()
+        }
+        return this.anticlockwise
     }
 
     buildPath() {

@@ -163,6 +163,8 @@ Object.defineProperty(ToolBuilder, 'toolType', {
         'arrayList': 4,
         'dropdown': 5,
         'button': 6,
+        //TODO render boolean
+        'boolean': 7
     }),
     configurable: false,
     writable: false
