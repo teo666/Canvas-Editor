@@ -3,8 +3,9 @@
     display: inline-block;
 }
 
-#tool_bar > button {
+#tool_bar > button, #tool_bar > input{
     display: table;
+    width: 100%;
 }
 
 #bg{

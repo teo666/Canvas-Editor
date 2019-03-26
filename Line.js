@@ -9,11 +9,11 @@ class Line extends Element {
         this.lineCap = CanvasStyle.lineCap.Round
         this.lineJoin = CanvasStyle.lineJoin.Round
         this.strokeStyle = '#faba11'
-        this.startPoint = new Point2D(0, 0)
-        this.endPoint = new Point2D(0, 0)
         this.shadowColor = Colors.HTMLColor.red;
         this.globalCompositeOperation = CanvasStyle.globalCompositeOperation.source_over
         this.shadowBlur = 0;
+        this.startPoint = new Point2D(0, 0)
+        this.endPoint = new Point2D(0, 0)
         if (args.length) this.value(...args)
     }
 

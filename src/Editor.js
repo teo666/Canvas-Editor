@@ -92,6 +92,13 @@ class Editor {
         a.startAngle(0)
         a.endAngle(Math.PI)
         this.world.addElement(a)
+
+        let bez = new Bezier()
+        bez.controlPoint(1,200,200)
+        bez.controlPoint(2,500,200)
+        bez.controlPoint(3,200,500)
+        bez.controlPoint(4,300,600)
+        this.world.addElement(bez)
         ////////////
 
 
@@ -136,7 +143,7 @@ class Editor {
         this.contextes.data.restore();
     }
 
-    clearForground() {
+    clearForeground() {
         this.contextes.fg.save();
         this.contextes.fg.setTransform(1, 0, 0, 1, 0, 0);
         this.contextes.fg.clearRect(0, 0, this.dataCanvas.width, this.dataCanvas.height);
@@ -160,7 +167,7 @@ class Editor {
     }
 
     drawForeground(){
-        this.clearForground()
+        this.clearForeground()
         this.world.drawPivot(this.contextes)
         this.world.addHitRegions(this.contextes)
     }

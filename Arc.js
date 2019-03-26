@@ -114,5 +114,13 @@ class Arc extends Element {
             contextes.data.restore();
             super.draw(contextes, null, t)
         }
+
+        if(this.enableEdit){
+            drawConstructionLine(contextes)
+        }
+    }
+
+    drawConstructionLine(contextes) {
+       //TODO:
     }
 }

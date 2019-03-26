@@ -1,3 +1,33 @@
+const __addArcUtil = {
+    drawConstructionLine: function (ctx, editor, elem, mem) {
+        editor.clearForeground()
+
+        const tm = editor.world.getTransformation().valueOf()
+        ctx.save()
+        ctx.setTransform(
+            tm[0],
+            tm[1],
+            tm[2],
+            tm[3],
+            tm[4],
+            tm[5]
+        )
+        ctx.setLineDash([10, 10])
+        ctx.lineWidth = 2
+        ctx.strokeStyle = 'yellow'
+        ctx.beginPath()
+        ctx.moveTo(elem.center().x(), elem.center().y())
+        ctx.lineTo(mem['startp'][0], mem['startp'][1])
+        if(mem.endp){
+            ctx.moveTo(elem.center().x(), elem.center().y())
+            ctx.lineTo(mem['endp'][0], mem['endp'][1])
+        }
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
+    }
+}
+
 const __addArc = {
     0: {
         next: [1]
@@ -90,17 +120,7 @@ const __addArc = {
             elem.endAngle(angle1 + Math.PI * 2)
             elem.radius(Point2D.hypot(elem.center(), start))
             editor.draw()
-
-            editor.contextes.data.save()
-            editor.contextes.data.setLineDash([10, 10])
-            editor.contextes.data.lineWidth = 2
-            editor.contextes.data.strokeStyle = 'yellow'
-            editor.contextes.data.beginPath()
-            editor.contextes.data.moveTo(elem.center().x(), elem.center().y())
-            editor.contextes.data.lineTo(p[0], p[1])
-            editor.contextes.data.stroke()
-            editor.contextes.data.closePath()
-            editor.contextes.data.restore()
+            __addArcUtil.drawConstructionLine(editor.contextes.fg,editor,elem,mem)
         },
         next: [2, 3, 6],
         saveEvent: true
@@ -127,6 +147,7 @@ const __addArc = {
                 angle2 = mem.angle1 + Math.PI * 2
             }
             elem.endAngle(angle2)
+            editor.drawForeground()
             editor.draw();
         },
         next: [],
@@ -154,18 +175,8 @@ const __addArc = {
             elem.endAngle(angle2)
             mem['endp'] = p
             editor.draw();
-            editor.contextes.data.save()
-            editor.contextes.data.setLineDash([10, 10])
-            editor.contextes.data.lineWidth = 2
-            editor.contextes.data.strokeStyle = 'yellow'
-            editor.contextes.data.beginPath()
-            editor.contextes.data.moveTo(elem.center().x(), elem.center().y())
-            editor.contextes.data.lineTo(mem['startp'][0], mem['startp'][1])
-            editor.contextes.data.moveTo(elem.center().x(), elem.center().y())
-            editor.contextes.data.lineTo(mem['endp'][0], mem['endp'][1])
-            editor.contextes.data.stroke()
-            editor.contextes.data.closePath()
-            editor.contextes.data.restore()
+            __addArcUtil.drawConstructionLine(editor.contextes.fg,editor,elem,mem)
+
         },
         next: [4, 5, 6, 7],
         saveEvent: true
@@ -174,6 +185,7 @@ const __addArc = {
     6: {
         event: 'mousewheel',
         callback: function (editor, elem, parent, events, e, mem) {
+            e.preventDefault()
             let inc
             if (e.deltaY > 0) {
                 inc = -1
@@ -183,18 +195,8 @@ const __addArc = {
             elem.width(Math.max(1, elem.width() + inc));
             editor.draw();
 
-            editor.contextes.data.save()
-            editor.contextes.data.setLineDash([10, 10])
-            editor.contextes.data.lineWidth = 2
-            editor.contextes.data.strokeStyle = 'yellow'
-            editor.contextes.data.beginPath()
-            editor.contextes.data.moveTo(elem.center().x(), elem.center().y())
-            editor.contextes.data.lineTo(mem['startp'][0], mem['startp'][1])
-            editor.contextes.data.moveTo(elem.center().x(), elem.center().y())
-            editor.contextes.data.lineTo(mem['endp'][0], mem['endp'][1])
-            editor.contextes.data.stroke()
-            editor.contextes.data.closePath()
-            editor.contextes.data.restore()
+            __addArcUtil.drawConstructionLine(editor.contextes.fg,editor,elem,mem)
+
         },
         next: [4, 5, 6, 7],
         saveEvent: false
@@ -205,18 +207,8 @@ const __addArc = {
             if (EventUtil.Button.MIDDLE == e.button) {
                 elem.rotation(!elem.rotation())
                 editor.draw()
-                editor.contextes.data.save()
-                editor.contextes.data.setLineDash([10, 10])
-                editor.contextes.data.lineWidth = 2
-                editor.contextes.data.strokeStyle = 'yellow'
-                editor.contextes.data.beginPath()
-                editor.contextes.data.moveTo(elem.center().x(), elem.center().y())
-                editor.contextes.data.lineTo(mem['startp'][0], mem['startp'][1])
-                editor.contextes.data.moveTo(elem.center().x(), elem.center().y())
-                editor.contextes.data.lineTo(mem['endp'][0], mem['endp'][1])
-                editor.contextes.data.stroke()
-                editor.contextes.data.closePath()
-                editor.contextes.data.restore()
+                __addArcUtil.drawConstructionLine(editor.contextes.fg,editor,elem,mem)
+
                 return true
             }
         },
