@@ -88,22 +88,27 @@ class Ellipse extends Element {
          * dell'elemento e moltiplicare invece solo il punto di cui voglio fare il test
         */
         let t = TransformationMatrix.multiply(tr, this.getTransformation()).inv().multiplyPoint(x, y).valueOf()
-        contextes.data.save();
-        contextes.data.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-        let ret = contextes.data.isPointInPath(this.path, t[0], t[1])
-        contextes.data.restore();
+        let ret = ctx.isPointInPath(this.path, t[0], t[1])
+        ctx.restore();
         return ret;
     }
 
     draw(contextes, parentT) {
         if (this.enableDraw) {
 
-            contextes.data.save();
+            let ctx = contextes.data
+            if (this.add()) {
+                ctx = contextes.fg
+            }
+
+            ctx.save();
 
             let t = TransformationMatrix.multiply(parentT, this.transformation)
             let ts = t.valueOf()
-            contextes.data.setTransform(
+            ctx.setTransform(
                 ts[0],
                 ts[1],
                 ts[2],
@@ -111,23 +116,23 @@ class Ellipse extends Element {
                 ts[4],
                 ts[5]
             )
-            contextes.data.globalCompositeOperation = this.globalCompositeOperation
-            contextes.data.lineWidth = this.lineWidth
-            contextes.data.fillStyle = this.fillStyle
-            contextes.data.strokeStyle = this.strokeStyle
-            contextes.data.shadowBlur = this.shadowBlur
-            contextes.data.shadowColor = this.shadowColor
-            contextes.data.setLineDash(this.lineDash);
-            contextes.data.fill(this.path);
+            ctx.globalCompositeOperation = this.globalCompositeOperation
+            ctx.lineWidth = this.lineWidth
+            ctx.fillStyle = this.fillStyle
+            ctx.strokeStyle = this.strokeStyle
+            ctx.shadowBlur = this.shadowBlur
+            ctx.shadowColor = this.shadowColor
+            ctx.setLineDash(this.lineDash);
+            ctx.fill(this.path);
             if (this.lineWidth) {
-                contextes.data.stroke(this.path)
+                ctx.stroke(this.path)
             }
 
             /*context.strokeStyle = 'red'
             context.lineWidth = 1
             context.stroke(this.hitPath)*/
 
-            contextes.data.restore();
+            ctx.restore();
             super.draw(contextes, null, t)
         }
     }

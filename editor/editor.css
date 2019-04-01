@@ -17,12 +17,14 @@
     border: 0px solid black;
     margin: 0px;
     position: absolute;
-    z-index:1000
+    z-index:1000;
+    /*visibility: hidden*/
 }
 
 #fg  {
     border: 0px solid black;
     margin: 0px;
     position: absolute;
-    z-index:1001
+    z-index:1001;
+    /*visibility: hidden*/
 }

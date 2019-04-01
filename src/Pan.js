@@ -56,6 +56,7 @@ class Pan {
             }
             editor.world.applyTransform(editor.contextes);
             editor.draw();
+            editor.clearForeground()
             editor.drawForeground()
         }
     }
@@ -73,6 +74,7 @@ class Pan {
             editor.world.rotate(- Math.sign(e.deltaY) * Math.PI/100);
             editor.world.applyTransform(editor.contextes)
             editor.draw();
+            editor.clearForeground()
             editor.drawForeground()
             return
         }
@@ -87,6 +89,7 @@ class Pan {
         editor.world.scaleOnPoint(z, z, diff[0], diff[1]);
         editor.world.applyTransform(editor.contextes)
         editor.draw();
+        editor.clearForeground()
         editor.drawForeground()
     }
 

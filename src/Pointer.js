@@ -29,6 +29,7 @@ class Pointer {
             list[list.length - 1].selected = true
             this.disableAllPivot()
             list[list.length - 1].pivot.enableDraw = true
+            editor.clearForeground()
             editor.drawForeground()
             const evt = new CustomEvent("propchange", {
                 detail: {

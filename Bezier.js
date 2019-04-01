@@ -64,22 +64,27 @@ class Bezier extends Element {
          * dell'elemento e moltiplicare invece solo il punto di cui voglio fare il test
         */
         let t = TransformationMatrix.multiply(tr, this.getTransformation()).inv().multiplyPoint(x, y)
-        contextes.data.save();
-        contextes.data.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-        let ret = contextes.data.isPointInPath(this.path, t[0], t[1])
-        contextes.data.restore();
+        let ret = ctx.isPointInPath(this.path, t[0], t[1])
+        ctx.restore();
         return ret;
     }
 
     draw(contextes, parentT) {
         if (this.enableDraw) {
 
-            contextes.data.save();
+            let ctx = contextes.data
+            if (this.add()) {
+                ctx = contextes.fg
+            }
+
+            ctx.save();
 
             let t = TransformationMatrix.multiply(parentT, this.transformation)
             let ts = t.valueOf()
-            contextes.data.setTransform(
+            ctx.setTransform(
                 ts[0],
                 ts[1],
                 ts[2],
@@ -88,15 +93,15 @@ class Bezier extends Element {
                 ts[5]
             )
 
-            contextes.data.globalCompositeOperation = this.globalCompositeOperation
-            contextes.data.strokeStyle = this.strokeStyle
-            contextes.data.lineWidth = this.lineWidth
-            contextes.data.lineCap = this.lineCap
-            contextes.data.lineJoin = this.lineJoin
-            contextes.data.setLineDash(this.lineDash)
-            contextes.data.shadowBlur = this.shadowBlur
-            contextes.data.shadowColor = this.shadowColor
-            contextes.data.stroke(this.path)
+            ctx.globalCompositeOperation = this.globalCompositeOperation
+            ctx.strokeStyle = this.strokeStyle
+            ctx.lineWidth = this.lineWidth
+            ctx.lineCap = this.lineCap
+            ctx.lineJoin = this.lineJoin
+            ctx.setLineDash(this.lineDash)
+            ctx.shadowBlur = this.shadowBlur
+            ctx.shadowColor = this.shadowColor
+            ctx.stroke(this.path)
 
             //DEBUG: draw hitTestPath
             /*
@@ -105,7 +110,7 @@ class Bezier extends Element {
             context.stroke(this.hitPath)
             */
 
-            contextes.data.restore();
+            ctx.restore();
             super.draw(contextes, null, t)
         }
     }

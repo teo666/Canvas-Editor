@@ -5,10 +5,15 @@ class Element extends Common {
         super();
         Object.defineProperty(this, 'id', { value: Element.retriveId() })
         this.name = ("element" + this.id);
-        this.pending = false;
+
+        //set element in adding mode
+        this.adding = false
+
+        //enable or disable drawing
         this.enableDraw = true
         this.selected = true
         this.pivot = new Pivot()
+
         Element._elements[this.id] = this
     }
 
@@ -20,8 +25,19 @@ class Element extends Common {
         return this.selected = sel && true
     }
 
-    isPending() {
-        return this.pending
+    enable() {
+        return this.enableDraw = true
+    }
+
+    add(b){
+        if(arguments.length){
+            this.adding = ((b && true) || false)
+        }
+        return this.adding
+    }
+
+    disable() {
+        return this.enableDraw = false
     }
 
     reflectX() {
@@ -151,7 +167,7 @@ class Element extends Common {
         t = t.valueOf()
         let m
         let a = new Path2D()
-        const p = this.hitPath ? this.hitPath: this.path 
+        const p = this.hitPath ? this.hitPath : this.path
         try {
             //console.log(1)
             m = new DOMMatrix(t)
@@ -195,10 +211,15 @@ class Element extends Common {
         }
         //this.addHitRegion(contextes.fg)
         this.elements.forEach(element => {
-            if (!element.pending) {
-                element.draw(contextes, ts);
-            }
+            element.draw(contextes, ts);
         });
+    }
+
+    enablePivot(b){
+        if(arguments.length){
+            this.pivot.enableDraw = ((b && true ) || false)
+        }
+        return this.pivot.enableDraw
     }
 
     drawPivot(contextes, parentT, overrideTM = null) {
@@ -208,12 +229,10 @@ class Element extends Common {
         } else {
             ts = TransformationMatrix.multiply(parentT, this.transformation)
         }
-        this.pivot.draw(contextes,ts)
+        this.pivot.draw(contextes, ts)
 
         this.elements.forEach(element => {
-            if (!element.pending) {
-                element.drawPivot(contextes, ts);
-            }
+            element.drawPivot(contextes, ts);
         });
     }
 

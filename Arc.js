@@ -18,7 +18,7 @@ class Arc extends Element {
         this.centerPoint = new Point2D(0, 0)
         this.angles = new Size2D(0, Math.PI / 2)
         this.anticlockwise = false
-        if(args.length) this.buildPath()
+        if (args.length) this.buildPath()
 
     }
 
@@ -50,7 +50,7 @@ class Arc extends Element {
         return this.centerPoint
     }
 
-    rotation(...args){
+    rotation(...args) {
         if (args.length > 0) {
             this.anticlockwise = args[0] && true
             this.buildPath()
@@ -81,11 +81,15 @@ class Arc extends Element {
 
     draw(contextes, parentT) {
         if (this.enableDraw) {
-            contextes.data.save();
+            let ctx = contextes.data
+            if (this.add()) {
+                ctx = contextes.fg
+            }
+            ctx.save();
 
             let t = TransformationMatrix.multiply(parentT, this.transformation)
             let ts = t.valueOf()
-            contextes.data.setTransform(
+            ctx.setTransform(
                 ts[0],
                 ts[1],
                 ts[2],
@@ -94,15 +98,15 @@ class Arc extends Element {
                 ts[5]
             )
 
-            contextes.data.globalCompositeOperation = this.globalCompositeOperation
-            contextes.data.strokeStyle = this.strokeStyle
-            contextes.data.lineWidth = this.lineWidth
-            contextes.data.lineCap = this.lineCap
-            contextes.data.lineJoin = this.lineJoin
-            contextes.data.setLineDash(this.lineDash)
-            contextes.data.shadowBlur = this.shadowBlur
-            contextes.data.shadowColor = this.shadowColor
-            contextes.data.stroke(this.path)
+            ctx.globalCompositeOperation = this.globalCompositeOperation
+            ctx.strokeStyle = this.strokeStyle
+            ctx.lineWidth = this.lineWidth
+            ctx.lineCap = this.lineCap
+            ctx.lineJoin = this.lineJoin
+            ctx.setLineDash(this.lineDash)
+            ctx.shadowBlur = this.shadowBlur
+            ctx.shadowColor = this.shadowColor
+            ctx.stroke(this.path)
 
             //DEBUG: draw hitTestPath
             /*
@@ -111,16 +115,16 @@ class Arc extends Element {
             context.stroke(this.hitPath)
             */
 
-            contextes.data.restore();
+            ctx.restore();
             super.draw(contextes, null, t)
         }
 
-        if(this.enableEdit){
+        if (this.enableEdit) {
             drawConstructionLine(contextes)
         }
     }
 
     drawConstructionLine(contextes) {
-       //TODO:
+        //TODO:
     }
 }

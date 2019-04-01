@@ -26,25 +26,19 @@ class World extends Common {
 
     draw(contextes) {
         this.elements.forEach(element => {
-            if (!element.pending) {
-                element.draw(contextes, this.getTransformation());
-            }
+            element.draw(contextes, this.getTransformation());
         });
     }
 
     drawPivot(contextes) {
         this.elements.forEach(element => {
-            if (!element.pending) {
-                element.drawPivot(contextes, this.getTransformation());
-            }
+            element.drawPivot(contextes, this.getTransformation());
         });
     }
 
     addHitRegions(contextes) {
         this.elements.forEach(element => {
-            if (!element.pending) {
-                element.addHitRegion(contextes, this.getTransformation());
-            }
+            element.addHitRegion(contextes, this.getTransformation());
         });
     }
 

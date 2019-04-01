@@ -32,7 +32,7 @@ class Editor {
             this.backgroundCanvas = obj.backgroundCanvas
             this.contextes.bg = this.backgroundCanvas.getContext("2d");
             this.grid.snap(50)
-            this.grid.prefetch(this.backgroundContext, this.backgroundCanvas, this.world)
+            this.grid.prefetch(this.contextes.bg, this.backgroundCanvas, this.world)
         }
 
         if (obj.foregroundCanvas && obj.foregroundCanvas.nodeName && obj.foregroundCanvas.nodeName == 'CANVAS') {
@@ -102,7 +102,6 @@ class Editor {
         ////////////
 
 
-
         this.draw()
         this.drawForeground()
     }
@@ -167,7 +166,6 @@ class Editor {
     }
 
     drawForeground(){
-        this.clearForeground()
         this.world.drawPivot(this.contextes)
         this.world.addHitRegions(this.contextes)
     }

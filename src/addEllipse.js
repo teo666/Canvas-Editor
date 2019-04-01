@@ -15,7 +15,7 @@ const __addEllipse = {
                 y: y
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
-            elem.pending = false;
+            elem.enable();
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.center(p[0], p[1]);
             elem.pivot.center(elem.center())
@@ -44,8 +44,6 @@ const __addEllipse = {
             if (!(radius.x() || radius.y())) {
                 return true
             }
-            elem.buildPath()
-            editor.draw()
         },
         next: [],
         saveEvent: false
@@ -66,8 +64,6 @@ const __addEllipse = {
             //console.log(elem.center().x(),elem.center().y(), p[0],p[1])
             let radius = Point2D.subtract(elem.center(), new Point2D(p[0], p[1])).abs().toSize2D()
             elem.radius(radius)
-            elem.buildPath()
-            editor.draw()
         },
         next: [2, 3],
         saveEvent: false
@@ -92,7 +88,7 @@ const __addEllipseBoundingCorner = {
                 y: y
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
-            elem.pending = false;
+            elem.enable();
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             mem['corner'] = new Point2D(p[0], p[1])
             elem.center(mem.corner);

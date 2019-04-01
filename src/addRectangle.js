@@ -14,7 +14,7 @@ const __addRectangle = {
                 y: y
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
-            elem.pending = false;
+            elem.enable();
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.corner(p[0], p[1]);
             elem.size(0, 0)

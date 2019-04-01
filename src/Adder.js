@@ -36,30 +36,30 @@ class Adder {
     add(type, parent, descriptor = null, continuosAdd = false) {
         // il controllo che non stia gia aggiungendo mi reviene eventuali inserimenti multipli dovuti a cambio di tool
         // TODO: sarebbe meglio far si' che il tool chami un medoto reset che permette di uscire dallo stato sospeso in modo pulito(???)
-        if(!this.adding){
+        if (!this.adding) {
             this.continuosAdd = continuosAdd
             this.adding = true;
             switch (type) {
                 case shapeType.Point2D:
-                break;
+                    break;
                 case shapeType.Ellipse:
-                this.addEllipse(descriptor)
-                break;
+                    this.addEllipse(descriptor)
+                    break;
                 case shapeType.Line:
-                this.addLine(descriptor)
-                break;
+                    this.addLine(descriptor)
+                    break;
                 case shapeType.Net:
-                this.addNet(descriptor);
-                break;
+                    this.addNet(descriptor);
+                    break;
                 case shapeType.Rectangle:
-                this.addRectangle(descriptor);
-                break;
+                    this.addRectangle(descriptor);
+                    break;
                 case shapeType.Square:
-                this.addSquare(descriptor);
-                break;
+                    this.addSquare(descriptor);
+                    break;
                 case shapeType.Arc:
-                this.addArc(descriptor);
-                break;
+                    this.addArc(descriptor);
+                    break;
             }
             this.prepare(parent)
         }
@@ -68,7 +68,8 @@ class Adder {
     prepare(p) {
         this.clearCompleteEventRegister()
         //prevent rendering
-        this.pending.pending = true;
+        this.pending.disable()
+        this.pending.add(true)
         this.parentElement = p;
         this.parentElement.addElement(this.pending)
 
@@ -81,38 +82,38 @@ class Adder {
     }
 
     addEllipse(descriptor) {
-        this.descriptor = descriptor? descriptor : __addEllipse;
+        this.descriptor = descriptor ? descriptor : __addEllipse;
         this.pending = new Ellipse();
         this.pendingType = shapeType.Ellipse;
     }
 
     addLine(descriptor) {
-        this.descriptor = descriptor? descriptor : __addLine;
+        this.descriptor = descriptor ? descriptor : __addLine;
         this.pending = new Line();
         this.pendingType = shapeType.Line;
     }
 
     //necessita di ottenere due eventi di mouseup
     addNet(descriptor) {
-        this.descriptor = descriptor? descriptor : __addNet;
+        this.descriptor = descriptor ? descriptor : __addNet;
         this.pending = new Net();
         this.pendingType = shapeType.Net;
     }
 
     addRectangle(descriptor) {
-        this.descriptor = descriptor? descriptor :__addRectangle;
+        this.descriptor = descriptor ? descriptor : __addRectangle;
         this.pending = new Rectangle();
         this.pendingType = shapeType.Rectangle;
     }
 
     addSquare(descriptor) {
-        this.descriptor = descriptor? descriptor :__addSquare;
+        this.descriptor = descriptor ? descriptor : __addSquare;
         this.pending = new Quadrangle();
         this.pendingType = shapeType.Square;
     }
 
     addArc(descriptor) {
-        this.descriptor = descriptor? descriptor :__addArc;
+        this.descriptor = descriptor ? descriptor : __addArc;
         this.pending = new Arc();
         this.pendingType = shapeType.Arc;
     }
@@ -143,7 +144,7 @@ class Adder {
 
     resetAdd(editor) {
         this.descriptor = null;
-        this.pending.pending = false;
+        this.pending.add(false);
         this.pending = null;
         this.mem = {};
         this.adding = false;
@@ -169,14 +170,28 @@ class Adder {
                 this.completeEventRegister.push(e);
             }
             if (this.state.callback && typeof this.state.callback == 'function') {
-                cancel = this.state.callback(editor, this.pending, this.parentElement, this.completeEventRegister, e,this.mem);
+                cancel = this.state.callback(editor, this.pending, this.parentElement, this.completeEventRegister, e, this.mem);
+
+                /**
+                 * adding element are redendered on foreground canvas
+                 * foreground is cleared and draw called 
+                 * TODO: make method to call it from extern
+                 */
+                editor.clearForeground()
+                this.pending.draw(editor.contextes, this.parentElement.transformation)
+                editor.drawForeground()
+            }
+            if (this.state.postDraw && typeof this.state.postDraw == 'function') {
+                this.state.postDraw(editor, this.pending, this.parentElement, this.completeEventRegister, e, this.mem);
             }
             if (!cancel) {
                 this.clearAllowedEvents();
                 this.readAllowedEvents();
             }
-            if(this.allowedEvents.length == 0) {
+            if (this.allowedEvents.length == 0) {
+                editor.drawForeground()
                 this.resetAdd(editor)
+                editor.draw()
             }
         }
     }
