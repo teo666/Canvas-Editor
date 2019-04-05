@@ -14,6 +14,10 @@ class Line extends Element {
         this.shadowBlur = 0;
         this.startPoint = new Point2D(0, 0)
         this.endPoint = new Point2D(0, 0)
+
+        this.controlElements.add(new Handle(this.startPoint))
+        this.controlElements.add(new Handle(this.endPoint))
+
         if (args.length) this.value(...args)
     }
 
@@ -69,6 +73,10 @@ class Line extends Element {
         return this.lineWidth;
     }
 
+    /**
+     * TODO:???
+     * @param  {...any} args
+     */
     color(...args) {
         if (args.length == 1) {
             if ((typeof args[0] == 'string' && args[0].match(/#{1}[a-fA-F0-9]{1,8}$/g)) || (args[0] instanceof CanvasGradient)) {
@@ -184,7 +192,7 @@ class Line extends Element {
 
             ctx.restore();
             super.draw(contextes, null, t)
+            //this.drawHandle(contextes,null,t)
         }
     }
-
 }

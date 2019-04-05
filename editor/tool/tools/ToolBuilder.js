@@ -36,6 +36,7 @@ class ToolBuilder {
             }
             b.bind.bind[0].buildPath()
             editor.draw()
+            editor.clearForeground()
             editor.drawForeground()
         }.bind(b.bind))
 
@@ -66,6 +67,7 @@ class ToolBuilder {
             }
             b.bind.bind[0].buildPath()
             editor.draw()
+            editor.clearForeground()
             editor.drawForeground()
         }.bind(b.bind))
 
@@ -96,6 +98,7 @@ class ToolBuilder {
             }
             b.bind.bind[0].buildPath()
             editor.draw()
+            editor.clearForeground()
             editor.drawForeground()
         }.bind(b.bind))
 
@@ -136,6 +139,7 @@ class ToolBuilder {
             }
             b.bind.bind[0].buildPath()
             editor.draw()
+            editor.clearForeground()
             editor.drawForeground()
         }.bind(b.bind))
 

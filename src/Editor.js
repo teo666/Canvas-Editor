@@ -72,9 +72,11 @@ class Editor {
         l.translate(150, 50)
         //l.rotate(-Math.PI/4)
         l.start(0, 0)
-        l.end(500, 0)
+        l.end(100, 0)
         l.width(50)
         this.world.addElement(l)
+
+        /*
         let el = new Ellipse()
         el.center(50, 50)
         el.radius(50, 90)
@@ -99,7 +101,7 @@ class Editor {
         bez.controlPoint(3,200,500)
         bez.controlPoint(4,300,600)
         this.world.addElement(bez)
-        ////////////
+        ////////////*/
 
 
         this.draw()
@@ -166,7 +168,7 @@ class Editor {
     }
 
     drawForeground(){
-        this.world.drawPivot(this.contextes)
+        this.world.drawControlElements(this.contextes)
         this.world.addHitRegions(this.contextes)
     }
 
@@ -235,10 +237,11 @@ class Editor {
         });
     }
 
-    keyUpCallback(editor, e) {
+    /*keyUpCallback(editor, e) {
         switch (e.key) {
             case "Escape":
                 if (this.tool.adder.isAdding()) {
+                    debugger
                     this.tool.adder.cancel();
                     this.draw()
                 }
@@ -248,7 +251,7 @@ class Editor {
         }
     }
 
-    /*mouseMoveCallback(editor,e) {
+    mouseMoveCallback(editor,e) {
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;

@@ -88,11 +88,11 @@ class Ellipse extends Element {
          * dell'elemento e moltiplicare invece solo il punto di cui voglio fare il test
         */
         let t = TransformationMatrix.multiply(tr, this.getTransformation()).inv().multiplyPoint(x, y).valueOf()
-        ctx.save();
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        contextes.fg.save();
+        contextes.fg.setTransform(1, 0, 0, 1, 0, 0);
 
-        let ret = ctx.isPointInPath(this.path, t[0], t[1])
-        ctx.restore();
+        let ret = contextes.fg.isPointInPath(this.path, t[0], t[1])
+        contextes.fg.restore();
         return ret;
     }
 

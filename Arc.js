@@ -118,13 +118,9 @@ class Arc extends Element {
             ctx.restore();
             super.draw(contextes, null, t)
         }
-
-        if (this.enableEdit) {
-            drawConstructionLine(contextes)
-        }
     }
 
-    drawConstructionLine(contextes) {
+    onEdit(contextes) {
         //TODO:
     }
 }

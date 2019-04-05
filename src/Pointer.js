@@ -28,7 +28,7 @@ class Pointer {
         if (list.length) {
             list[list.length - 1].selected = true
             this.disableAllPivot()
-            list[list.length - 1].pivot.enableDraw = true
+            list[list.length - 1].controlElements.controlList[0].enableDraw = true
             editor.clearForeground()
             editor.drawForeground()
             const evt = new CustomEvent("propchange", {
@@ -41,9 +41,14 @@ class Pointer {
         }
     }
 
+    //TODO: implementare un metodo select che permette di selezionare un elemento in funzione del suo id
+    select(){
+
+    }
+
     disableAllPivot() {
         for (const i in Element._elements) {
-            Element._elements[i].pivot.enableDraw = false
+            Element._elements[i].controlElements.controlList[0].enableDraw = false
         }
 
     }

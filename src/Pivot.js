@@ -1,7 +1,8 @@
 'use strict'
 
-class Pivot {
+class Pivot extends ControlElement{
     constructor() {
+        super()
         this.centerPoint = new Point2D(0, 0)
         this.crossSize = 10
         this.lineWidth = 2
@@ -38,7 +39,43 @@ class Pivot {
         this.pathH.lineTo(this.centerPoint.x() + this.dimension.x() / 2, this.centerPoint.y())
     }
 
+    addHitRegion(contextes, parentT) {
+        let t = parentT.valueOf()
+        let m
+        let a = new Path2D()
+        const p = this.staticHitPath
+        try {
+            //console.log(1)
+            m = new DOMMatrix(t)
+            a.addPath(p, m)
+            contextes.fg.addHitRegion({
+                path: a,
+                id: this.id,
+                cursor: 'grab'
+            })
+
+        } catch (e) {
+            m = document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGMatrix();
+            m.a = t[0]
+            m.b = t[1]
+            m.c = t[2]
+            m.d = t[3]
+            m.e = t[4]
+            m.f = t[5]
+            a.addPath(p, m)
+            try {
+                contextes.fg.addHitRegion({
+                    path: a,
+                    id: this.id,
+                    cursor: 'grab'
+                })
+            } catch (e) {
+            }
+        }
+    }
+
     draw(contextes, e_tm) {
+        this.enableDraw = true
         if (this.enableDraw) {
             contextes.fg.save()
             //ritorna la posizione del punto relativamente al mondo
@@ -71,5 +108,13 @@ Object.defineProperty(Pivot, 'staticPath', {
         pathH.moveTo(-5, 0)
         pathH.lineTo(5, 0)
         return { pathH: pathH, pathV: pathV }
+    })()
+})
+
+Object.defineProperty(Pivot, 'staticHitPath', {
+    value: (function () {
+        const hit = new Path2D()
+        hit.rect(-5,-5,10,10)
+        return hit
     })()
 })

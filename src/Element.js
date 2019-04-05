@@ -14,6 +14,9 @@ class Element extends Common {
         this.selected = true
         this.pivot = new Pivot()
 
+        this.controlElements = new ControlElement()
+        this.controlElements.add(this.pivot)
+
         Element._elements[this.id] = this
     }
 
@@ -29,8 +32,8 @@ class Element extends Common {
         return this.enableDraw = true
     }
 
-    add(b){
-        if(arguments.length){
+    add(b) {
+        if (arguments.length) {
             this.adding = ((b && true) || false)
         }
         return this.adding
@@ -215,25 +218,15 @@ class Element extends Common {
         });
     }
 
-    enablePivot(b){
-        if(arguments.length){
-            this.pivot.enableDraw = ((b && true ) || false)
+    enablePivot(b) {
+        if (arguments.length) {
+            this.pivot.enableDraw = ((b && true) || false)
         }
         return this.pivot.enableDraw
     }
 
-    drawPivot(contextes, parentT, overrideTM = null) {
-        let ts
-        if (overrideTM) {
-            ts = overrideTM
-        } else {
-            ts = TransformationMatrix.multiply(parentT, this.transformation)
-        }
-        this.pivot.draw(contextes, ts)
-
-        this.elements.forEach(element => {
-            element.drawPivot(contextes, ts);
-        });
+    drawControlElements(contextes, parentT) {
+        this.controlElements.draw(contextes, TransformationMatrix.multiply(parentT, this.transformation))
     }
 
     getParentsTransformations() {

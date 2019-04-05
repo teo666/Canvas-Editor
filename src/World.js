@@ -30,9 +30,9 @@ class World extends Common {
         });
     }
 
-    drawPivot(contextes) {
+    drawControlElements(contextes) {
         this.elements.forEach(element => {
-            element.drawPivot(contextes, this.getTransformation());
+            element.drawControlElements(contextes, this.getTransformation());
         });
     }
 

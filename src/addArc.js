@@ -194,7 +194,6 @@ const __addArc = {
         callback: function (editor, elem, parent, events, e, mem) {
             if (EventUtil.Button.MIDDLE == e.button) {
                 elem.rotation(!elem.rotation())
-                editor.draw()
                 return true
             }
         },

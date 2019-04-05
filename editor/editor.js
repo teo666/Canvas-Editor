@@ -7,8 +7,10 @@ function draw() {
     let el = editor.world.elements[1]
     
     l.rotateOnPoint(Math.PI/100 , l.pivot.x(), l.pivot.y())
-    el.rotateOnPoint(Math.PI/100 , el.pivot.x(), el.pivot.y())
+    //el.rotateOnPoint(Math.PI/100 , el.pivot.x(), el.pivot.y())
     editor.draw()
+    editor.clearForeground()
+    editor.drawForeground()
     raf = requestAnimationFrame(draw)
 }
 
