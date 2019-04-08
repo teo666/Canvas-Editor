@@ -168,8 +168,8 @@ class Editor {
     }
 
     drawForeground(){
-        this.world.drawControlElements(this.contextes)
         this.world.addHitRegions(this.contextes)
+        this.world.drawControlElements(this.contextes)
     }
 
     draw() {

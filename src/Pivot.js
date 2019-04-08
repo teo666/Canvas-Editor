@@ -39,43 +39,7 @@ class Pivot extends ControlElement{
         this.pathH.lineTo(this.centerPoint.x() + this.dimension.x() / 2, this.centerPoint.y())
     }
 
-    addHitRegion(contextes, parentT) {
-        let t = parentT.valueOf()
-        let m
-        let a = new Path2D()
-        const p = this.staticHitPath
-        try {
-            //console.log(1)
-            m = new DOMMatrix(t)
-            a.addPath(p, m)
-            contextes.fg.addHitRegion({
-                path: a,
-                id: this.id,
-                cursor: 'grab'
-            })
-
-        } catch (e) {
-            m = document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGMatrix();
-            m.a = t[0]
-            m.b = t[1]
-            m.c = t[2]
-            m.d = t[3]
-            m.e = t[4]
-            m.f = t[5]
-            a.addPath(p, m)
-            try {
-                contextes.fg.addHitRegion({
-                    path: a,
-                    id: this.id,
-                    cursor: 'grab'
-                })
-            } catch (e) {
-            }
-        }
-    }
-
     draw(contextes, e_tm) {
-        this.enableDraw = true
         if (this.enableDraw) {
             contextes.fg.save()
             //ritorna la posizione del punto relativamente al mondo
@@ -93,6 +57,7 @@ class Pivot extends ControlElement{
             contextes.fg.lineWidth = this.lineWidth;
             contextes.fg.stroke(Pivot.staticPath.pathH)
             contextes.fg.restore()
+            this.addHitRegion(contextes, null, new TransformationMatrix().translate(p[0],p[1]))
         }
     }
 }

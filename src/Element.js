@@ -13,9 +13,10 @@ class Element extends Common {
         this.enableDraw = true
         this.selected = true
         this.pivot = new Pivot()
+        this.pivot.parent(this)
 
-        this.controlElements = new ControlElement()
-        this.controlElements.add(this.pivot)
+        this.controls = new ControlList()
+        this.controls.add(this.pivot)
 
         Element._elements[this.id] = this
     }
@@ -226,7 +227,7 @@ class Element extends Common {
     }
 
     drawControlElements(contextes, parentT) {
-        this.controlElements.draw(contextes, TransformationMatrix.multiply(parentT, this.transformation))
+        this.controls.draw(contextes, TransformationMatrix.multiply(parentT, this.transformation))
     }
 
     getParentsTransformations() {

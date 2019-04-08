@@ -15,8 +15,13 @@ class Line extends Element {
         this.startPoint = new Point2D(0, 0)
         this.endPoint = new Point2D(0, 0)
 
-        this.controlElements.add(new Handle(this.startPoint))
-        this.controlElements.add(new Handle(this.endPoint))
+        let a = new Handle(this.startPoint)
+        a.parent(this)
+        this.controls.add(a)
+
+        a = new Handle(this.endPoint)
+        a.parent(this)
+        this.controls.add(a)
 
         if (args.length) this.value(...args)
     }

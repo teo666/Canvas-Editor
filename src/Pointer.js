@@ -10,7 +10,9 @@ class Pointer {
     }
 
     onMouseMove(editor, etype, e) {
-        //console.log(e.region)
+        if(e.region != null){
+            console.log(e.region)
+        }
     }
 
     onMouseDown(editor, etype, e) {
@@ -28,7 +30,7 @@ class Pointer {
         if (list.length) {
             list[list.length - 1].selected = true
             this.disableAllPivot()
-            list[list.length - 1].controlElements.controlList[0].enableDraw = true
+            list[list.length - 1].controls.list[0].enableDraw = true
             editor.clearForeground()
             editor.drawForeground()
             const evt = new CustomEvent("propchange", {
@@ -48,7 +50,7 @@ class Pointer {
 
     disableAllPivot() {
         for (const i in Element._elements) {
-            Element._elements[i].controlElements.controlList[0].enableDraw = false
+            Element._elements[i].controls.list[0].enableDraw = false
         }
 
     }
