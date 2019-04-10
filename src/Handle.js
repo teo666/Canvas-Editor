@@ -6,7 +6,7 @@ class Handle extends ControlElement {
         //TODO: introdurre il concetto di tipo delle maniglie
         this.type = null
         this.position = point
-        this.enableDraw = true
+        this.enableDraw = false
     }
 
     draw(contextes, pT) {

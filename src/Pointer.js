@@ -10,41 +10,65 @@ class Pointer {
     }
 
     onMouseMove(editor, etype, e) {
-        if(e.region != null){
+        if (e.region != null) {
             console.log(e.region)
         }
     }
 
     onMouseDown(editor, etype, e) {
-        let list;
-        if (e.region && Element._elements[e.region]) {
-            list = [Element._elements[e.region]]
+        let selected;
+
+        if (e.region) {
+            selected = [this.select(e.region)]
             console.log('hitRegion primitive')
         } else {
             let rect = e.target.getBoundingClientRect();
             let x = e.clientX - rect.left;
             let y = e.clientY - rect.top;
-            list = editor.world.hitTest(x, y, editor.contextes, editor.canvas)
+            selected = editor.world.hitTest(x, y, editor.contextes, editor.canvas)
             console.log('hittest')
         }
-        if (list.length) {
-            list[list.length - 1].selected = true
-            this.disableAllPivot()
-            list[list.length - 1].controls.list[0].enableDraw = true
-            editor.clearForeground()
-            editor.drawForeground()
+        if (selected.length) {
+            switch (selected[selected.length - 1].type) {
+                case 'Element':
+                    selected[selected.length - 1].el.selected = true
+                    //this.disableAllPivot()
+                    this.disableAllControlPoint()
+                    //selected[selected.length - 1].el.enablePivot(true)
+                    selected[selected.length - 1].el.controls.enableControlPoints(true)
+
+                    editor.clearForeground()
+                    editor.drawForeground()
+                    const evt = new CustomEvent("propchange", {
+                        detail: {
+                            obj: selected[selected.length - 1].el
+                        }
+                    });
+                    this.eventToolTarget.dispatchEvent(evt);
+                    break;
+                case 'ControlElement':
+
+                    break;
+            }
+        } else {
             const evt = new CustomEvent("propchange", {
                 detail: {
-                    obj: list[list.length - 1]
+                    obj: null
                 }
             });
             this.eventToolTarget.dispatchEvent(evt);
-
+            this.disableAllPivot()
+            this.disableAllControlPoint()
+            editor.clearForeground()
+            editor.drawForeground()
         }
     }
 
-    //TODO: implementare un metodo select che permette di selezionare un elemento in funzione del suo id
-    select(){
+    select(id) {
+        const type = ElementType.Type[id.substring(0, 4)]
+        const ids = id.substring(4, id.length)
+
+        return { el: type._elements[ids], type: type.prototype.constructor.name }
 
     }
 
@@ -52,6 +76,11 @@ class Pointer {
         for (const i in Element._elements) {
             Element._elements[i].controls.list[0].enableDraw = false
         }
+    }
 
+    disableAllControlPoint() {
+        for (const i in ControlElement._elements) {
+            ControlElement._elements[i].enableDraw = false
+        }
     }
 }

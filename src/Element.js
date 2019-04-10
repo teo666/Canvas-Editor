@@ -178,7 +178,7 @@ class Element extends Common {
             a.addPath(p, m)
             contextes.fg.addHitRegion({
                 path: a,
-                id: this.id,
+                id: 'ELEM' + this.id,
                 cursor: 'grab'
             })
 
@@ -194,7 +194,7 @@ class Element extends Common {
             try {
                 contextes.fg.addHitRegion({
                     path: a,
-                    id: this.id,
+                    id: 'ELEM' + this.id,
                     cursor: 'grab'
                 })
             } catch (e) {
@@ -224,6 +224,10 @@ class Element extends Common {
             this.pivot.enableDraw = ((b && true) || false)
         }
         return this.pivot.enableDraw
+    }
+
+    setControlPoint(b){
+        this.controls.enable(b)
     }
 
     drawControlElements(contextes, parentT) {

@@ -19,12 +19,13 @@ class ToolsRenderer {
     }
 
     changeTool(obj) {
+        $(this.container).children().detach()
+        if(obj == null ) return
         if (ToolsRenderer.association[obj.constructor.name]) {
             if (!this.cache[obj.constructor.name]) {
                 this.render(obj.constructor.name)
             }
             this.value(obj)
-            $(this.container).children().detach()
             $(this.container).append(this.cache[obj.constructor.name].tool)
             return
         }

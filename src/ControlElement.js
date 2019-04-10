@@ -4,10 +4,13 @@ class ControlElement {
     constructor() {
         Object.defineProperty(this, 'id', { value: ControlElement.retriveId() })
         this.name = ("controlElement" + this.id);
-        this.controlList = []
-        this.enable = true
         this.enableDraw = true
         this.parentElement = null
+        ControlElement._elements[this.id] = this
+    }
+
+    enable(b){
+        this.enableDraw = b
     }
 
     addHitRegion(contextes, parentT, overrideTM = null) {
@@ -27,7 +30,7 @@ class ControlElement {
             a.addPath(p, m)
             contextes.fg.addHitRegion({
                 path: a,
-                id: (this.parentElement ? this.parentElement.id : '') +'-'+ this.id ,
+                id: 'COEL' + this.id,
                 cursor: 'grab'
             })
 
@@ -43,7 +46,7 @@ class ControlElement {
             try {
                 contextes.fg.addHitRegion({
                     path: a,
-                    id: { p: this.parentElement ? this.parentElement.id: null, id: this.id },
+                    id: 'COEL' + this.id,
                     cursor: 'grab'
                 })
             } catch (e) {
@@ -58,13 +61,6 @@ class ControlElement {
         return this.parentElement
     }
 
-    add(e) {
-        if (e instanceof ControlElement) {
-            this.controlList.push(e)
-            return
-        }
-        throw "Invalid arguments"
-    }
 }
 
 Object.defineProperty(ControlElement, 'retriveId',
@@ -79,3 +75,5 @@ Object.defineProperty(ControlElement, 'retriveId',
         writable: false
     }
 )
+
+Object.defineProperty(ControlElement, '_elements', { value: {} })
