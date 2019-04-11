@@ -4,16 +4,25 @@ class Tool {
     constructor() {
         this.activeTool = 'pan'
         this.tools = {
-            pointer: new Pointer(),
-            pan: new Pan(),
-            adder: new Adder(),
-            colors: new Colors(),
-            canvasStyle: new CanvasStyle()
+            [Tool.validTools.pointer]: new Pointer(),
+            [Tool.validTools.pan]: new Pan(),
+            [Tool.validTools.adder]: new Adder(),
+            [Tool.validTools.colors]: new Colors(),
+            [Tool.validTools.canvasStyle]: new CanvasStyle()
         }
     }
 
     reset() {
-        this.activeTool = 'pan'
+        this.activeTool = Tool.validTools.pan
+    }
+
+    changeTool(tool) {
+        if (tool in Tool.validTools) {
+            this.tools[this.activeTool].cancel()
+            this.activeTool = tool
+        } else {
+            throw "Not a valid Tool"
+        }
     }
 
     dispatch(editor, etype, e) {
@@ -48,6 +57,16 @@ class Tool {
         return m;
     }*/
 }
+
+Object.defineProperty(Tool, 'validTools', {
+    value: {
+        'pan': 'pan',
+        'pointer': 'pointer',
+        'adder': 'adder',
+        'colors': 'colors',
+        'canvasStyle': 'canvasStyle'
+    }
+})
 
 class EventUtil {
     constructor() {

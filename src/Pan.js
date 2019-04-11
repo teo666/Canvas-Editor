@@ -16,6 +16,10 @@ class Pan {
         this.is_dragging = false;
     }
 
+    cancel(){
+        
+    }
+
     onMouseDown(editor, etype, e) {
         e.preventDefault();
         let rect = e.target.getBoundingClientRect();

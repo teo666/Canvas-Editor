@@ -5,6 +5,10 @@ class Pointer {
         this.eventToolTarget = null
     }
 
+    cancel(){
+        
+    }
+
     eventTarget(obj) {
         this.eventToolTarget = obj
     }

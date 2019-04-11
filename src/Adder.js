@@ -34,16 +34,6 @@ class Adder {
     }
 
     add(type, parent, descriptor = null, continuosAdd = false) {
-        // il controllo che non stia gia aggiungendo mi reviene eventuali inserimenti multipli dovuti a cambio di tool
-        // TODO: sarebbe meglio far si' che il tool chami un medoto reset che permette di uscire dallo stato sospeso in modo pulito(???)
-        if(this.adding){
-            //brutto
-            editor.clearForeground()
-            this.cancel()
-            this.adding = false
-
-        }
-        
         if (!this.adding) {
             this.continuosAdd = continuosAdd
             this.adding = true;
@@ -129,8 +119,11 @@ class Adder {
     cancel(editor) {
         let els = this.parentElement.getElements();
         let index = els.indexOf(this.pending)
-        els.splice(index, 1)
+        if(index > 0){
+            els.splice(index, 1)
+        }
         this.continuosAdd = false
+        this.adding = false
         //this.resetAdd(editor);
     }
 
