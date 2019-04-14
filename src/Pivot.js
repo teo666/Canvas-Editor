@@ -40,7 +40,12 @@ class Pivot extends ControlElement{
             const rect = e.target.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            this.MOUSEDOWN = {x,y,startx: this.centerPoint.x(), starty: this.centerPoint.y() }
+            this.MOUSEDOWN = {x,y,startx : this.centerPoint.x(), starty : this.centerPoint.y()}
+
+            editor.cursor.snapToCoordinatesSystem(this.MOUSEDOWN, editor.world.getTransformation())
+            const b = this.parentElement.getParentsTransformations().multiplyTM(this.parentElement.getTransformation()).inv().multiplyPoint(this.MOUSEDOWN.snap_x, this.MOUSEDOWN.snap_y)
+            this.MOUSEDOWN.x = b[0]
+            this.MOUSEDOWN.y = b[1]
         }
 
     }
@@ -65,23 +70,10 @@ class Pivot extends ControlElement{
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
 
             const a = this.parentElement.getParentsTransformations().multiplyTM(this.parentElement.getTransformation()).inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            
             mmv = {
-                x: this.MOUSEDOWN.x,
-                y: this.MOUSEDOWN.y
+                x: this.MOUSEDOWN.startx + a[0] - this.MOUSEDOWN.x,
+                y: this.MOUSEDOWN.starty + a[1] - this.MOUSEDOWN.y
             }
-
-            editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
-
-            const b = this.parentElement.getParentsTransformations().multiplyTM(this.parentElement.getTransformation()).inv().multiplyPoint(mmv.snap_x, mmv.snap_y) 
-
-            //console.log(a[0] - b[0], a[1] - b[1])
-            mmv = {
-                x: this.MOUSEDOWN.startx + a[0] - b[0],
-                y: this.MOUSEDOWN.starty + a[1] - b[1]
-            }
-
-            //editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
 
             this.centerPoint.value(mmv.x, mmv.y)
             this.parentElement.buildPath()
