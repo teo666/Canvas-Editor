@@ -16,9 +16,9 @@ class Tool {
         this.activeTool = Tool.validTools.pan
     }
 
-    changeTool(tool) {
+    changeTool(editor,tool) {
         if (tool in Tool.validTools) {
-            this.tools[this.activeTool].cancel()
+            this.tools[this.activeTool].cancel(editor)
             this.activeTool = tool
         } else {
             throw "Not a valid Tool"

@@ -3,10 +3,21 @@
 class Pointer {
     constructor() {
         this.eventToolTarget = null
+        this.permanentTarget = null
     }
 
-    cancel(){
-        
+    cancel(editor) {
+        this.disableAllControlPoint()
+        editor.clearForeground()
+        editor.drawForeground()
+    }
+
+    setPermanentTarget(t) {
+        this.permanentTarget = t
+    }
+
+    cancelPermanentTarget() {
+        this.permanentTarget = null
     }
 
     eventTarget(obj) {
@@ -14,12 +25,68 @@ class Pointer {
     }
 
     onMouseMove(editor, etype, e) {
-        if (e.region != null) {
-            console.log(e.region)
+        if (this.permanentTarget) {
+            this.permanentTarget.onMouseMove(editor, etype, e, this)
+            return
+        }
+        let selected;
+
+        if (e.region) {
+            selected = [this.select(e.region)]
+            //console.log('hitRegion primitive')
+        } else {
+            let rect = e.target.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            selected = editor.world.hitTest(x, y, editor.contextes, editor.canvas)
+            //console.log('hittest')
+        }
+        if (selected.length) {
+            switch (selected[selected.length - 1].type) {
+                case 'Element':
+
+                    break;
+                case 'ControlElement':
+                    selected[selected.length - 1].el.onMouseMove(editor, etype, e, this)
+                    break;
+            }
+        }
+    }
+
+    onMouseUp(editor, etype, e) {
+        if (this.permanentTarget) {
+            this.permanentTarget.onMouseUp(editor, etype, e, this)
+            return
+        }
+        let selected;
+
+        if (e.region) {
+            selected = [this.select(e.region)]
+            console.log('hitRegion primitive')
+        } else {
+            let rect = e.target.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            selected = editor.world.hitTest(x, y, editor.contextes, editor.canvas)
+            console.log('hittest')
+        }
+        if (selected.length) {
+            switch (selected[selected.length - 1].type) {
+                case 'Element':
+
+                    break;
+                case 'ControlElement':
+                    selected[selected.length - 1].el.onMouseUp(editor, etype, e, this)
+                    break;
+            }
         }
     }
 
     onMouseDown(editor, etype, e) {
+        if (this.permanentTarget) {
+            this.permanentTarget.onMouseDown(editor, etype, e, this)
+            return
+        }
         let selected;
 
         if (e.region) {
@@ -51,7 +118,7 @@ class Pointer {
                     this.eventToolTarget.dispatchEvent(evt);
                     break;
                 case 'ControlElement':
-
+                    selected[selected.length - 1].el.onMouseDown(editor, etype, e, this)
                     break;
             }
         } else {

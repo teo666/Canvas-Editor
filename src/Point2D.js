@@ -57,11 +57,24 @@ class Point2D {
     subtract(...args) {
         if (args.length > 0) {
             if (args.length == 1 && args[0] instanceof Point2D) {
-                ret.x(ret.x() - args[0].x())
-                ret.y(ret.y() - args[0].y())
-            } else if (args.length == 1 && typeof args[0] == 'number' && typeof args[1] == 'number') {
-                ret.x(ret.x() - args[0])
-                ret.y(ret.y() - args[1])
+                this.x(this.x() - args[0].x())
+                this.y(this.y() - args[0].y())
+            } else if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
+                this.x(this.x() - args[0])
+                this.y(this.y() - args[1])
+            }
+        }
+        return this;
+    }
+
+    add(...args) {
+        if (args.length > 0) {
+            if (args.length == 1 && args[0] instanceof Point2D) {
+                this.x(this.x() + args[0].x())
+                this.y(this.y() + args[0].y())
+            } else if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
+                this.x(this.x() + args[0])
+                this.y(this.y() + args[1])
             }
         }
         return this;
@@ -77,6 +90,27 @@ class Point2D {
                 if (index) {
                     ret.x(ret.x() - element.x())
                     ret.y(ret.y() - element.y())
+                } else {
+                    ret.x(element.x())
+                    ret.y(element.y())
+                }
+            })) {
+                throw "Invalid arguments"
+            }
+        }
+        return ret
+    }
+    
+    static add(...args) {
+        let ret = new Point2D(0, 0)
+        if (args.length > 0) {
+            if (args.some((element, index) => {
+                if (!element instanceof Point2D) {
+                    return true
+                }
+                if (index) {
+                    ret.x(ret.x() + element.x())
+                    ret.y(ret.y() + element.y())
                 } else {
                     ret.x(element.x())
                     ret.y(element.y())

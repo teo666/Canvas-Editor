@@ -62,24 +62,24 @@
 <body>
     <div>
         <div id="tool_bar" style="height: 500px; width: 100px; float: left;">
-            <button onclick="editor.tool.changeTool(Tool.validTools.pan)">Pan</button>
-            <button onclick="editor.tool.changeTool(Tool.validTools.pointer)">Pointer</button>
+            <button onclick="editor.tool.changeTool(editor,Tool.validTools.pan)">Pan</button>
+            <button onclick="editor.tool.changeTool(editor,Tool.validTools.pointer)">Pointer</button>
             <button
-                onclick="editor.tool.changeTool(Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line
+                onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Line, editor.world)">Line
             </button>
             <button
-                onclick="editor.tool.changeTool(Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse
+                onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Ellipse, editor.world)">Ellipse
                 center/radiuses
             </button>
             <button
-                onclick="editor.tool.changeTool(Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Ellipse, editor.world, __addEllipseBoundingCorner)">Ellipse
+                onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Ellipse, editor.world, __addEllipseBoundingCorner)">Ellipse
                 radiuses
             </button>
             <button
-                onclick="editor.tool.changeTool(Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Arc, editor.world)">Arc
+                onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Arc, editor.world)">Arc
             </button>
             <button
-                onclick="editor.tool.changeTool(Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Rectangle, editor.world)">Rectangle
+                onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Rectangle, editor.world)">Rectangle
             </button>
             <button onclick="draw()">Animate
             </button>

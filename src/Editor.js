@@ -69,11 +69,13 @@ class Editor {
         this.world.applyTransform(this.contextes)
 
         let l = new Line()
-        l.translate(150, 50)
-        //l.rotate(-Math.PI/4)
+        l.translate(100, 100)
+        l.rotate(-Math.PI/4)
+        l.pivot.value(50,0)
         l.start(0, 0)
         l.end(100, 0)
         l.width(50)
+        l.scale(2,2)
         this.world.addElement(l)
 
         /*
