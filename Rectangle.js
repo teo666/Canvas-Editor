@@ -14,8 +14,16 @@ class Rectangle extends Element {
         this.globalCompositeOperation = CanvasStyle.globalCompositeOperation.source_over
         this.shadowBlur = 0;
 
-        this.cornerPoint = new Point2D(0, 0)
-        this.sizes = new Size2D(0, 0)
+        this.startPoint = new Point2D(0, 0)
+        let a = new Handle(this.startPoint)
+        a.parent(this)
+        this.controls.add(a)
+
+        this.endPoint = new Point2D(0, 0)
+        a = new Handle(this.endPoint)
+        a.parent(this)
+        this.controls.add(a)
+
         if (args.length) this.value(...args)
     }
 
@@ -54,24 +62,35 @@ class Rectangle extends Element {
     }
 
     size(...args) {
-        if (args.length) {
-            this.sizes.value(...args)
-            this.buildPath()
+        if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number' ) {
+            this.end(this.startPoint.x() + args[0], this.startPoint.y() + args[1])
         }
-        return this.sizes
+        return Point2D.subtract(this.endPoint, this.startPoint)
     }
 
-    corner(...args) {
+    dimensions(){
+        this.size().abs()
+    }
+
+    start(...args) {
         if (args.length) {
-            this.cornerPoint.value(...args)
+            this.startPoint.value(...args)
             this.buildPath()
         }
-        return this.cornerPoint
+        return this.startPoint
+    }
+
+    end(...args) {
+        if (args.length) {
+            this.endPoint.value(...args)
+            this.buildPath()
+        }
+        return this.endPoint
     }
 
     buildPath() {
         this.path = new Path2D()
-        this.path.rect(this.cornerPoint.x(), this.cornerPoint.y(), this.sizes.w(), this.sizes.h())
+        this.path.rect(this.startPoint.x(), this.startPoint.y(), this.size().w(), this.size().h())
         this.buildHitTestPath()
     }
 
@@ -84,30 +103,30 @@ class Rectangle extends Element {
 
         switch (this.lineJoin) {
             case CanvasStyle.lineJoin.Round:
-                this.hitPath.moveTo(this.corner().x(), this.corner().y() - hs)
-                this.hitPath.lineTo(this.corner().x() + this.size().w(), this.corner().y() - hs)
-                this.hitPath.arcTo(this.corner().x() + this.size().w() + ws, this.corner().y() - hs, this.corner().x() + this.size().w() + ws, this.corner().y(), r)
-                this.hitPath.lineTo(this.corner().x() + this.size().w() + ws, this.corner().y() + this.size().h())
-                this.hitPath.arcTo(this.corner().x() + this.size().w() + ws, this.corner().y() + this.size().h() + hs, this.corner().x() + this.size().w(), this.corner().y() + this.size().h() + hs, r)
-                this.hitPath.lineTo(this.corner().x(), this.corner().y() + this.size().h() + hs)
-                this.hitPath.arcTo(this.corner().x() - ws, this.corner().y() + this.size().h() + hs, this.corner().x() - ws, this.corner().y() + this.size().h(), r)
-                this.hitPath.lineTo(this.corner().x() - ws, this.corner().y())
-                this.hitPath.arcTo(this.corner().x() - ws, this.corner().y() - hs, this.corner().x(), this.corner().y() - hs, r)
+                this.hitPath.moveTo(this.startPoint.x(), this.startPoint.y() - hs)
+                this.hitPath.lineTo(this.startPoint.x() + this.size().w(), this.startPoint.y() - hs)
+                this.hitPath.arcTo(this.startPoint.x() + this.size().w() + ws, this.startPoint.y() - hs, this.startPoint.x() + this.size().w() + ws, this.startPoint.y(), r)
+                this.hitPath.lineTo(this.startPoint.x() + this.size().w() + ws, this.startPoint.y() + this.size().h())
+                this.hitPath.arcTo(this.startPoint.x() + this.size().w() + ws, this.startPoint.y() + this.size().h() + hs, this.startPoint.x() + this.size().w(), this.startPoint.y() + this.size().h() + hs, r)
+                this.hitPath.lineTo(this.startPoint.x(), this.startPoint.y() + this.size().h() + hs)
+                this.hitPath.arcTo(this.startPoint.x() - ws, this.startPoint.y() + this.size().h() + hs, this.startPoint.x() - ws, this.startPoint.y() + this.size().h(), r)
+                this.hitPath.lineTo(this.startPoint.x() - ws, this.startPoint.y())
+                this.hitPath.arcTo(this.startPoint.x() - ws, this.startPoint.y() - hs, this.startPoint.x(), this.startPoint.y() - hs, r)
                 this.hitPath.closePath()
                 break;
             case CanvasStyle.lineJoin.Miter:
                 this.hitPath.rect(this.cornerPoint.x() - ws, this.cornerPoint.y() - hs, this.sizes.w() + 2 * ws, this.sizes.h() + 2 * hs)
                 break;
             case CanvasStyle.lineJoin.Bavel:
-                this.hitPath.moveTo(this.corner().x(), this.corner().y() - hs)
-                this.hitPath.lineTo(this.corner().x() + this.size().w(), this.corner().y() - hs)
-                this.hitPath.lineTo(this.corner().x() + this.size().w() + ws, this.corner().y())
-                this.hitPath.lineTo(this.corner().x() + this.size().w() + ws, this.corner().y() + this.size().h())
-                this.hitPath.lineTo(this.corner().x() + this.size().w(), this.corner().y() + this.size().h() + hs)
-                this.hitPath.lineTo(this.corner().x(), this.corner().y() + this.size().h() + hs)
-                this.hitPath.lineTo(this.corner().x() - ws, this.corner().y() + this.size().h())
-                this.hitPath.lineTo(this.corner().x() - ws, this.corner().y())
-                this.hitPath.lineTo(this.corner().x(), this.corner().y() - hs)
+                this.hitPath.moveTo(this.startPoint.x(), this.startPoint.y() - hs)
+                this.hitPath.lineTo(this.startPoint.x() + this.size().w(), this.startPoint.y() - hs)
+                this.hitPath.lineTo(this.startPoint.x() + this.size().w() + ws, this.startPoint.y())
+                this.hitPath.lineTo(this.startPoint.x() + this.size().w() + ws, this.startPoint.y() + this.size().h())
+                this.hitPath.lineTo(this.startPoint.x() + this.size().w(), this.startPoint.y() + this.size().h() + hs)
+                this.hitPath.lineTo(this.startPoint.x(), this.startPoint.y() + this.size().h() + hs)
+                this.hitPath.lineTo(this.startPoint.x() - ws, this.startPoint.y() + this.size().h())
+                this.hitPath.lineTo(this.startPoint.x() - ws, this.startPoint.y())
+                this.hitPath.lineTo(this.startPoint.x(), this.startPoint.y() - hs)
                 this.hitPath.closePath()
                 break;
         }

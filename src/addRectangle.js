@@ -16,8 +16,8 @@ const __addRectangle = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             elem.enable();
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.corner(p[0], p[1]);
-            elem.size(0, 0)
+            elem.start(p[0], p[1]);
+            elem.end(p[0], p[1])
             elem.pivot.center(p[0], p[1])
             editor.draw();
         },
@@ -39,8 +39,8 @@ const __addRectangle = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             //console.log(mmv)
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.size(p[0] - elem.corner().x(), p[1] - elem.corner().y());
-            elem.pivot.center((elem.corner().x() + p[0]) / 2, (elem.corner().y() + p[1]) / 2)
+            elem.size(p[0] - elem.start().x(), p[1] - elem.start().y());
+            elem.pivot.center((elem.start().x() + p[0]) / 2, (elem.start().y() + p[1]) / 2)
             editor.draw();
         },
         next: [2, 3, 4],
@@ -86,8 +86,8 @@ const __addRectangle = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.size(p[0] - elem.corner().x(), p[1] - elem.corner().y());
-            elem.pivot.center((elem.corner().x() + p[0]) / 2, (elem.corner().y() + p[1]) / 2)
+            elem.size(p[0] - elem.start().x(), p[1] - elem.start().y());
+            elem.pivot.center((elem.start().x() + p[0]) / 2, (elem.start().y() + p[1]) / 2)
 
             if (elem.size().x() == elem.size().x() == 0) {
                 //wait next event
