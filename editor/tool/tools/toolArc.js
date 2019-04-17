@@ -1,23 +1,25 @@
 const __toolArc = Object.assign({
     pivot: {
         type: 'Pivot',
-        label: 'pivot'
+        label: 'Pivot'
     },
     center: {
         type: 'Point2D',
-        label: 'center'
+        label: 'Center'
     },
-    radius: {
-        type: ToolBuilder.toolType.numeric,
-        label: 'radius'
+    startPoint: {
+        type: 'Point2D',
+        label: 'Start'
+    },
+    endPoint: {
+        type: 'Point2D',
+        label: 'End'
     },
     rotation: {
-        type: ToolBuilder.toolType.numeric,
-        label: 'rotation'
+        type: ToolBuilder.toolType.dropdown,
+        options: {'Clockwise': false, 'Anticlockwise': true},
+        value: {'Clockwise': false, 'Anticlockwise': true},
+        label: 'Rotation'
     },
-    angles: {
-        type : 'Point2D',
-        label : 'angles'
-    }
 }, __toolStyle)
 

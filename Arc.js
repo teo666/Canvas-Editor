@@ -14,6 +14,8 @@ class Arc extends Element {
         this.shadowBlur = this.shadowBlur
         this.shadowColor = this.shadowColor
 
+        this.anticlockwise = false
+
         this.centerPoint = new Point2D(0, 0)
         
         let a = new Handle(this.centerPoint)
@@ -62,7 +64,15 @@ class Arc extends Element {
 
     rotation(...args) {
         if (args.length > 0) {
-            this.anticlockwise = args[0] && true
+            if(typeof args[0] == 'string'){
+                if(args[0] == 'true'){
+                    this.anticlockwise = true
+                } else {
+                    this.anticlockwise = false
+                }
+            } else {
+                this.anticlockwise = args[0] && true
+            }
             this.buildPath()
         }
         return this.anticlockwise
