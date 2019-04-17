@@ -13,9 +13,23 @@ class Arc extends Element {
         this.lineJoin = CanvasStyle.lineJoin.Round
         this.shadowBlur = this.shadowBlur
         this.shadowColor = this.shadowColor
-        this.radiusSize = 50;
-        this.arcLength = 0;
+
         this.centerPoint = new Point2D(0, 0)
+        
+        let a = new Handle(this.centerPoint)
+        a.parent(this)
+        this.controls.add(a)
+
+        this.startPoint = new Point2D(0,0)
+        a = new Handle(this.startPoint)
+        a.parent(this)
+        this.controls.add(a)
+
+        this.endPoint = new Point2D(0,0)
+        a = new Handle(this.endPoint)
+        a.parent(this)
+        this.controls.add(a)
+
         this.angles = new Size2D(0, Math.PI / 2)
         this.anticlockwise = false
         if (args.length) this.buildPath()
@@ -34,12 +48,8 @@ class Arc extends Element {
         return this.lineWidth;
     }
 
-    radius(...args) {
-        if (args.length == 1 && typeof args[0] == 'number') {
-            this.radiusSize = Math.abs(args[0])
-            this.buildPath()
-        }
-        return this.radiusSize
+    radius() {
+        return Point2D.hypot(this.center(), this.start())
     }
 
     center(...args) {
@@ -60,23 +70,28 @@ class Arc extends Element {
 
     buildPath() {
         this.path = new Path2D();
-        this.path.arc(this.centerPoint.x(), this.centerPoint.y(), this.radiusSize, this.angles.x(), this.angles.y(), this.anticlockwise);
+        const startAngle = Point2D.angle(this.center(), this.start())
+        let endAngle = Point2D.angle(this.center(), this.end())
+        if(this.start().equal(this.end())){
+            endAngle = startAngle + Math.PI*2
+        }
+        this.path.arc(this.centerPoint.x(), this.centerPoint.y(), this.radius(), startAngle, endAngle, this.anticlockwise);
     }
 
-    startAngle(...args) {
-        if (args.length > 0) {
-            this.angles.x(...args)
+    start(...args){
+        if(args.length){
+            this.startPoint.value(...args)
             this.buildPath()
         }
-        return this.angles.x();
+        return this.startPoint
     }
 
-    endAngle(...args) {
-        if (args.length > 0) {
-            this.angles.y(...args)
+    end(...args){
+        if(args.length){
+            this.endPoint.value(...args)
             this.buildPath()
         }
-        return this.angles.y();
+        return this.endPoint
     }
 
     draw(contextes, parentT) {
@@ -116,6 +131,9 @@ class Arc extends Element {
             */
 
             ctx.restore();
+            if(this.selected){
+                this.onEdit(contextes)
+            }
             super.draw(contextes, null, t)
         }
     }

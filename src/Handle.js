@@ -105,7 +105,7 @@ Object.defineProperty(Handle, 'source', {
 Object.defineProperty(Handle, 'staticPathRound', {
     value: (function () {
         const i = new Path2D()
-        i.arc(0, 0, 10, 0, Math.PI * 2)
+        i.arc(0, 0, 5, 0, Math.PI * 2)
         return i
     })()
 })

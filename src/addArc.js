@@ -46,8 +46,8 @@ const __addArc = {
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.center(p[0], p[1]);
             elem.pivot.center(p[0], p[1]);
-            elem.startAngle(0)
-            elem.endAngle(Math.PI * 2)
+            elem.start(p[0],p[1])
+            elem.end(p[0],p[1])
         },
         next: [2, 3],
         saveEvent: true
@@ -72,15 +72,10 @@ const __addArc = {
             elem.enablePivot();
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            let start = new Point2D(p[0], p[1])
-            if (elem.center().equal(start)) {
+            elem.start(p[0], p[1])
+            if (elem.center().equal(elem.start())) {
                 return true
             }
-            let angle1 = Point2D.angle(elem.center(), start)
-            mem['angle1'] = angle1
-            elem.startAngle(angle1)
-            //elem.endAngle(angle1 + Math.PI)
-            elem.radius(Point2D.hypot(elem.center(), start))
         },
         postDraw: function (editor, elem, parent, events, e, mem) {
             mem['draw_construction'](editor.contextes.fg, editor, elem, mem)
@@ -101,13 +96,10 @@ const __addArc = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            mem['startp'] = p
             elem.enable();
-            let start = new Point2D(p[0], p[1])
-            let angle1 = Point2D.angle(elem.center(), start)
-            elem.startAngle(angle1)
-            elem.endAngle(angle1 + Math.PI * 2)
-            elem.radius(Point2D.hypot(elem.center(), start))
+            elem.start(p[0], p[1])
+            elem.end(p[0],p[1])
+            mem['startp'] = p
         },
         postDraw: function (editor, elem, parent, events, e, mem) {
             mem['draw_construction'](editor.contextes.fg, editor, elem, mem)
@@ -132,11 +124,7 @@ const __addArc = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            let angle2 = Point2D.angle(elem.center(), new Point2D(p[0], p[1]))
-            if (angle2 == mem.angle1) {
-                angle2 = mem.angle1 + Math.PI * 2
-            }
-            elem.endAngle(angle2)
+            elem.end(p[0],p[1])
         },
         next: [],
         saveEvent: true
@@ -154,14 +142,9 @@ const __addArc = {
                 y: y
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
-            //elem.pending = false;
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            let angle2 = Point2D.angle(elem.center(), new Point2D(p[0], p[1]))
-            if (angle2 == mem.angle1) {
-                angle2 = mem.angle1 + Math.PI * 2
-            }
-            elem.endAngle(angle2)
             mem['endp'] = p
+            elem.end(p[0],p[1])
 
         },
         postDraw: function (editor, elem, parent, events, e, mem) {
