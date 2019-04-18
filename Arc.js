@@ -17,25 +17,24 @@ class Arc extends Element {
         this.anticlockwise = false
 
         this.centerPoint = new Point2D(0, 0)
-        
+
         let a = new Handle(this.centerPoint)
         a.parent(this)
         this.controls.add(a)
 
-        this.startPoint = new Point2D(0,0)
+        this.startPoint = new Point2D(0, 0)
         a = new Handle(this.startPoint)
         a.parent(this)
         this.controls.add(a)
 
-        this.endPoint = new Point2D(0,0)
+        this.endPoint = new Point2D(0, 0)
         a = new Handle(this.endPoint)
         a.parent(this)
         this.controls.add(a)
 
         this.angles = new Size2D(0, Math.PI / 2)
         this.anticlockwise = false
-        if (args.length) this.buildPath()
-
+        this.buildPath()
     }
 
     width(...args) {
@@ -64,8 +63,8 @@ class Arc extends Element {
 
     rotation(...args) {
         if (args.length > 0) {
-            if(typeof args[0] == 'string'){
-                if(args[0] == 'true'){
+            if (typeof args[0] == 'string') {
+                if (args[0] == 'true') {
                     this.anticlockwise = true
                 } else {
                     this.anticlockwise = false
@@ -82,22 +81,22 @@ class Arc extends Element {
         this.path = new Path2D();
         const startAngle = Point2D.angle(this.center(), this.start())
         let endAngle = Point2D.angle(this.center(), this.end())
-        if(this.start().equal(this.end())){
-            endAngle = startAngle + Math.PI*2
+        if (this.start().equal(this.end())) {
+            endAngle = startAngle + Math.PI * 2
         }
         this.path.arc(this.centerPoint.x(), this.centerPoint.y(), this.radius(), startAngle, endAngle, this.anticlockwise);
     }
 
-    start(...args){
-        if(args.length){
+    start(...args) {
+        if (args.length) {
             this.startPoint.value(...args)
             this.buildPath()
         }
         return this.startPoint
     }
 
-    end(...args){
-        if(args.length){
+    end(...args) {
+        if (args.length) {
             this.endPoint.value(...args)
             this.buildPath()
         }
@@ -141,7 +140,7 @@ class Arc extends Element {
             */
 
             ctx.restore();
-            if(this.selected){
+            if (this.selected) {
                 this.onEdit(contextes)
             }
             super.draw(contextes, null, t)
@@ -149,6 +148,26 @@ class Arc extends Element {
     }
 
     onEdit(contextes) {
-        //TODO:
+        const ctx = contextes.fg
+        const tm = editor.world.getTransformation().valueOf()
+        ctx.save()
+        ctx.setTransform(
+            tm[0],
+            tm[1],
+            tm[2],
+            tm[3],
+            tm[4],
+            tm[5]
+        )
+        ctx.setLineDash([10, 10])
+        ctx.lineWidth = 2
+        ctx.strokeStyle = 'yellow'
+        ctx.beginPath()
+        ctx.moveTo(this.start().x(), this.start().y())
+        ctx.lineTo(this.center().x(), this.center().y())
+        ctx.lineTo(this.end().x(), this.end().y())
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
     }
 }
