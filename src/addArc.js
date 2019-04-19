@@ -90,7 +90,9 @@ const __addArc = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.end(p[0], p[1])
-            elem.pivot.value(elem.center())
+            let c = Point2D.add(elem.end(), elem.start())
+            console.log(c)
+            elem.pivot.value(c.x()/2,c.y()/2)
         },
         next: [],
         saveEvent: false

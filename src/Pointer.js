@@ -10,6 +10,9 @@ class Pointer {
         this.disableAllControlPoint()
         editor.clearForeground()
         editor.drawForeground()
+        this.unselectAll()
+        this.removeProp()
+
     }
 
     setPermanentTarget(t) {
@@ -110,6 +113,7 @@ class Pointer {
 
                     editor.clearForeground()
                     editor.drawForeground()
+                    selected[selected.length - 1].el.edit(editor.contextes)
                     const evt = new CustomEvent("propchange", {
                         detail: {
                             obj: selected[selected.length - 1].el
@@ -122,17 +126,22 @@ class Pointer {
                     break;
             }
         } else {
-            const evt = new CustomEvent("propchange", {
-                detail: {
-                    obj: null
-                }
-            });
-            this.eventToolTarget.dispatchEvent(evt);
+            this.removeProp()
             this.disableAllPivot()
             this.disableAllControlPoint()
+            this.unselectAll()
             editor.clearForeground()
             editor.drawForeground()
         }
+    }
+
+    removeProp(){
+        const evt = new CustomEvent("propchange", {
+            detail: {
+                obj: null
+            }
+        });
+        this.eventToolTarget.dispatchEvent(evt);
     }
 
     select(id) {
@@ -141,6 +150,12 @@ class Pointer {
 
         return { el: type._elements[ids], type: type.prototype.constructor.name }
 
+    }
+
+    unselectAll(){
+        for (const i in Element._elements) {
+            Element._elements[i].selected = false
+        }
     }
 
     disableAllPivot() {

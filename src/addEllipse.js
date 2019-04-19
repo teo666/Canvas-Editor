@@ -17,6 +17,8 @@ const __addEllipse = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             elem.enable();
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
+            elem.controlWidth(p[0])
+            elem.controlHeight(p[1])
             elem.center(p[0], p[1]);
             elem.pivot.center(elem.center())
         },
@@ -38,10 +40,9 @@ const __addEllipse = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            let radius = Point2D.subtract(elem.center(), new Point2D(p[0], p[1])).abs().toSize2D()
-
-            elem.radius(radius)
-            if (!(radius.x() || radius.y())) {
+            elem.center( (p[0] + elem.controlWidth() ) / 2, (p[1] + elem.controlHeight() ) / 2)
+            elem.pivot.value(elem.center())
+            if (elem.center().equal(elem.heightPoint) && elem.center().equal(elem.widthPoint)) {
                 return true
             }
         },
@@ -61,9 +62,7 @@ const __addEllipse = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            //console.log(elem.center().x(),elem.center().y(), p[0],p[1])
-            let radius = Point2D.subtract(elem.center(), new Point2D(p[0], p[1])).abs().toSize2D()
-            elem.radius(radius)
+            elem.center( (p[0] + elem.controlWidth() ) / 2, (p[1] + elem.controlHeight() ) / 2)
         },
         next: [2, 3],
         saveEvent: false

@@ -139,15 +139,13 @@ class Arc extends Element {
             context.stroke(this.hitPath)
             */
 
+            if(this.select) this.edit(contextes)
             ctx.restore();
-            if (this.selected) {
-                this.onEdit(contextes)
-            }
             super.draw(contextes, null, t)
         }
     }
 
-    onEdit(contextes) {
+    edit(contextes) {
         const ctx = contextes.fg
         const tm = editor.world.getTransformation().valueOf()
         ctx.save()

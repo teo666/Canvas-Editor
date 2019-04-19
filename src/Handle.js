@@ -4,11 +4,23 @@ class Handle extends ControlElement {
     constructor(point) {
         super()
         //TODO: introdurre il concetto di tipo delle maniglie
+        this.shape = Handle.shape.round
         this.type = null
         this.position = point
         this.enableDraw = false
         this.parentElement = null
         this.edit = false
+    }
+
+    getPath() {
+        switch (this.shape) {
+            case 0:
+                return Handle.staticPathRound
+            case 1:
+                return Handle.staticPathSquare
+            case 2:
+                return Handle.staticPathCross
+        }
     }
 
     onMouseDown(editor, etype, e, p) {
@@ -19,7 +31,7 @@ class Handle extends ControlElement {
             const rect = e.target.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            this.MOUSEDOWN = {x,y,startx : this.position.x(), starty : this.position.y()}
+            this.MOUSEDOWN = { x, y, startx: this.position.x(), starty: this.position.y() }
 
             editor.cursor.snapToCoordinatesSystem(this.MOUSEDOWN, editor.world.getTransformation())
             const b = this.parentElement.getParentsTransformations().multiplyTM(this.parentElement.getTransformation()).inv().multiplyPoint(this.MOUSEDOWN.snap_x, this.MOUSEDOWN.snap_y)
@@ -33,7 +45,6 @@ class Handle extends ControlElement {
         p.cancelPermanentTarget(this)
         this.DRAG = false
         this.MOUSEDOWN = {}
-
     }
 
     onMouseMove(editor, etype, e, p) {
@@ -43,7 +54,7 @@ class Handle extends ControlElement {
             const y = e.clientY - rect.top;
 
             let mmv = {
-                x,y
+                x, y
             }
 
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
@@ -55,9 +66,11 @@ class Handle extends ControlElement {
             }
 
             this.position.value(mmv.x, mmv.y)
+            this.onChange()
             this.parentElement.buildPath()
             editor.draw()
             editor.clearForeground()
+            this.parentElement.edit(editor.contextes)
             editor.drawForeground()
         }
     }
@@ -82,8 +95,10 @@ class Handle extends ControlElement {
             //ctx.fill(Handle.staticPathSquare)
 
             ctx.strokeStyle = 'black'
-            ctx.stroke(Handle.staticPathRound)
-            ctx.fill(Handle.staticPathRound)
+            let s = this.getPath()
+
+            ctx.stroke(s)
+            ctx.fill(s)
             //ctx.fill(Handle.staticPathRound)
             //ctx.drawImage(Handle.source, - Handle.source.width / 2, - Handle.source.height / 2)
 
@@ -110,10 +125,29 @@ Object.defineProperty(Handle, 'staticPathRound', {
     })()
 })
 
+Object.defineProperty(Handle, 'staticPathCross', {
+    value: (function () {
+        const i = new Path2D()
+        i.moveTo(-5, -5)
+        i.lineTo(5, 5)
+        i.moveTo(5, -5)
+        i.lineTo(-5, 5)
+        return i
+    })()
+})
+
 Object.defineProperty(Handle, 'staticPathSquare', {
     value: (function () {
         const i = new Path2D()
-        i.rect(-10, -10, 20, 20)
+        i.rect(-5, -5, 10, 10)
         return i
     })()
+})
+
+Object.defineProperty(Handle, 'shape', {
+    value: {
+        'round': 0,
+        'square': 1,
+        'cross': 2
+    }
 })

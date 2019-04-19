@@ -190,8 +190,10 @@ class Adder {
                 this.readAllowedEvents();
             }
             if (this.allowedEvents.length == 0) {
-                editor.drawForeground()
+                this.pending.selected = false
                 this.resetAdd(editor)
+                editor.clearForeground()
+                editor.drawForeground()
                 editor.draw()
             }
         }

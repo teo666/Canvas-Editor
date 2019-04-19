@@ -54,8 +54,12 @@ class ControlElement {
         }
     }
 
+    onChange(){
+        
+    }
+
     parent(e) {
-        if (arguments.length) {
+        if (arguments.length && e instanceof Element) {
             this.parentElement = e
         }
         return this.parentElement

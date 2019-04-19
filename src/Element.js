@@ -219,6 +219,10 @@ class Element extends Common {
         });
     }
 
+    edit(){
+        
+    }
+
     enablePivot(b) {
         if (arguments.length) {
             this.pivot.enableDraw = ((b && true) || false)

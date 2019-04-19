@@ -112,6 +112,9 @@ class Pivot extends ControlElement{
             contextes.fg.lineWidth = this.lineWidth;
             contextes.fg.stroke(Pivot.staticPath.pathH)
             contextes.fg.restore()
+            if(this.parentElement){
+                this.parentElement.edit(contextes)
+            }
             this.addHitRegion(contextes, null, new TransformationMatrix().translate(p[0],p[1]))
         }
     }
