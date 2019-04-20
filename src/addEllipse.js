@@ -17,9 +17,11 @@ const __addEllipse = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             elem.enable();
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.controlWidth(p[0])
-            elem.controlHeight(p[1])
-            elem.center(p[0], p[1]);
+            elem.center(p[0], p[1])
+            elem.start(elem.center())
+            elem.end(elem.center())
+            
+            mem['start'] = p
             elem.pivot.center(elem.center())
         },
         next: [2, 3],
@@ -40,9 +42,14 @@ const __addEllipse = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.center( (p[0] + elem.controlWidth() ) / 2, (p[1] + elem.controlHeight() ) / 2)
+            let r = new Size2D( (p[0] - mem.start[0])/2,( p[1] - mem.start[1])/2)
+            
+            elem.center( mem.start[0] + r.w(), mem.start[1] + r.h())
             elem.pivot.value(elem.center())
-            if (elem.center().equal(elem.heightPoint) && elem.center().equal(elem.widthPoint)) {
+            elem.start( elem.center().x() + r.w(), elem.center().y())
+            elem.end(elem.start())
+            elem.radius(r)
+            if (r.w() == 0 && r.h() == 0) {
                 return true
             }
         },
@@ -62,7 +69,13 @@ const __addEllipse = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.center( (p[0] + elem.controlWidth() ) / 2, (p[1] + elem.controlHeight() ) / 2)
+            let r = new Size2D( (p[0] - mem.start[0])/2,( p[1] - mem.start[1])/2)
+            
+            elem.center( mem.start[0] + r.w(), mem.start[1] + r.h())
+            elem.start( elem.center().x() + r.w(), elem.center().y())
+            elem.end(elem.start())
+            
+            elem.radius(r)
         },
         next: [2, 3],
         saveEvent: false

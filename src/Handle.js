@@ -66,7 +66,7 @@ class Handle extends ControlElement {
             }
 
             this.position.value(mmv.x, mmv.y)
-            this.onChange()
+            this.postChange()
             this.parentElement.buildPath()
             editor.draw()
             editor.clearForeground()

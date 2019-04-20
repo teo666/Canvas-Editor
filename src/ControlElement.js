@@ -54,7 +54,7 @@ class ControlElement {
         }
     }
 
-    onChange(){
+    postChange(){
         
     }
 

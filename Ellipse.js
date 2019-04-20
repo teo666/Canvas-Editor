@@ -15,8 +15,33 @@ class Ellipse extends Element {
         this.centerPoint = new Point2D(0, 0);
         let a = new Handle(this.centerPoint)
         a.shape = Handle.shape.cross
-        a.onChange = function () {
-            //TODO:
+        a.postChange = function () {
+            this.constraints()
+        }.bind(this)
+        a.parent(this)
+        this.controls.add(a)
+
+        this.endPoint = new Point2D(0, 0)
+        a = new Handle(this.endPoint)
+        a.postChange = function () {
+            const endAnglePoint = Point2D.subtract(this.endPoint, this.centerPoint)
+            endAnglePoint.x(endAnglePoint.x() / this.radiusRatio())
+            let endAngle = Point2D.angle(new Point2D(0,0), endAnglePoint)
+            this.angleSize.y(endAngle)
+            this.constraints()
+        }.bind(this)
+
+        a.parent(this)
+        this.controls.add(a)
+
+        this.startPoint = new Point2D(0, 0)
+        a = new Handle(this.startPoint)
+        a.postChange = function () {
+            const startAnglePoint = Point2D.subtract(this.startPoint, this.centerPoint)
+            startAnglePoint.x(startAnglePoint.x() / this.radiusRatio())
+            const startAngle = Point2D.angle(new Point2D(0,0), startAnglePoint)
+            this.angleSize.x(startAngle)
+            this.constraints()
         }.bind(this)
 
         a.parent(this)
@@ -24,10 +49,8 @@ class Ellipse extends Element {
 
         this.widthPoint = new Point2D(0, 0)
         a = new Handle(this.widthPoint)
-        a.onChange = function () {
-            this.widthPoint.h(this.center().h())
-            let diff = Math.abs(this.widthPoint.w() - this.centerPoint.w())
-            this.widthPoint.w(this.center().w() - diff)
+        a.postChange = function () {
+            this.radius(this.centerPoint.x() - this.widthPoint.w(), this.radiusSize.h())
         }.bind(this)
 
         a.parent(this)
@@ -36,25 +59,16 @@ class Ellipse extends Element {
 
         this.heightPoint = new Point2D(0, 0)
         a = new Handle(this.heightPoint)
-        a.onChange = function () {
-            this.heightPoint.w(this.center().w())
-            let diff = Math.abs(this.heightPoint.h() - this.centerPoint.h())
-            this.heightPoint.h(this.center().h() - diff)
+        a.postChange = function () {
+            this.radius(this.radiusSize.w(), this.centerPoint.y() - this.heightPoint.h())
         }.bind(this)
 
         a.parent(this)
         a.shape = Handle.shape.square
         this.controls.add(a)
 
-        this.startPoint = new Point2D(0, 0)
-        a = new Handle(this.startPoint)
-        a.parent(this)
-        this.controls.add(a)
-
-        this.endPoint = new Point2D(0, 0)
-        a = new Handle(this.endPoint)
-        a.parent(this)
-        this.controls.add(a)
+        this.radiusSize = new Size2D(0, 0)
+        this.angleSize = new Size2D(0,Math.PI * 2)
 
         this.buildPath()
 
@@ -66,12 +80,16 @@ class Ellipse extends Element {
     constraints() {
         //constraint height
         this.heightPoint.w(this.center().w())
-        let diff = Math.abs(this.heightPoint.h() - this.centerPoint.h())
-        this.heightPoint.h(this.center().h() - diff)
+        this.heightPoint.h(this.center().h() - this.radius().h())
         //constraint width
         this.widthPoint.h(this.center().h())
-        diff = Math.abs(this.widthPoint.w() - this.centerPoint.w())
-        this.widthPoint.w(this.center().w() - diff)
+        this.widthPoint.w(this.center().w() - this.radius().w())
+
+        this.start().x(this.radius().x() * Math.cos(this.angleSize.x()) + this.centerPoint.x())
+        this.start().y(this.radius().y() * Math.sin(this.angleSize.x()) + this.centerPoint.y())
+
+        this.end().x(this.radius().x() * Math.cos(this.angleSize.y()) + this.centerPoint.x())
+        this.end().y(this.radius().y() * Math.sin(this.angleSize.y()) + this.centerPoint.y())
     }
 
     value(...args) {
@@ -89,6 +107,10 @@ class Ellipse extends Element {
         this.buildPath()
     }
 
+    radiusRatio(){
+        return this.radius().x() / this.radius().y()
+    }
+
     lineWidth(...args) {
         if (args.length == 1) {
             if (typeof args[0] == 'number') {
@@ -101,30 +123,9 @@ class Ellipse extends Element {
         return this.lineWidth;
     }
 
-    controlWidth(...args) {
-        if (args.length && typeof args[0] == 'number') {
-            this.widthPoint.w(args[0])
-            this.widthPoint.h(this.center().h())
-            this.buildPath();
-        }
-        return this.widthPoint.w()
-    }
-
-    controlHeight(...args) {
-        if (args.length && typeof args[0] == 'number') {
-            this.heightPoint.h(args[0])
-            this.heightPoint.w(this.center().w())
-            this.buildPath();
-        }
-        return this.heightPoint.h()
-    }
-
     center(...args) {
         if (args.length) {
             this.centerPoint.value(...args)
-            //this.heightPoint.w(this.center().w())
-            //this.widthPoint.h(this.center().h())
-            this.constraints()
             this.buildPath()
         }
         return this.centerPoint;
@@ -147,11 +148,12 @@ class Ellipse extends Element {
     }
 
     radius(...args) {
-        if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
-            this.controlWidth(args[0])
-            this.controlHeight(args[1])
+        if (args.length) {
+            this.radiusSize.value(...args)
+            this.constraints()
+            this.buildPath()
         }
-        return new Size2D(this.controlWidth() - this.center().x(), this.controlHeight() - this.center().y()).abs()
+        return new Size2D(this.radiusSize).abs()
     }
 
     rotation(...args) {
@@ -164,12 +166,7 @@ class Ellipse extends Element {
 
     buildPath() {
         this.path = new Path2D();
-        const startAngle = Point2D.angle(this.center(), this.start())
-        let endAngle = Point2D.angle(this.center(), this.end())
-        if (startAngle == endAngle) {
-            endAngle = startAngle + Math.PI * 2
-        }
-        this.path.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radius().x(), this.radius().y(), this.rotationNumber, startAngle, endAngle);
+        this.path.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radius().w(), this.radius().h(), this.rotationNumber, this.angleSize.x(), this.angleSize.y());
         this.buildHitTestPath()
     }
 
@@ -231,16 +228,16 @@ class Ellipse extends Element {
             /*context.strokeStyle = 'red'
             context.lineWidth = 1
             context.stroke(this.hitPath)*/
-            if (this.selected) this.edit(contextes)
+            //if (this.selected) this.edit(contextes)
             ctx.restore();
             super.draw(contextes, null, t)
         }
     }
 
-    edit(contextes) {
+    onEdit(contextes) {
         const ctx = contextes.fg
         const tm = TransformationMatrix.multiply(this.getParentsTransformations(), this.getTransformation()).valueOf()
-
+        
         ctx.save()
         ctx.setTransform(
             tm[0],

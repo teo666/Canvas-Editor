@@ -11,7 +11,7 @@ class Element extends Common {
 
         //enable or disable drawing
         this.enableDraw = true
-        this.selected = true
+        this.selected = false
         this.pivot = new Pivot()
         this.pivot.parent(this)
 

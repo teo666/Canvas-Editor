@@ -24,6 +24,13 @@ class Rectangle extends Element {
         a.parent(this)
         this.controls.add(a)
 
+        //TODO: finire il center point per il rettangolo
+        this.centerPoint = new Point2D(0,0)
+        a = new Handle(this.centerPoint)
+        a.shape = Handle.shape.cross
+        a.parent(this)
+        this.controls.add(a)
+
         if (args.length) this.value(...args)
     }
 
