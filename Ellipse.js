@@ -4,17 +4,19 @@ class Ellipse extends Element {
     constructor(...args) {
         super();
         this.path = null;
-        this.lineWidth = 10;
+        this.lineWidth = 20;
         this.lineDash = [];
         this.strokeStyle = Colors.HTMLColor.orange
         this.fillStyle = Colors.HTMLColor.green
         this.shadowColor = Colors.HTMLColor.red;
         this.globalCompositeOperation = CanvasStyle.globalCompositeOperation.source_over
         this.shadowBlur = 0;
+        this.closeToCenter = true
 
         this.centerPoint = new Point2D(0, 0);
         let a = new Handle(this.centerPoint)
         a.shape = Handle.shape.cross
+        a.strokeStyle = Colors.HTMLColor.white
         a.postChange = function () {
             this.constraints()
         }.bind(this)
@@ -26,7 +28,7 @@ class Ellipse extends Element {
         a.postChange = function () {
             const endAnglePoint = Point2D.subtract(this.endPoint, this.centerPoint)
             endAnglePoint.x(endAnglePoint.x() / this.radiusRatio())
-            let endAngle = Point2D.angle(new Point2D(0,0), endAnglePoint)
+            let endAngle = Point2D.angle(new Point2D(0, 0), endAnglePoint)
             this.angleSize.y(endAngle)
             this.constraints()
         }.bind(this)
@@ -39,7 +41,7 @@ class Ellipse extends Element {
         a.postChange = function () {
             const startAnglePoint = Point2D.subtract(this.startPoint, this.centerPoint)
             startAnglePoint.x(startAnglePoint.x() / this.radiusRatio())
-            const startAngle = Point2D.angle(new Point2D(0,0), startAnglePoint)
+            const startAngle = Point2D.angle(new Point2D(0, 0), startAnglePoint)
             this.angleSize.x(startAngle)
             this.constraints()
         }.bind(this)
@@ -68,7 +70,7 @@ class Ellipse extends Element {
         this.controls.add(a)
 
         this.radiusSize = new Size2D(0, 0)
-        this.angleSize = new Size2D(0,Math.PI * 2)
+        this.angleSize = new Size2D(0, Math.PI * 2)
 
         this.buildPath()
 
@@ -107,7 +109,7 @@ class Ellipse extends Element {
         this.buildPath()
     }
 
-    radiusRatio(){
+    radiusRatio() {
         return this.radius().x() / this.radius().y()
     }
 
@@ -166,14 +168,26 @@ class Ellipse extends Element {
 
     buildPath() {
         this.path = new Path2D();
+        if (this.closeToCenter && Math.abs(this.angleSize.x() - this.angleSize.y()) != Math.PI * 2) {
+            this.path.moveTo(this.centerPoint.x(), this.centerPoint.y())
+            this.path.lineTo(this.start().x(), this.start().y())
+        }
+
         this.path.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radius().w(), this.radius().h(), this.rotationNumber, this.angleSize.x(), this.angleSize.y());
+
+        if (this.closeToCenter && Math.abs(this.angleSize.x() - this.angleSize.y()) != Math.PI * 2) {
+            this.path.closePath()
+        }
         this.buildHitTestPath()
     }
 
     buildHitTestPath() {
         const w = this.lineWidth / 2
         this.hitPath = new Path2D();
-        this.hitPath.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radius().x() + w, this.radius().y() + w, this.rotationNumber, 0, 2 * Math.PI);
+        this.hitPath.moveTo(this.centerPoint.x(), this.centerPoint.y())
+        this.hitPath.lineTo(this.start().x(), this.start().y())
+        this.hitPath.ellipse(this.centerPoint.x(), this.centerPoint.y(), this.radius().x() + w, this.radius().y() + w, this.rotationNumber, this.angleSize.x(), this.angleSize.y());
+        this.hitPath.closePath()
     }
 
     hitTest(x, y, tr, contextes) {
@@ -225,9 +239,9 @@ class Ellipse extends Element {
                 ctx.stroke(this.path)
             }
 
-            /*context.strokeStyle = 'red'
-            context.lineWidth = 1
-            context.stroke(this.hitPath)*/
+            /*contextes.fg.strokeStyle = 'red'
+            contextes.fg.lineWidth = 1
+            contextes.fg.stroke(this.hitPath)*/
             //if (this.selected) this.edit(contextes)
             ctx.restore();
             super.draw(contextes, null, t)
@@ -237,7 +251,7 @@ class Ellipse extends Element {
     onEdit(contextes) {
         const ctx = contextes.fg
         const tm = TransformationMatrix.multiply(this.getParentsTransformations(), this.getTransformation()).valueOf()
-        
+
         ctx.save()
         ctx.setTransform(
             tm[0],

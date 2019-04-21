@@ -16,17 +16,34 @@ class Rectangle extends Element {
 
         this.startPoint = new Point2D(0, 0)
         let a = new Handle(this.startPoint)
+        a.shape = Handle.shape.square
+        a.postChange = function(){
+            this.constraints()
+        }.bind(this)
         a.parent(this)
         this.controls.add(a)
 
         this.endPoint = new Point2D(0, 0)
         a = new Handle(this.endPoint)
+        a.shape = Handle.shape.square
+        a.postChange = function(){
+            this.constraints()
+        }.bind(this)
         a.parent(this)
         this.controls.add(a)
 
         //TODO: finire il center point per il rettangolo
-        this.centerPoint = new Point2D(0,0)
+        this.centerPoint = new Point2D(0, 0)
         a = new Handle(this.centerPoint)
+        a.strokeStyle = Colors.HTMLColor.white
+        
+        a.postChange = function () {
+            const size = this.size()
+            const diff = Point2D.subtract(this.centerPoint, new Point2D(size.x() / 2, size.y() / 2))
+            this.startPoint.value(diff)
+            this.size(size.x(), size.y())
+        }.bind(this)
+
         a.shape = Handle.shape.cross
         a.parent(this)
         this.controls.add(a)
@@ -56,6 +73,11 @@ class Rectangle extends Element {
         this.buildPath()
     }
 
+    constraints() {
+        const mid = Point2D.add(this.startPoint, this.endPoint)
+        this.centerPoint.value(mid.x() / 2, mid.y() / 2)
+    }
+
     width(...args) {
         if (args.length == 1) {
             if (typeof args[0] == 'number') {
@@ -69,19 +91,20 @@ class Rectangle extends Element {
     }
 
     size(...args) {
-        if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number' ) {
+        if (args.length == 2 && typeof args[0] == 'number' && typeof args[1] == 'number') {
             this.end(this.startPoint.x() + args[0], this.startPoint.y() + args[1])
         }
         return Point2D.subtract(this.endPoint, this.startPoint)
     }
 
-    dimensions(){
+    dimensions() {
         this.size().abs()
     }
 
     start(...args) {
         if (args.length) {
             this.startPoint.value(...args)
+            this.constraints()
             this.buildPath()
         }
         return this.startPoint
@@ -90,6 +113,7 @@ class Rectangle extends Element {
     end(...args) {
         if (args.length) {
             this.endPoint.value(...args)
+            this.constraints()
             this.buildPath()
         }
         return this.endPoint

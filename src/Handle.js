@@ -10,6 +10,9 @@ class Handle extends ControlElement {
         this.enableDraw = false
         this.parentElement = null
         this.edit = false
+
+        this.strokeStyle = Colors.HTMLColor.black
+        this.lineWidth = 1
     }
 
     getPath() {
@@ -94,7 +97,7 @@ class Handle extends ControlElement {
 
             //ctx.fill(Handle.staticPathSquare)
 
-            ctx.strokeStyle = 'black'
+            ctx.strokeStyle = this.strokeStyle
             let s = this.getPath()
 
             ctx.stroke(s)
