@@ -10,7 +10,7 @@ class Handle extends ControlElement {
         this.enableDraw = false
         this.parentElement = null
         this.edit = false
-
+        this.snapEnabled = true
         this.strokeStyle = Colors.HTMLColor.black
         this.lineWidth = 1
     }
@@ -57,11 +57,13 @@ class Handle extends ControlElement {
             const y = e.clientY - rect.top;
 
             let mmv = {
-                x, y
+                x, y, snap_x: x, snap_y: y
             }
 
-            editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
-
+            if (this.snapEnabled) {
+                editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
+            }
+            
             const a = this.parentElement.getParentsTransformations().multiplyTM(this.parentElement.getTransformation()).inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             mmv = {
                 x: this.MOUSEDOWN.startx + a[0] - this.MOUSEDOWN.x,
@@ -78,8 +80,6 @@ class Handle extends ControlElement {
         }
     }
 
-
-
     draw(contextes, pT) {
         if (this.enableDraw) {
 
@@ -94,8 +94,6 @@ class Handle extends ControlElement {
                 p[1]
             )
             ctx.fillStyle = 'white'
-
-            //ctx.fill(Handle.staticPathSquare)
 
             ctx.strokeStyle = this.strokeStyle
             let s = this.getPath()

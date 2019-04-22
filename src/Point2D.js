@@ -2,7 +2,7 @@
 
 class Point2D {
     constructor(...args) {
-        this.c = [0,0]
+        this.c = [0, 0]
         this.value(...args)
     }
 
@@ -10,13 +10,13 @@ class Point2D {
         return new Point2D(this)
     }
 
-    valueOf(){
+    valueOf() {
         return this.c
     }
 
     value(...args) {
-        if(!args.length) return this
-        
+        if (!args.length) return this
+
         if (args.length == 1 && args[0] instanceof Point2D) {
             this.x(args[0].x())
             this.y(args[0].y())
@@ -100,7 +100,14 @@ class Point2D {
         }
         return ret
     }
-    
+
+    static polarToCartesin(a, l) {
+        if (typeof a == 'number' && typeof l == 'number') {
+            return  new Point2D(Math.cos(a) * l, Math.sin(a) * l)
+        }
+        throw 'Invalid arguments'
+    }
+
     static add(...args) {
         let ret = new Point2D(0, 0)
         if (args.length > 0) {

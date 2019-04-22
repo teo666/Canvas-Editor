@@ -78,11 +78,9 @@ class Editor {
         l.scale(2,2)
         this.world.addElement(l)
 
-        let e = new Ellipse()
-        e.center(700,200)
-        e.radius(200,100)
-        e.pivot.center(100,100)
-        this.world.addElement(e)
+        let a = new Arc()
+        a.center(500,200)
+        this.world.addElement(a)
 
         /*
         let el = new Ellipse()
