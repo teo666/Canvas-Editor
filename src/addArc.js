@@ -21,8 +21,8 @@ const __addArc = {
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
             elem.center(p[0], p[1])
-            elem.start(p[0], p[1])
-            elem.end(p[0], p[1])
+            mem['s'] = new Point2D(p[0],p[1])
+            mem['e'] = new Point2D(p[0],p[1])
         },
         next: [2, 3],
         saveEvent: false
@@ -44,8 +44,10 @@ const __addArc = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.start(p[0], p[1])
-            if (elem.center().equal(elem.start())) {
+            mem['s'].value(p[0],p[1])
+            elem.radius(Point2D.hypot(elem.center(), mem['s']))
+            elem.startAngle(Point2D.angle(elem.center(), mem['s']))
+            if (!elem.radius()) {
                 return true
             }
         },
@@ -65,8 +67,8 @@ const __addArc = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.start(p[0], p[1])
-            elem.end(p[0], p[1])
+            mem['s'].value(p[0],p[1])
+            elem.radius(Point2D.hypot(elem.center(), mem['s']))
         },
         next: [2, 3, 6],
         saveEvent: false
@@ -89,10 +91,9 @@ const __addArc = {
             elem.selected = false
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.end(p[0], p[1])
-            let c = Point2D.add(elem.end(), elem.start())
-            console.log(c)
-            elem.pivot.value(c.x()/2,c.y()/2)
+            mem['e'].value(p[0],p[1])
+            elem.endAngle(Point2D.angle(elem.center(), mem['e'] ))
+            elem.pivot.center(Point2D.midPoint(elem.center(), elem.startPoint, elem.endPoint))
         },
         next: [],
         saveEvent: false
@@ -111,7 +112,8 @@ const __addArc = {
             }
             editor.cursor.snapToCoordinatesSystem(mmv, editor.world.getTransformation())
             let p = elem.getParentsTransformations().inv().multiplyPoint(mmv.snap_x, mmv.snap_y)
-            elem.end(p[0], p[1])
+            mem['e'].value(p[0],p[1])
+            elem.endAngle(Point2D.angle(elem.center(), mem['e'] ))
 
         },
         next: [4, 5, 6, 7],

@@ -8,13 +8,15 @@ const shapeType = {
     4: "Rectangle",
     5: "Square",
     6: "Arc",
+    7: "Bezier",
     "Point2D": 0,
     "Line": 1,
     "Ellipse": 2,
     "Net": 3,
     "Rectangle": 4,
     "Square": 5,
-    "Arc": 6
+    "Arc": 6,
+    "Bezier": 7
 }
 
 class Adder {
@@ -58,6 +60,9 @@ class Adder {
                 case shapeType.Arc:
                     this.addArc(descriptor);
                     break;
+                case shapeType.Bezier:
+                    this.addBezier(descriptor);
+                    break;
             }
             this.prepare(parent)
         }
@@ -77,6 +82,12 @@ class Adder {
 
         this.clearAllowedEvents()
         this.readAllowedEvents();
+    }
+
+    addBezier(descriptor) {
+        this.descriptor = descriptor ? descriptor : __addBezier;
+        this.pending = new Bezier();
+        this.pendingType = shapeType.Bezier;
     }
 
     addEllipse(descriptor) {
@@ -119,7 +130,7 @@ class Adder {
     cancel(editor) {
         let els = this.parentElement.getElements();
         let index = els.indexOf(this.pending)
-        if(index > 0){
+        if (index > 0) {
             els.splice(index, 1)
         }
         this.continuosAdd = false

@@ -68,11 +68,11 @@ class Arc extends Element {
     }
 
     constraints() {
-        this.start().x(this.radiusLength * Math.cos(this.angleSize.x()) + this.centerPoint.x())
-        this.start().y(this.radiusLength * Math.sin(this.angleSize.x()) + this.centerPoint.y())
+        this.startPoint.x(this.radiusLength * Math.cos(this.angleSize.x()) + this.centerPoint.x())
+        this.startPoint.y(this.radiusLength * Math.sin(this.angleSize.x()) + this.centerPoint.y())
 
-        this.end().x(this.radiusLength * Math.cos(this.angleSize.y()) + this.centerPoint.x())
-        this.end().y(this.radiusLength * Math.sin(this.angleSize.y()) + this.centerPoint.y())
+        this.endPoint.x(this.radiusLength * Math.cos(this.angleSize.y()) + this.centerPoint.x())
+        this.endPoint.y(this.radiusLength * Math.sin(this.angleSize.y()) + this.centerPoint.y())
 
         this.radiusHandlePoint.x(this.centerPoint.x())
         this.radiusHandlePoint.y(this.centerPoint.y() - this.radiusLength)
@@ -88,7 +88,7 @@ class Arc extends Element {
 
     radius(...args) {
         if (args.length == 1 && typeof args[0] == 'number') {
-            this.radiusLength = args[0]
+            this.radiusLength = Math.abs(args[0])
             this.constraints()
             this.buildPath()
         }
@@ -146,7 +146,7 @@ class Arc extends Element {
         }
 
         const angle_3_2 = angle_3 / 2
-        const radius = this.radius() - w
+        const radius = Math.max(0, this.radius() - w)
         const RADIUS = this.radius() + w
         const hyp = radius * Math.tan(angle_3_2)
         const HYP = Math.abs(RADIUS * Math.tan(angle_3_2))
@@ -223,22 +223,35 @@ class Arc extends Element {
 
     }
 
-    start(...args) {
+    angle(...args) {
         if (args.length) {
-            this.startPoint.value(...args)
+            this.angleSize.value(...args)
             this.constraints()
             this.buildPath()
         }
-        return this.startPoint
+        return this.angleSize
     }
 
-    end(...args) {
-        if (args.length) {
-            this.endPoint.value(...args)
+    startAngle(...args) {
+        if (args.length == 1) {
+            this.angleSize.value(args[0], this.angleSize.y())
             this.constraints()
             this.buildPath()
+        } else {
+            throw 'Invalid arguments'
         }
-        return this.endPoint
+        return this.angleSize.x()
+    }
+
+    endAngle(...args) {
+        if (args.length == 1) {
+            this.angleSize.value(this.angleSize.x(), args[0])
+            this.constraints()
+            this.buildPath()
+        } else {
+            throw 'Invalid arguments'
+        }
+        return this.angleSize.y()
     }
 
     draw(contextes, parentT) {
@@ -284,26 +297,6 @@ class Arc extends Element {
     }
 
     onEdit(contextes) {
-        const ctx = contextes.fg
-        const tm = TransformationMatrix.multiply(this.getParentsTransformations(), this.getTransformation()).valueOf()
-        ctx.save()
-        ctx.setTransform(
-            tm[0],
-            tm[1],
-            tm[2],
-            tm[3],
-            tm[4],
-            tm[5]
-        )
-        ctx.setLineDash([10, 10])
-        ctx.lineWidth = 2
-        ctx.strokeStyle = 'yellow'
-        ctx.beginPath()
-        ctx.moveTo(this.start().x(), this.start().y())
-        ctx.lineTo(this.center().x(), this.center().y())
-        ctx.lineTo(this.end().x(), this.end().y())
-        ctx.stroke()
-        ctx.closePath()
-        ctx.restore()
+
     }
 }

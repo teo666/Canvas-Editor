@@ -11,10 +11,38 @@ class Bezier extends Element {
         this.shadowColor = Colors.HTMLColor.red;
         this.globalCompositeOperation = CanvasStyle.globalCompositeOperation.source_over
         this.shadowBlur = 0;
+
         this.controlPoint1 = new Point2D()
+        let a = new Handle(this.controlPoint1)
+        a.postChange = function () {
+            
+        }.bind(this)
+        a.parent(this)
+        this.controls.add(a)
+
         this.controlPoint2 = new Point2D()
+        a = new Handle(this.controlPoint2)
+        a.postChange = function () {
+            
+        }.bind(this)
+        a.parent(this)
+        this.controls.add(a)
+
         this.controlPoint3 = new Point2D()
+        a = new Handle(this.controlPoint3)
+        a.postChange = function () {
+            
+        }.bind(this)
+        a.parent(this)
+        this.controls.add(a)
+
         this.controlPoint4 = new Point2D()
+        a = new Handle(this.controlPoint4)
+        a.postChange = function () {
+            
+        }.bind(this)
+        a.parent(this)
+        this.controls.add(a)
 
         if (args.length) {
             this.value(...args)
@@ -33,6 +61,13 @@ class Bezier extends Element {
             this.controlPoint4.value(args[3])
             this.buildPath()
         }
+    }
+
+    width(w){
+        if(typeof w == 'number' && w >= 0){
+            this.lineWidth = w
+        }
+        return this.lineWidth
     }
 
     controlPoint(n, ...args) {

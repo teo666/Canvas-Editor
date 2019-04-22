@@ -68,7 +68,7 @@ class Editor {
         this.world.translate(200, 200)
         this.world.applyTransform(this.contextes)
 
-        let l = new Line()
+        /*let l = new Line()
         l.translate(100, 100)
         l.rotate(-Math.PI/4)
         l.pivot.value(50,0)
@@ -80,25 +80,6 @@ class Editor {
 
         let a = new Arc()
         a.center(500,200)
-        this.world.addElement(a)
-
-        /*
-        let el = new Ellipse()
-        el.center(50, 50)
-        el.radius(50, 90)
-        el.translate(100, 300)
-        this.world.addElement(el)
-
-        let qd = new Rectangle()
-        qd.corner(10, 10)
-        qd.size(100, 200)
-        this.world.addElement(qd)
-
-        let a = new Arc()
-        a.center(-100,-100)
-        a.radius(50)
-        a.startAngle(0)
-        a.endAngle(Math.PI)
         this.world.addElement(a)
 
         let bez = new Bezier()

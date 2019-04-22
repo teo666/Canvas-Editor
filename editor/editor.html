@@ -22,6 +22,7 @@
     <script type="text/javascript" src="../src/addSquare.js"></script>
     <script type="text/javascript" src="../src/addArc.js"></script>
     <script type="text/javascript" src="../src/addEllipse.js"></script>
+    <script type="text/javascript" src="../src/addBezier.js"></script>
     <script type="text/javascript" src="../src/Tool.js"></script>
     <script type="text/javascript" src="../src/Editor.js"></script>
     <script type="text/javascript" src="../src/Element.js"></script>
@@ -80,6 +81,9 @@
             </button>
             <button
                 onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Rectangle, editor.world)">Rectangle
+            </button>
+            <button
+                onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Bezier, editor.world)">Bezier curve
             </button>
             <button onclick="draw()">Animate
             </button>

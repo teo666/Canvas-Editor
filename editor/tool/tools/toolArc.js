@@ -7,13 +7,23 @@ const __toolArc = Object.assign({
         type: 'Point2D',
         label: 'Center'
     },
-    startPoint: {
+    /*startPoint: {
         type: 'Point2D',
         label: 'Start'
     },
     endPoint: {
         type: 'Point2D',
         label: 'End'
+    },*/
+    angle: {
+        type: 'Point2D',
+        label: 'Angle'
+    },
+    radiusLength: {
+        type: ToolBuilder.toolType.numeric,
+        label: 'Radius',
+        precision: 1,
+        min: 0
     },
     rotation: {
         type: ToolBuilder.toolType.dropdown,

@@ -108,6 +108,13 @@ class Point2D {
         throw 'Invalid arguments'
     }
 
+    static midPoint(...args){
+        let ret = Point2D.add(...args)
+        ret.x(ret.x() / args.length)
+        ret.y(ret.y() / args.length) 
+        return ret
+    }
+
     static add(...args) {
         let ret = new Point2D(0, 0)
         if (args.length > 0) {
