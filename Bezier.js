@@ -3,7 +3,7 @@
 class Bezier extends Element {
     constructor(...args) {
         super();
-        this.lineWidth = 10;
+        this.lineWidth = 20;
         this.lineDash = [];
         this.lineCap = CanvasStyle.lineCap.Round
         this.lineJoin = CanvasStyle.lineJoin.Round
@@ -15,7 +15,7 @@ class Bezier extends Element {
         this.controlPoint1 = new Point2D()
         let a = new Handle(this.controlPoint1)
         a.postChange = function () {
-            
+
         }.bind(this)
         a.parent(this)
         this.controls.add(a)
@@ -23,7 +23,7 @@ class Bezier extends Element {
         this.controlPoint2 = new Point2D()
         a = new Handle(this.controlPoint2)
         a.postChange = function () {
-            
+
         }.bind(this)
         a.parent(this)
         this.controls.add(a)
@@ -31,7 +31,7 @@ class Bezier extends Element {
         this.controlPoint3 = new Point2D()
         a = new Handle(this.controlPoint3)
         a.postChange = function () {
-            
+
         }.bind(this)
         a.parent(this)
         this.controls.add(a)
@@ -39,7 +39,7 @@ class Bezier extends Element {
         this.controlPoint4 = new Point2D()
         a = new Handle(this.controlPoint4)
         a.postChange = function () {
-            
+
         }.bind(this)
         a.parent(this)
         this.controls.add(a)
@@ -63,16 +63,16 @@ class Bezier extends Element {
         }
     }
 
-    width(w){
-        if(typeof w == 'number' && w >= 0){
+    width(w) {
+        if (typeof w == 'number' && w >= 0) {
             this.lineWidth = w
         }
         return this.lineWidth
     }
 
     controlPoint(n, ...args) {
-        if (typeof n == 'number' && n > 0 && n <= 4 ) {
-            if(args.length){
+        if (typeof n == 'number' && n > 0 && n <= 4) {
+            if (args.length) {
                 this['controlPoint' + n].value(...args)
                 this.buildPath()
             }
@@ -90,6 +90,30 @@ class Bezier extends Element {
             this.controlPoint3.x(), this.controlPoint3.y(),
             this.controlPoint4.x(), this.controlPoint4.y(),
         );
+        this.buildHitTestPath()
+
+    }
+
+    buildHitTestPath() {
+        //WARN: this method is an aproximation of real bezier path
+        this.hitPath = new Path2D();
+        const w = this.lineWidth / 2
+
+        this.hitPath.moveTo(this.controlPoint1.x() - w, this.controlPoint1.y() - w)
+
+        this.hitPath.bezierCurveTo(
+            this.controlPoint2.x() - w, this.controlPoint2.y() - w,
+            this.controlPoint3.x() - w, this.controlPoint3.y() - w,
+            this.controlPoint4.x() - w, this.controlPoint4.y() - w,
+        );
+        this.hitPath.lineTo(this.controlPoint4.x() + w, this.controlPoint4.y() + w)
+
+        this.hitPath.bezierCurveTo(
+            this.controlPoint3.x() + w, this.controlPoint3.y() + w,
+            this.controlPoint2.x() + w, this.controlPoint2.y() + w,
+            this.controlPoint1.x() + w, this.controlPoint1.y() + w,
+        );
+        this.hitPath.closePath()
 
     }
 
@@ -139,11 +163,11 @@ class Bezier extends Element {
             ctx.stroke(this.path)
 
             //DEBUG: draw hitTestPath
-            /*
-            context.strokeStyle = 'black'
-            context.lineWidth = 1
-            context.stroke(this.hitPath)
-            */
+
+            contextes.fg.strokeStyle = 'yellow'
+            contextes.fg.lineWidth = 1
+            contextes.fg.stroke(this.hitPath)
+
 
             ctx.restore();
             super.draw(contextes, null, t)

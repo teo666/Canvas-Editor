@@ -4,7 +4,7 @@ class Line extends Element {
     constructor(...args) {
         super();
         this.path = null;
-        this.lineWidth = 1;
+        this.lineWidth = 20;
         this.lineDash = [];
         this.lineCap = CanvasStyle.lineCap.Round
         this.lineJoin = CanvasStyle.lineJoin.Round

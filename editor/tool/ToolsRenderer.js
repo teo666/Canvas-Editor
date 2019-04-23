@@ -153,6 +153,7 @@ Object.defineProperty(ToolsRenderer, 'association', {
         Ellipse: __toolEllipse,
         Rectangle: __toolRectangle,
         Arc: __toolArc,
-        Bezier: __toolBezier
+        Bezier: __toolBezier,
+        QuadraticCurve: __toolQuedraticCurve
     })
 })

@@ -9,6 +9,7 @@ const shapeType = {
     5: "Square",
     6: "Arc",
     7: "Bezier",
+    8: "QuadraticCurve",
     "Point2D": 0,
     "Line": 1,
     "Ellipse": 2,
@@ -16,7 +17,8 @@ const shapeType = {
     "Rectangle": 4,
     "Square": 5,
     "Arc": 6,
-    "Bezier": 7
+    "Bezier": 7,
+    "QuadraticCurve":8
 }
 
 class Adder {
@@ -60,8 +62,11 @@ class Adder {
                 case shapeType.Arc:
                     this.addArc(descriptor);
                     break;
-                case shapeType.Bezier:
+                    case shapeType.Bezier:
                     this.addBezier(descriptor);
+                    break;
+                    case shapeType.QuadraticCurve:
+                    this.addQuadraticCurve(descriptor);
                     break;
             }
             this.prepare(parent)
@@ -82,6 +87,12 @@ class Adder {
 
         this.clearAllowedEvents()
         this.readAllowedEvents();
+    }
+
+    addQuadraticCurve(descriptor) {
+        this.descriptor = descriptor ? descriptor : __addQuadraticCurve;
+        this.pending = new QuadraticCurve();
+        this.pendingType = shapeType.QuadraticCurve;
     }
 
     addBezier(descriptor) {

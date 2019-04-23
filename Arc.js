@@ -6,7 +6,7 @@ class Arc extends Element {
         this.path = null;
         this.lineWidth = 20;
         this.lineDash = [];
-        this.strokeStyle = Colors.HTMLColor.red
+        this.strokeStyle = '#faba11'
         this.fillStyle = Colors.HTMLColor.red
         this.globalCompositeOperation = this.globalCompositeOperation
         this.lineCap = CanvasStyle.lineCap.Round
@@ -52,7 +52,7 @@ class Arc extends Element {
 
         this.angleSize = new Size2D(0, Math.PI * 2)
 
-        this.radiusLength = 100
+        this.radiusLength = 0
 
         this.radiusHandlePoint = new Point2D(0, 0)
         a = new Handle(this.radiusHandlePoint)

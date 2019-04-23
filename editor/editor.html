@@ -23,6 +23,7 @@
     <script type="text/javascript" src="../src/addArc.js"></script>
     <script type="text/javascript" src="../src/addEllipse.js"></script>
     <script type="text/javascript" src="../src/addBezier.js"></script>
+    <script type="text/javascript" src="../src/addQuadraticCurve.js"></script>
     <script type="text/javascript" src="../src/Tool.js"></script>
     <script type="text/javascript" src="../src/Editor.js"></script>
     <script type="text/javascript" src="../src/Element.js"></script>
@@ -32,6 +33,7 @@
     <script type="text/javascript" src="../Arc.js"></script>
     <script type="text/javascript" src="../Rectangle.js"></script>
     <script type="text/javascript" src="../Ellipse.js"></script>
+    <script type="text/javascript" src="../QuadraticCurve.js"></script>
     <script type="text/javascript" src="../src/World.js"></script>
     <script type="text/javascript" src="../src/Cursor.js"></script>
     <script type="text/javascript" src="../src/Point2D.js"></script>
@@ -52,6 +54,7 @@
     <script type="text/javascript" src="./tool/tools/toolRectangle.js"></script>
     <script type="text/javascript" src="./tool/tools/toolArc.js"></script>
     <script type="text/javascript" src="./tool/tools/toolBezier.js"></script>
+    <script type="text/javascript" src="./tool/tools/toolQuadraticCurve.js"></script>
 
     <script type="text/javascript" src="./tool/ToolsRenderer.js"></script>
 
@@ -84,6 +87,9 @@
             </button>
             <button
                 onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.Bezier, editor.world)">Bezier curve
+            </button>
+            <button
+                onclick="editor.tool.changeTool(editor,Tool.validTools.adder); editor.tool.tools.adder.add(shapeType.QuadraticCurve, editor.world)">Quadratic curve
             </button>
             <button onclick="draw()">Animate
             </button>
